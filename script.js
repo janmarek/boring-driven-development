@@ -126,8 +126,8 @@ const scenes = [
   {
     id: "title",
     notes:
-      "Title → slack flow in one scene. 7 beats: title → fade+center → eat dots → notify → eat notif → window → bug.",
-    steps: 7,
+      "Title → slack flow in one scene. 8 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug.",
+    steps: 8,
     render: () => `
       <div class="scene intro">
         <!-- Title text overlay (fades out from step 1+) -->

@@ -34,7 +34,7 @@ what bores you.
 
 | # | id            | steps | What happens |
 |---|---------------|-------|--------------|
-| 1 | `title`       | 7     | Title → fade+center → pacman eats dots → notification → eat → Slack window → bug report. One continuous scene. |
+| 1 | `title`       | 8     | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window → bug report. One continuous scene. |
 | 2 | `abstract`    | 1     | (legacy) frustration-as-signal hook. |
 | 3 | `map`         | 1     | (legacy) lifecycle as a Pac-Man maze. |
 | 4 | `slack`       | 1     | (legacy) full Slack UI. To be replaced. |
@@ -51,7 +51,7 @@ their replacements.
 
 ## Scenes — detail
 
-### 1. `title` — 7 steps
+### 1. `title` — 8 steps
 
 Opening card and the whole title → Slack flow, merged into one scene so the
 pacman + dots persist as the same DOM elements throughout (smooth animation
@@ -64,18 +64,22 @@ across every beat).
   - Footer: "Jan Marek" (left), Mews wordmark (right).
 - **Step 1** — Title texts and Mews logo fade out. At the same time, pacman
   and the 4 pellets slide from the upper-right down to the centre of the stage,
-  laying out into a horizontal trail. The Slack icon scales in on the right.
-- **Step 2** — Pacman moves right along the trail, eating the dots in sequence.
-- **Step 3** — A red notification badge ("1") pops onto the **top-right corner**
+  laying out into a horizontal trail. (No Slack icon yet.)
+- **Step 2** — The Slack icon fades in on the right of the trail.
+- **Step 3** — Pacman moves right along the trail, eating the dots in sequence.
+- **Step 4** — A red notification badge ("1") pops onto the **top-right corner**
   of the Slack icon.
-- **Step 4** — Pacman moves diagonally up-right to that corner and eats the
+- **Step 5** — Pacman moves diagonally up-right to that corner and eats the
   notification.
-- **Step 5** — Pacman exits right; the Slack icon shrinks; the schematic
+- **Step 6** — Pacman exits right; the Slack icon shrinks; the schematic
   `#product-feedback` window scales in at the centre.
-- **Step 6** — Petr's bug message slides into the window: _"hey, found a bug 🐛
+- **Step 7** — Petr's bug message slides into the window: _"hey, found a bug 🐛
   — the tax field disappears on second submit."_
 
-Each step is reversible with `←`.
+Each step is reversible with `←`. Continuous moves like the
+pacman+dots travel are the recurring pattern for this presentation —
+when adding scenes, prefer one merged scene with N step-keyed positions
+over multiple scenes connected by hard cuts.
 
 ### 2. `abstract` — _(legacy, 1 step)_
 

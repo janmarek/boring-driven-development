@@ -1299,14 +1299,20 @@ body {
 .slack-arrival .new-msg .sw-text .emoji { font-size: 26px; }
 
 /* ===================================================
- * Intro scene — merged title→slack flow (7 controllable steps)
- * step 0 — full title
- * step 1 — texts/logo fade out, pacman+dots move to centre, slack icon pops in
- * step 2 — pacman moves right, dots eaten in stagger
- * step 3 — notification badge appears on top-right of slack icon
- * step 4 — pacman moves up-right to corner, eats notification
- * step 5 — pacman exits, slack icon shrinks, schematic window expands
- * step 6 — bug-report message slides into the window
+ * Intro scene — merged title→slack flow (8 controllable steps)
+ *   0 — full title
+ *   1 — texts/logo fade out, pacman+dots glide to centre
+ *   2 — slack icon fades in on the right
+ *   3 — pacman moves right, dots eaten in stagger
+ *   4 — notification badge appears on top-right of slack icon
+ *   5 — pacman moves up-right to corner, eats notification
+ *   6 — pacman exits, slack icon shrinks, schematic window expands
+ *   7 — bug-report message slides into the window
+ *
+ * Authoring note: continuous moves across steps are the common pattern
+ * for this presentation. Each element has CSS rules per data-step value;
+ * transitions interpolate the property changes between adjacent steps.
+ * To add a new beat, insert a new step number and shift later ones up.
  * =================================================== */
 
 .intro {
@@ -1334,7 +1340,8 @@ body {
 .intro[data-step="3"] .intro-titles,
 .intro[data-step="4"] .intro-titles,
 .intro[data-step="5"] .intro-titles,
-.intro[data-step="6"] .intro-titles {
+.intro[data-step="6"] .intro-titles,
+.intro[data-step="7"] .intro-titles {
   opacity: 0;
 }
 
@@ -1396,23 +1403,22 @@ body {
   transition-duration: 0.85s, 0.85s, 0.4s;
   transition-timing-function: ease-in-out;
 }
-.intro[data-step="1"] .intro-pacman {
-  left: 600px; top: 450px;
-}
+.intro[data-step="1"] .intro-pacman,
 .intro[data-step="2"] .intro-pacman {
-  left: 1080px; top: 450px;
+  left: 350px; top: 450px;
+}
+.intro[data-step="3"] .intro-pacman,
+.intro[data-step="4"] .intro-pacman {
+  left: 780px; top: 450px;
   transition-duration: 1.5s, 1.5s, 0.4s;
 }
-.intro[data-step="3"] .intro-pacman {
-  left: 1080px; top: 450px;
-}
-.intro[data-step="4"] .intro-pacman {
-  left: 1340px; top: 370px;
+.intro[data-step="5"] .intro-pacman {
+  left: 1000px; top: 380px;
   transition-duration: 0.6s, 0.6s, 0.4s;
 }
-.intro[data-step="5"] .intro-pacman,
-.intro[data-step="6"] .intro-pacman {
-  left: 1700px; top: 370px;
+.intro[data-step="6"] .intro-pacman,
+.intro[data-step="7"] .intro-pacman {
+  left: 1700px; top: 380px;
   opacity: 0;
   transition-duration: 0.7s, 0.7s, 0.4s;
 }
@@ -1447,74 +1453,79 @@ body {
 .intro[data-step="3"] .intro-dots .dot,
 .intro[data-step="4"] .intro-dots .dot,
 .intro[data-step="5"] .intro-dots .dot,
-.intro[data-step="6"] .intro-dots .dot { top: 450px; }
+.intro[data-step="6"] .intro-dots .dot,
+.intro[data-step="7"] .intro-dots .dot { top: 450px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(1),
 .intro[data-step="2"] .intro-dots .dot:nth-child(1),
 .intro[data-step="3"] .intro-dots .dot:nth-child(1),
 .intro[data-step="4"] .intro-dots .dot:nth-child(1),
 .intro[data-step="5"] .intro-dots .dot:nth-child(1),
-.intro[data-step="6"] .intro-dots .dot:nth-child(1) { left: 720px; }
+.intro[data-step="6"] .intro-dots .dot:nth-child(1),
+.intro[data-step="7"] .intro-dots .dot:nth-child(1) { left: 470px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(2),
 .intro[data-step="2"] .intro-dots .dot:nth-child(2),
 .intro[data-step="3"] .intro-dots .dot:nth-child(2),
 .intro[data-step="4"] .intro-dots .dot:nth-child(2),
 .intro[data-step="5"] .intro-dots .dot:nth-child(2),
-.intro[data-step="6"] .intro-dots .dot:nth-child(2) { left: 820px; }
+.intro[data-step="6"] .intro-dots .dot:nth-child(2),
+.intro[data-step="7"] .intro-dots .dot:nth-child(2) { left: 570px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(3),
 .intro[data-step="2"] .intro-dots .dot:nth-child(3),
 .intro[data-step="3"] .intro-dots .dot:nth-child(3),
 .intro[data-step="4"] .intro-dots .dot:nth-child(3),
 .intro[data-step="5"] .intro-dots .dot:nth-child(3),
-.intro[data-step="6"] .intro-dots .dot:nth-child(3) { left: 920px; }
+.intro[data-step="6"] .intro-dots .dot:nth-child(3),
+.intro[data-step="7"] .intro-dots .dot:nth-child(3) { left: 670px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(4),
 .intro[data-step="2"] .intro-dots .dot:nth-child(4),
 .intro[data-step="3"] .intro-dots .dot:nth-child(4),
 .intro[data-step="4"] .intro-dots .dot:nth-child(4),
 .intro[data-step="5"] .intro-dots .dot:nth-child(4),
-.intro[data-step="6"] .intro-dots .dot:nth-child(4) { left: 1020px; }
+.intro[data-step="6"] .intro-dots .dot:nth-child(4),
+.intro[data-step="7"] .intro-dots .dot:nth-child(4) { left: 770px; }
 
-/* Step 2+: dots get eaten — opacity 0, scale 0 */
-.intro[data-step="2"] .intro-dots .dot,
+/* Step 3+: dots get eaten — opacity 0, scale 0 */
 .intro[data-step="3"] .intro-dots .dot,
 .intro[data-step="4"] .intro-dots .dot,
 .intro[data-step="5"] .intro-dots .dot,
-.intro[data-step="6"] .intro-dots .dot {
+.intro[data-step="6"] .intro-dots .dot,
+.intro[data-step="7"] .intro-dots .dot {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
-/* Step 2 specifically: staggered timing so pacman appears to eat them in sequence */
-.intro[data-step="2"] .intro-dots .dot:nth-child(1) {
+/* Step 3 specifically: staggered timing so pacman appears to eat them in sequence */
+.intro[data-step="3"] .intro-dots .dot:nth-child(1) {
   transition: opacity 0.18s ease-out 0.32s, transform 0.18s ease-out 0.32s;
 }
-.intro[data-step="2"] .intro-dots .dot:nth-child(2) {
+.intro[data-step="3"] .intro-dots .dot:nth-child(2) {
   transition: opacity 0.18s ease-out 0.62s, transform 0.18s ease-out 0.62s;
 }
-.intro[data-step="2"] .intro-dots .dot:nth-child(3) {
+.intro[data-step="3"] .intro-dots .dot:nth-child(3) {
   transition: opacity 0.18s ease-out 0.92s, transform 0.18s ease-out 0.92s;
 }
-.intro[data-step="2"] .intro-dots .dot:nth-child(4) {
+.intro[data-step="3"] .intro-dots .dot:nth-child(4) {
   transition: opacity 0.18s ease-out 1.22s, transform 0.18s ease-out 1.22s;
 }
 
-/* --- Slack icon (appears step 1, shrinks step 5) --- */
+/* --- Slack icon (fades in step 2, shrinks step 6) --- */
 .intro .intro-slack {
   position: absolute;
-  left: 1300px;
+  left: 950px;
   top: 450px;
   width: 160px;
   height: 160px;
-  transform: translate(-50%, -50%) scale(0);
+  transform: translate(-50%, -50%) scale(0.85);
   opacity: 0;
-  transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1), opacity 0.4s ease-out;
+  transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1), opacity 0.55s ease-out;
 }
-.intro[data-step="1"] .intro-slack,
 .intro[data-step="2"] .intro-slack,
 .intro[data-step="3"] .intro-slack,
-.intro[data-step="4"] .intro-slack {
+.intro[data-step="4"] .intro-slack,
+.intro[data-step="5"] .intro-slack {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
@@ -1546,8 +1557,8 @@ body {
 /* --- Notification badge (top-right corner of slack icon) --- */
 .intro .intro-badge {
   position: absolute;
-  /* Slack icon center (1300, 450), size 160 → top-right corner at (1380, 370) */
-  left: 1380px;
+  /* Slack icon center (950, 450), size 160 → top-right corner at (1030, 370) */
+  left: 1030px;
   top: 370px;
   width: 56px;
   height: 56px;
@@ -1562,10 +1573,10 @@ body {
   box-shadow: 0 0 24px rgba(236, 90, 32, 0.7), 0 0 0 5px var(--black);
   transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1);
 }
-.intro[data-step="3"] .intro-badge {
+.intro[data-step="4"] .intro-badge {
   transform: translate(-50%, -50%) scale(1);
 }
-.intro[data-step="4"] .intro-badge {
+.intro[data-step="5"] .intro-badge {
   transform: translate(-50%, -50%) scale(0);
   transition: transform 0.22s ease-in 0.4s;
 }
@@ -1587,8 +1598,8 @@ body {
   flex-direction: column;
   transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
 }
-.intro[data-step="5"] .intro-window,
-.intro[data-step="6"] .intro-window {
+.intro[data-step="6"] .intro-window,
+.intro[data-step="7"] .intro-window {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
@@ -1641,7 +1652,7 @@ body {
   transform: translateY(20px);
   transition: opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s;
 }
-.intro[data-step="6"] .intro-window .new-msg {
+.intro[data-step="7"] .intro-window .new-msg {
   opacity: 1;
   transform: translateY(0);
 }
