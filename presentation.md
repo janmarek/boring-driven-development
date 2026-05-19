@@ -35,14 +35,13 @@ what bores you.
 
 | # | id              | steps | What happens |
 |---|-----------------|-------|--------------|
-| 1 | `title`         | 13    | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window (two-card schematic) → bug report → composer+typing "please create a ticket in jira" → delete → claude appears → pacman eats claude → slack window flies left. |
-| 2 | `jira`          | 5     | Schematic Mews Jira: detailed backlog flies in (Mews toolbar + table) → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, label chips one-by-one, structured description) → window flies left. |
-| 3 | `claude-arrival`| 4     | Pacman center-top, rotates to face down, descends, eats Claude AI icon → Claude code window scales in (mac frame + terminal theme) with the pixel-octopus mascot and "claude" branding. |
-| 4 | `claude-work`   | 6     | Terminal flow: MCP connect → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
+| 1 | `title`         | 10    | Title → fade+center → pacman eats dot trail → Slack icon appears → notification → eat → Slack window (two-card schematic) → bug report → composer+typing "please create a ticket in jira" → delete. Advance from the last step cuts straight to the jira scene flying in. |
+| 2 | `jira`          | 5     | Schematic Mews Jira: detailed backlog flies in (Mews toolbar + table) → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, label chips one-by-one, structured description) → window scales down + fades out. |
+| 3 | `claude-arrival`| 4     | Pacman center-top, rotates to face down, descends along a 3-dot trail, eats Claude AI icon → Claude code window scales in (mac frame + terminal theme) with the pixel-octopus mascot and "claude" branding. |
+| 4 | `claude-work`   | 6     | Terminal flow: MCP connect (slack + atlassian) → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
 | 5 | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-grw.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
-| 6 | `abstract`      | 1     | (legacy slide) frustration-as-signal hook. Available for reuse. |
-| 7 | `github`        | 1     | (legacy) GitHub PR mock. Will be redone as a schematic scene later. |
-| 8 | `outro`         | 1     | (legacy slide) takeaway. Available for reuse. |
+| 6 | `github`        | 1     | (legacy) GitHub PR mock. Will be redone as a schematic scene later. |
+| 7 | `abstract`      | 1     | (legacy slide) frustration-as-signal closing — pink ghost above the heading, "inspiration." in pink, "frustration." in yellow. |
 
 Legacy scenes removed in iter 11 (map, slack, jira-list, jira-create, claude
 CLI) — the new scenes 2–5 cover the same ground.
@@ -51,11 +50,11 @@ CLI) — the new scenes 2–5 cover the same ground.
 
 ## Scenes — detail
 
-### 1. `title` — 12 steps
+### 1. `title` — 10 steps
 
-Opening card and the whole title → Slack flow → "ask Claude instead" beat,
-merged into one scene so the pacman + dots persist as the same DOM elements
-throughout (smooth animation across every beat).
+Opening card and the whole title → Slack flow, merged into one scene so the
+pacman + dots persist as the same DOM elements throughout (smooth animation
+across every beat). The "ask Claude instead" beat now lives in `claude-arrival`.
 
 - **Step 0** — Full title card.
   - Big yellow-and-white **BORING DRIVEN DEVELOPMENT** (top-left).
@@ -65,8 +64,9 @@ throughout (smooth animation across every beat).
 - **Step 1** — Title texts and Mews logo fade out. At the same time, pacman
   and the 4 pellets slide from the upper-right down to the centre of the stage,
   laying out into a horizontal trail. (No Slack icon yet.)
-- **Step 2** — The Slack icon fades in on the right of the trail.
-- **Step 3** — Pacman moves right along the trail, eating the dots in sequence.
+- **Step 2** — Pacman moves right along the trail, eating the dots in sequence.
+- **Step 3** — The Slack icon fades in just to the right of where the trail
+  used to be — immediately after the dots are gone.
 - **Step 4** — A red notification badge ("1") pops onto the **top-right corner**
   of the Slack icon.
 - **Step 5** — Pacman moves diagonally up-right to that corner and eats the
@@ -80,12 +80,9 @@ throughout (smooth animation across every beat).
   animation reveals the reply, character by character: _"please create a
   ticket in jira"_.
 - **Step 9** — The typed message is deleted (typewriter reversed). The input
-  goes back to empty. Narrative beat: never send it.
-- **Step 10** — A Claude octopus icon scales in to the upper-right of the
-  stage (outside the Slack window), with a soft orange glow and a "claude"
-  label.
-- **Step 11** — Pacman fades back in from offstage right and travels left
-  to the Claude icon. As pacman arrives, Claude shrinks to nothing — eaten.
+  goes back to empty. Narrative beat: never send it. **Advancing past this
+  step cuts the slack window away and the jira scene flies in from the right
+  on the same press** — slack disappearing and jira appearing happen together.
 
 Each step is reversible with `←`. Continuous moves like the
 pacman+dots travel are the recurring pattern for this presentation —
@@ -94,8 +91,11 @@ over multiple scenes connected by hard cuts.
 
 ### 2. `jira` — 5 steps
 
-Schematic Jira flow that follows the slack window leaving in title-step 12.
+Schematic Jira flow that follows the slack window from the title scene.
 Same two-card aesthetic (dark-navy header plate + offwhite body plate).
+The jira window flies in from the right on the same press that swaps out
+the slack window — so the audience reads it as slack disappearing and
+jira arriving together.
 
 - **Step 0** — Backlog flies in from the right: header bar with "▣ Jira",
   "Growth · Backlog" crumbs, and a "+ Create" button; below it a list of
@@ -109,23 +109,30 @@ Same two-card aesthetic (dark-navy header plate + offwhite body plate).
   labels → structured description (What & Why / Implementation /
   Acceptance criteria). The audience sees the "look at all this" beat
   unfold.
-- **Step 4** — Jira window flies left and disappears, same way the
-  slack window leaves at title-step 12.
+- **Step 4** — Jira window scales down and fades out — explicit disappear
+  beat before the deck advances to `claude-arrival`. (Slack uses a
+  fly-left exit; this exit uses scale-down so each scene's leave feels
+  distinct.)
 
 ### 3. `claude-arrival` — 4 steps
 
-Bridge scene from the jira backlog flying off to the Claude code splash.
+Bridge scene from the jira backlog to the Claude code splash.
 
 - **Step 0** — Pacman appears center-top of the stage, facing right.
-- **Step 1** — Pacman rotates 90° to face down. At the same time, a
-  Claude AI 4-petal burst icon scales in below center with a soft
-  orange glow.
-- **Step 2** — Pacman descends to the icon's position. The icon scales
-  out with a delayed transition timed to pacman's arrival — eaten.
-- **Step 3** — Claude code window scales in: mac titlebar with traffic
-  lights and "claude code" title, dark body, pixel-octopus mascot
-  prominent in the middle with the "claude · tip: press / for
-  commands" splash below.
+- **Step 1** — Pacman rotates 90° to face down. At the same time, the
+  Claude AI icon (the official rounded mark, sourced from Wikimedia,
+  with a "CLAUDE" label below) scales in low in the stage, and a
+  vertical trail of 3 small dots appears between pacman and the icon.
+- **Step 2** — Pacman descends to the icon's position, eating each of
+  the 3 dots in sequence on the way down. The icon scales out with a
+  delayed transition timed to pacman's arrival — eaten. **On the same
+  press**, the Claude code window scales in (delayed 0.8s so it lands
+  after the icon vanishes), mac titlebar with traffic lights and
+  "claude code" title, dark body, pixel-octopus mascot prominent in
+  the middle with the "claude · tip: press / for commands" splash.
+- **Step 3** — Holds the open window state (no further animation;
+  hand-off slide for the speaker before the deck advances to
+  `claude-work`).
 
 ### 4. `claude-work` — 6 steps
 
@@ -133,8 +140,10 @@ Same Claude code window, but now we drive it through the MCP flow that
 motivates the next beat.
 
 - **Step 0** — Idle terminal: pixel-octopus mark + "claude" brand on
-  one row at the top, empty prompt input at the bottom.
-- **Step 1** — `› /mcp atlassian connect` → ✓ Connected to atlassian-mcp.
+  one row at the top.
+- **Step 1** — Two MCP connections fire in cascade:
+  `› /mcp slack connect` → ✓ Connected to slack-mcp →
+  `› /mcp atlassian connect` → ✓ Connected to atlassian-mcp.
 - **Step 2** — User prompt typewriter: _"create a jira ticket for the
   tax bug Petr reported in #product-feedback"_.
 - **Step 3** — Claude works: `Read slack thread` → `Call
@@ -156,27 +165,26 @@ account id), then body sections: When to use / Required fields /
 Description template (the same What & Why / Implementation /
 Acceptance criteria structure the jira modal demanded).
 
-### 6. `abstract` — _(legacy slide, 1 step)_
-
-The hook. Frustration as a creative signal. Kept as a reusable
-text-only slide.
-
-### 7. `github` — _(legacy, 1 step)_
+### 6. `github` — _(legacy, 1 step)_
 
 GitHub PR mock from v1. Detailed (mac frame + repo bar + diff +
-comment) — still in the deck so we can show the "ship it" beat at the
-end. Will eventually be re-done as a schematic scene following the
-same aesthetic as the new ones.
+comment) — still in the deck so we can show the "ship it" beat
+before the closing slide. Will eventually be re-done as a schematic
+scene following the same aesthetic as the new ones.
 
-### 8. `outro` — _(legacy slide, 1 step)_
+### 7. `abstract` — _(closing slide, 1 step)_
 
-Takeaway slide. Available for reuse.
+The closing hook. Pink ghost above the heading, two-line statement
+with "inspiration." in pink and "frustration." in yellow. No body
+paragraph — the heading is the whole message. Pacman + two ghosts
+in the bottom-right corner.
 
 ---
 
 ## How a scene is defined
 
-Each scene is an object in the `scenes` array inside `script.js`:
+Each scene is an object in the `scenes` array inside `scenes.js` (the
+helpers and runtime live in `runtime.js` — see CLAUDE.md for the split):
 
 ```js
 {
@@ -200,7 +208,7 @@ Each scene is an object in the `scenes` array inside `script.js`:
 - Use `transition` (not `animation`) on properties that should move forward
   AND back as the user navigates with arrow keys. Reserve `@keyframes` for
   one-shot effects (like a pellet being eaten) that don't need to rewind.
-- Shared helpers in `script.js`: `pacman(dir, size)`, `ghost(color, label, size)`,
+- Shared helpers in `runtime.js`: `pacman(dir, size)`, `ghost(color, label, size)`,
   `appWindow({ variant, theme, … })`. Icons live in `icons/*.svg` and are
   referenced via `<img src="icons/foo.svg">` in render functions.
 

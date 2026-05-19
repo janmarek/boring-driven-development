@@ -21,11 +21,14 @@ The presentation MUST stay safe to drive forward live. Keep this in mind for eve
 
 ## Architecture
 
-Three files do all the work:
+Four files do all the work:
 
-- **`index.html`** — shell with `<div id="stage">` + `<div id="hud">`. Don't add structural HTML here; build inside scenes.
+- **`index.html`** — shell with `<div id="stage">` + `<div id="hud">`. Don't add structural HTML here; build inside scenes. Loads `scenes.js` then `runtime.js` (in that order).
 - **`styles.css`** — design system + per-scene styles. Stage is **1600 × 900 internal coordinates**; JS applies a uniform `transform: scale(...)` on resize. Author against 1600×900, not the viewport.
-- **`script.js`** — scene registry + runtime. The whole presentation is the `scenes` array; everything else is plumbing.
+- **`scenes.js`** — the `scenes` array. This is the content you edit when iterating on a beat. References helpers (`pacman`, `ghost`, `appWindow`) defined in runtime.js, but those are only called when `render()` runs, so the load order is fine even though the helpers don't exist when scenes.js evaluates.
+- **`runtime.js`** — the framework: stage constants, the helper templates, and the scene mount/navigation logic. Stable; rarely needs to change. Calls `mountScene(0, 0)` at the bottom to start the deck.
+
+**Heuristic when iterating**: read `scenes.js` to change a scene; only open `runtime.js` if you need to check a helper signature or change navigation behaviour.
 
 ### Scene shape
 
@@ -43,7 +46,7 @@ The returned root must have `class="scene"`. The runtime writes `data-step="N"` 
 
 ### Mount + step lifecycle (important)
 
-`mountScene()` does this:
+`mountScene()` (defined in runtime.js) does this:
 
 1. `stage.innerHTML = scene.render()`.
 2. **On the next animation frame**, sets `root.dataset.step = stepIndex`.
@@ -68,7 +71,7 @@ body plate) with one drop-shadow on the wrapper. Visually one rounded
 window; technically two elements (so the WebKit antialiasing fringe at
 the header/body joint can't appear — see Common pitfalls).
 
-JS helper in `script.js`:
+JS helper in `runtime.js`:
 
 ```js
 appWindow({
@@ -294,15 +297,12 @@ Slack icon top-right corner = `(icon_center_x + 80, icon_center_y - 80)`. The no
 node verify.mjs        # ~15s end-to-end
 ```
 
-Use this after any visual change. It catches:
-- Positioning issues (read the PNG, eyeball the gaps)
-- Selector mismatches (elements not appearing where you expect)
-- Black-screen regressions (the `position: relative` bug above)
-- Step-by-step state correctness (since keyboard navigation matches real flow, including transition timing)
+**Don't run this by default.** Jan checks the deck manually after every iteration in the browser, so screenshot runs on routine edits are redundant. Use it only when:
 
-The walker waits 2.8s on `title-step0` (long travel transition) and 900ms on every other step. If you add a scene with a transition longer than 900ms, bump the wait in `verify.mjs`.
+- The change involves a risky UI manipulation (new merged scene, big CSS rewrite, anything that could black-screen the deck or break the mount lifecycle) and you genuinely can't reason about the outcome from code alone.
+- Jan explicitly asks you to verify or run the walker.
 
-Read the screenshots with the `Read` tool — Claude Code renders PNGs inline. Always look at the ones you changed; never assume "the code looks right, so it works." Several bugs in this project (notably the `position: relative` black-screen and the `:nth-child` indexing mismatch) were invisible from code review and only caught by looking at the rendered output.
+What it catches when you do run it: positioning, selector mismatches, black-screen regressions, step-by-step state correctness. Read the PNGs back with the `Read` tool — Claude Code renders them inline. The walker waits 2.8s on `title-step0` (long travel transition) and 900ms on every other step; bump the wait in `verify.mjs` if you add a transition longer than 900ms.
 
 ## The iteration loop with Jan
 
@@ -310,7 +310,7 @@ Jan drives the deck scene-by-scene, giving directional feedback ("move this left
 
 1. **Read the feedback as a concrete brief.** Jan tends to bundle multiple small asks in one message. Pick them apart and treat each as a tracked task.
 2. **Make the change.** Prefer editing existing CSS rules / scene step counts over adding new scenes. Continuous-flow changes mean shifting step numbers in CSS — accept the find-and-replace.
-3. **Verify with Playwright.** Run `node verify.mjs`, then `Read` the screenshots for the steps you changed. Eyeball the result against what Jan asked for. If something's off (overlap, wrong position, wrong timing), iterate before reporting.
+3. **Don't auto-verify.** Jan checks the deck in the browser himself. Skip `node verify.mjs` unless the change is risky (see the Verification section) or Jan asks.
 4. **Update `presentation.md`** to match the new scene/step layout. Step numbers in the doc must match `data-step` values used in CSS. The doc is the spec; mismatched docs are bugs.
 5. **Commit.** One commit per iteration ("iter N: <one-line summary>"). Include both the user-visible change and the why in the message body. Co-author trailer goes on every commit (`Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`).
 6. **Tell Jan what changed** in a short message with the new step list and what to look at. Leave a question or two open so the next direction can be quick.
@@ -334,9 +334,10 @@ Don't document things already obvious from a quick read of the code (file struct
 ## Files
 
 ```
-index.html              shell
+index.html              shell (loads scenes.js then runtime.js)
 styles.css              fonts, palette, scene styles
-script.js               scenes[] + runtime
+scenes.js               the scenes[] array — what you edit per iteration
+runtime.js              helpers (pacman, ghost, appWindow) + mount/navigation
 presentation.md         human-readable scene spec (keep in sync with scenes[])
 verify.mjs              Playwright walker (boots local server, screenshots each step)
 package.json            dev deps (Playwright)
@@ -350,7 +351,7 @@ Screenshot ….png        reference: Mews brand palette
 ### `icons/` convention
 
 Icons live as standalone files under `icons/` rather than inlined in
-`script.js`, to keep the JS readable. Scenes reference them via
+`scenes.js`, to keep the JS readable. Scenes reference them via
 `<img src="icons/foo.svg" alt="">`. Because `<img>`-loaded SVGs are
 opaque to CSS (can't reach `currentColor`), the file should bake the
 final fill colors in. When an icon needs runtime-varied color, fall
@@ -372,6 +373,6 @@ Current set:
 - **Stage is 1600×900, not responsive.** Don't add media queries inside scenes. The whole stage is scaled uniformly by JS.
 - **No frameworks. No build step.** Don't add React/Vue/etc. "Just open `index.html`" is a feature.
 - **Each beat the user controls is a step.** Don't auto-chain beats — the talk's whole feel depends on the speaker pressing → when they're ready.
-- **Update `presentation.md` whenever scenes/steps change.** It's the human-readable spec; `script.js` is the implementation. They must stay in sync.
+- **Update `presentation.md` whenever scenes/steps change.** It's the human-readable spec; `scenes.js` is the implementation. They must stay in sync.
 - **Legacy scenes were pruned in iter 11.** The flow-recreation legacies (map, slack, jira-list, jira-create, claude CLI) and the now-unused `.slack-arrival` CSS were removed once the new scenes (jira, claude-arrival, claude-work, skill) covered the same ground. Only `abstract`, `github`, and `outro` are kept as legacy slides for reuse. **Don't delete those** without an explicit ask, and don't re-introduce the removed ones without a reason — the new scenes are the canonical version of each beat.
 - The parent `/Users/janmarek/projects/CLAUDE.md` applies to a multi-repo workspace and is not relevant inside this directory.

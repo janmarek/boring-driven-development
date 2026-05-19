@@ -381,12 +381,18 @@ body {
   gap: 36px;
 }
 
-.abstract-kicker {
-  font-size: 16px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--pink);
-  font-weight: 600;
+/* Pink ghost above the heading (replaces the old "The idea" kicker).
+   .ghost is position: absolute with a translate(-50%, -50%) float
+   animation — wrapping it in a relative box at the ghost's natural size
+   keeps it in the column flow. */
+.abstract-ghost {
+  position: relative;
+  width: 70px;
+  height: 80px;
+}
+.abstract-ghost .ghost {
+  left: 50%;
+  top: 50%;
 }
 
 .abstract-h2 {
@@ -402,13 +408,8 @@ body {
   font-style: normal;
   color: var(--yellow);
 }
-
-.abstract-body {
-  font-size: 26px;
-  line-height: 1.45;
-  max-width: 1200px;
-  color: var(--ecru);
-  margin: 0;
+.abstract-h2 .pink {
+  color: var(--pink);
 }
 
 /* --- Pacman character --- */
@@ -699,50 +700,6 @@ body {
 .github-comment .name { font-weight: 600; color: #1f2328; }
 .github-comment .when { color: #59636e; font-size: 12px; margin-left: 6px; }
 
-/* --- Outro --- */
-.outro-scene {
-  flex-direction: column;
-  text-align: left;
-  align-items: flex-start;
-  justify-content: center;
-  padding: 80px 120px;
-  gap: 30px;
-}
-.outro-tag {
-  font-size: 16px;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: var(--pink);
-  font-weight: 600;
-}
-.outro-h1 {
-  font-size: 110px;
-  line-height: 0.96;
-  font-weight: 800;
-  letter-spacing: -0.03em;
-  margin: 0;
-  max-width: 1300px;
-}
-.outro-h1 .yellow { color: var(--yellow); }
-.outro-sub {
-  font-size: 28px;
-  color: var(--ecru);
-  margin: 0;
-  max-width: 1100px;
-  line-height: 1.4;
-}
-.outro-footer {
-  position: absolute;
-  left: 120px;
-  bottom: 70px;
-  font-size: 18px;
-  color: rgba(255, 255, 255, 0.5);
-  display: flex;
-  gap: 18px;
-  align-items: center;
-}
-.outro-footer .pacman { width: 36px; height: 36px; }
-
 /* --- Helpers --- */
 .row { display: flex; align-items: center; gap: 10px; }
 
@@ -791,10 +748,7 @@ body {
 .intro[data-step="6"] .intro-titles,
 .intro[data-step="7"] .intro-titles,
 .intro[data-step="8"] .intro-titles,
-.intro[data-step="9"] .intro-titles,
-.intro[data-step="10"] .intro-titles,
-.intro[data-step="11"] .intro-titles,
-.intro[data-step="12"] .intro-titles {
+.intro[data-step="9"] .intro-titles {
   opacity: 0;
 }
 
@@ -856,10 +810,11 @@ body {
   transition-duration: 0.85s, 0.85s, 0.4s;
   transition-timing-function: ease-in-out;
 }
-.intro[data-step="1"] .intro-pacman,
-.intro[data-step="2"] .intro-pacman {
+.intro[data-step="1"] .intro-pacman {
   left: 350px; top: 450px;
 }
+/* Step 2: pacman travels right along the trail, eating the dots */
+.intro[data-step="2"] .intro-pacman,
 .intro[data-step="3"] .intro-pacman,
 .intro[data-step="4"] .intro-pacman {
   left: 780px; top: 450px;
@@ -872,23 +827,10 @@ body {
 .intro[data-step="6"] .intro-pacman,
 .intro[data-step="7"] .intro-pacman,
 .intro[data-step="8"] .intro-pacman,
-.intro[data-step="9"] .intro-pacman,
-.intro[data-step="10"] .intro-pacman {
+.intro[data-step="9"] .intro-pacman {
   left: 1700px; top: 380px;
   opacity: 0;
   transition-duration: 0.7s, 0.7s, 0.4s;
-}
-/* Step 11: pacman returns from offstage right and travels to claude */
-.intro[data-step="11"] .intro-pacman {
-  left: 1400px; top: 220px;
-  opacity: 1;
-  transition-duration: 1.5s, 1.5s, 0.3s;
-}
-/* Step 12: pacman stays put while the slack window flies off the left */
-.intro[data-step="12"] .intro-pacman {
-  left: 1400px; top: 220px;
-  opacity: 1;
-  transition-duration: 0.3s, 0.3s, 0.3s;
 }
 
 /* --- Dots (4 of them, persist as title pellets → trail dots → eaten) --- */
@@ -924,10 +866,7 @@ body {
 .intro[data-step="6"] .intro-dots .dot,
 .intro[data-step="7"] .intro-dots .dot,
 .intro[data-step="8"] .intro-dots .dot,
-.intro[data-step="9"] .intro-dots .dot,
-.intro[data-step="10"] .intro-dots .dot,
-.intro[data-step="11"] .intro-dots .dot,
-.intro[data-step="12"] .intro-dots .dot { top: 450px; }
+.intro[data-step="9"] .intro-dots .dot { top: 450px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(1),
 .intro[data-step="2"] .intro-dots .dot:nth-child(1),
@@ -937,10 +876,7 @@ body {
 .intro[data-step="6"] .intro-dots .dot:nth-child(1),
 .intro[data-step="7"] .intro-dots .dot:nth-child(1),
 .intro[data-step="8"] .intro-dots .dot:nth-child(1),
-.intro[data-step="9"] .intro-dots .dot:nth-child(1),
-.intro[data-step="10"] .intro-dots .dot:nth-child(1),
-.intro[data-step="11"] .intro-dots .dot:nth-child(1),
-.intro[data-step="12"] .intro-dots .dot:nth-child(1) { left: 470px; }
+.intro[data-step="9"] .intro-dots .dot:nth-child(1) { left: 470px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(2),
 .intro[data-step="2"] .intro-dots .dot:nth-child(2),
@@ -950,10 +886,7 @@ body {
 .intro[data-step="6"] .intro-dots .dot:nth-child(2),
 .intro[data-step="7"] .intro-dots .dot:nth-child(2),
 .intro[data-step="8"] .intro-dots .dot:nth-child(2),
-.intro[data-step="9"] .intro-dots .dot:nth-child(2),
-.intro[data-step="10"] .intro-dots .dot:nth-child(2),
-.intro[data-step="11"] .intro-dots .dot:nth-child(2),
-.intro[data-step="12"] .intro-dots .dot:nth-child(2) { left: 570px; }
+.intro[data-step="9"] .intro-dots .dot:nth-child(2) { left: 570px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(3),
 .intro[data-step="2"] .intro-dots .dot:nth-child(3),
@@ -963,10 +896,7 @@ body {
 .intro[data-step="6"] .intro-dots .dot:nth-child(3),
 .intro[data-step="7"] .intro-dots .dot:nth-child(3),
 .intro[data-step="8"] .intro-dots .dot:nth-child(3),
-.intro[data-step="9"] .intro-dots .dot:nth-child(3),
-.intro[data-step="10"] .intro-dots .dot:nth-child(3),
-.intro[data-step="11"] .intro-dots .dot:nth-child(3),
-.intro[data-step="12"] .intro-dots .dot:nth-child(3) { left: 670px; }
+.intro[data-step="9"] .intro-dots .dot:nth-child(3) { left: 670px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(4),
 .intro[data-step="2"] .intro-dots .dot:nth-child(4),
@@ -976,36 +906,31 @@ body {
 .intro[data-step="6"] .intro-dots .dot:nth-child(4),
 .intro[data-step="7"] .intro-dots .dot:nth-child(4),
 .intro[data-step="8"] .intro-dots .dot:nth-child(4),
-.intro[data-step="9"] .intro-dots .dot:nth-child(4),
-.intro[data-step="10"] .intro-dots .dot:nth-child(4),
-.intro[data-step="11"] .intro-dots .dot:nth-child(4),
-.intro[data-step="12"] .intro-dots .dot:nth-child(4) { left: 770px; }
+.intro[data-step="9"] .intro-dots .dot:nth-child(4) { left: 770px; }
 
-/* Step 3+: dots get eaten — opacity 0, scale 0 */
+/* Step 2+: dots get eaten — opacity 0, scale 0 */
+.intro[data-step="2"] .intro-dots .dot,
 .intro[data-step="3"] .intro-dots .dot,
 .intro[data-step="4"] .intro-dots .dot,
 .intro[data-step="5"] .intro-dots .dot,
 .intro[data-step="6"] .intro-dots .dot,
 .intro[data-step="7"] .intro-dots .dot,
 .intro[data-step="8"] .intro-dots .dot,
-.intro[data-step="9"] .intro-dots .dot,
-.intro[data-step="10"] .intro-dots .dot,
-.intro[data-step="11"] .intro-dots .dot,
-.intro[data-step="12"] .intro-dots .dot {
+.intro[data-step="9"] .intro-dots .dot {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
-/* Step 3 specifically: staggered timing so pacman appears to eat them in sequence */
-.intro[data-step="3"] .intro-dots .dot:nth-child(1) {
+/* Step 2 specifically: staggered timing so pacman appears to eat them in sequence */
+.intro[data-step="2"] .intro-dots .dot:nth-child(1) {
   transition: opacity 0.18s ease-out 0.32s, transform 0.18s ease-out 0.32s;
 }
-.intro[data-step="3"] .intro-dots .dot:nth-child(2) {
+.intro[data-step="2"] .intro-dots .dot:nth-child(2) {
   transition: opacity 0.18s ease-out 0.62s, transform 0.18s ease-out 0.62s;
 }
-.intro[data-step="3"] .intro-dots .dot:nth-child(3) {
+.intro[data-step="2"] .intro-dots .dot:nth-child(3) {
   transition: opacity 0.18s ease-out 0.92s, transform 0.18s ease-out 0.92s;
 }
-.intro[data-step="3"] .intro-dots .dot:nth-child(4) {
+.intro[data-step="2"] .intro-dots .dot:nth-child(4) {
   transition: opacity 0.18s ease-out 1.22s, transform 0.18s ease-out 1.22s;
 }
 
@@ -1020,7 +945,9 @@ body {
   opacity: 0;
   transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1), opacity 0.55s ease-out;
 }
-.intro[data-step="2"] .intro-slack,
+/* Slack icon appears at step 3 — right after pacman finishes eating
+   the dot trail. Stays visible through step 5 (when it shrinks as the
+   slack window scales in at step 6). */
 .intro[data-step="3"] .intro-slack,
 .intro[data-step="4"] .intro-slack,
 .intro[data-step="5"] .intro-slack {
@@ -1106,17 +1033,9 @@ body {
 .intro[data-step="6"] .intro-window,
 .intro[data-step="7"] .intro-window,
 .intro[data-step="8"] .intro-window,
-.intro[data-step="9"] .intro-window,
-.intro[data-step="10"] .intro-window,
-.intro[data-step="11"] .intro-window {
+.intro[data-step="9"] .intro-window {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-}
-/* Step 12: slack window slides off the left edge and fades out */
-.intro[data-step="12"] .intro-window {
-  transform: translate(-180%, -50%) scale(1);
-  opacity: 0;
-  transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2), opacity 0.55s ease-in 0.2s;
 }
 
 .intro .intro-window .sw-header {
@@ -1173,10 +1092,7 @@ body {
 }
 .intro[data-step="7"] .intro-window .new-msg,
 .intro[data-step="8"] .intro-window .new-msg,
-.intro[data-step="9"] .intro-window .new-msg,
-.intro[data-step="10"] .intro-window .new-msg,
-.intro[data-step="11"] .intro-window .new-msg,
-.intro[data-step="12"] .intro-window .new-msg {
+.intro[data-step="9"] .intro-window .new-msg {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1212,9 +1128,7 @@ body {
   pointer-events: none;
 }
 .intro[data-step="8"] .intro-window .sw-composer,
-.intro[data-step="9"] .intro-window .sw-composer,
-.intro[data-step="10"] .intro-window .sw-composer,
-.intro[data-step="11"] .intro-window .sw-composer {
+.intro[data-step="9"] .intro-window .sw-composer {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1253,9 +1167,7 @@ body {
   max-width: 32ch;
   transition: max-width 1.8s steps(31, end);
 }
-.intro[data-step="9"] .intro-window .sw-typing,
-.intro[data-step="10"] .intro-window .sw-typing,
-.intro[data-step="11"] .intro-window .sw-typing {
+.intro[data-step="9"] .intro-window .sw-typing {
   max-width: 0;
   transition: max-width 0.7s steps(31, end);
 }
@@ -1295,48 +1207,8 @@ body {
   display: block;
 }
 
-/* --- Claude octopus (appears step 10, eaten step 11) --- */
-.intro .intro-claude {
-  position: absolute;
-  left: 1400px;
-  top: 220px;
-  width: 160px;
-  height: 160px;
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  filter: drop-shadow(0 0 30px rgba(236, 90, 32, 0.55));
-  transition: transform 0.5s cubic-bezier(.34, 1.7, .64, 1), opacity 0.4s ease-out;
-}
-.intro[data-step="10"] .intro-claude {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-}
-/* Step 11: claude gets eaten as pacman arrives — delayed shrink */
-.intro[data-step="11"] .intro-claude {
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.25s ease-in 1.3s, opacity 0.25s ease-in 1.3s;
-}
-.intro .intro-claude img {
-  width: 100%;
-  height: 100%;
-  color: var(--orange);
-  display: block;
-}
-.intro .intro-claude .intro-claude-label {
-  position: absolute;
-  left: 50%;
-  bottom: -38px;
-  transform: translateX(-50%);
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.55);
-}
-
 /* =====================================================================
- * Jira scene — 5 steps. Same two-card aesthetic as the slack window
+ * Jira scene — 4 steps. Same two-card aesthetic as the slack window
  * inside the title scene: a dark navy header plate and an offwhite
  * body plate stacked with a small gap.
  *
@@ -1377,10 +1249,15 @@ body {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
+/* Step 4: window scales down + fades out so the audience sees an explicit
+   disappear before the deck advances to claude-arrival. (Slack already
+   uses a fly-left exit; using scale-down here keeps each scene's exit
+   visually distinct.) */
 .jira[data-step="4"] .jira-window {
-  transform: translate(-180%, -50%) scale(1);
+  transform: translate(-50%, -50%) scale(0.82);
   opacity: 0;
-  transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2), opacity 0.55s ease-in 0.2s;
+  transition: transform 0.5s cubic-bezier(.7, 0, .84, 0.2),
+              opacity 0.45s ease-in;
 }
 
 .jira .jw-header {
@@ -1796,8 +1673,8 @@ body {
   opacity: 1;
   transition: top 0.8s ease-in-out, opacity 0.4s ease-out;
 }
-.claude-arrival[data-step="2"] .ca-pacman { top: 450px; }
-.claude-arrival[data-step="3"] .ca-pacman { top: 1000px; opacity: 0; }
+.claude-arrival[data-step="2"] .ca-pacman { top: 620px; }
+.claude-arrival[data-step="3"] .ca-pacman { top: 1100px; opacity: 0; }
 
 /* Rotate the pacman SVG itself from step 1+. The .half elements inside
    keep their own chomp animation transforms — those are on children,
@@ -1811,20 +1688,58 @@ body {
   transform: rotate(90deg);
 }
 
+/* --- 3 dots between pacman start (top 100) and icon (top 450). Appear
+   with the icon at step 1, eaten in a tight stagger at step 2 timed so
+   the disappearance reads as pacman chomping each one as it descends. */
+.claude-arrival .ca-dots .ca-dot {
+  position: absolute;
+  left: 800px;
+  width: 22px;
+  height: 22px;
+  background: var(--offwhite);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+}
+.claude-arrival .ca-dots .ca-dot:nth-child(1) { top: 240px; }
+.claude-arrival .ca-dots .ca-dot:nth-child(2) { top: 360px; }
+.claude-arrival .ca-dots .ca-dot:nth-child(3) { top: 480px; }
+.claude-arrival[data-step="1"] .ca-dots .ca-dot {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.claude-arrival[data-step="2"] .ca-dots .ca-dot,
+.claude-arrival[data-step="3"] .ca-dots .ca-dot {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+}
+/* Stagger eats: pacman descends 100→620 over 0.8s (650 px/s); its
+   front-edge (centre + 42 since rotated to face down) reaches each
+   dot's top y at (y − 142)/650 — matching delays below. */
+.claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(1) {
+  transition: opacity 0.16s ease-out 0.15s, transform 0.16s ease-out 0.15s;
+}
+.claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(2) {
+  transition: opacity 0.16s ease-out 0.34s, transform 0.16s ease-out 0.34s;
+}
+.claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(3) {
+  transition: opacity 0.16s ease-out 0.52s, transform 0.16s ease-out 0.52s;
+}
+
 /* --- Claude AI icon. Visible only at step 1; eaten with a delayed
    shrink at step 2 so the shrink lands as pacman arrives. --- */
 .claude-arrival .ca-icon {
   position: absolute;
   left: 800px;
-  top: 450px;
-  width: 160px;
-  height: 160px;
-  margin-left: -80px;
-  margin-top: -80px;
+  top: 620px;
+  width: 110px;
+  height: 110px;
+  margin-left: -55px;
+  margin-top: -55px;
   transform: scale(0);
   opacity: 0;
-  color: var(--orange);
-  filter: drop-shadow(0 0 30px rgba(236, 90, 32, 0.55));
+  filter: drop-shadow(0 0 28px rgba(236, 90, 32, 0.55));
   transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1), opacity 0.4s ease-out;
 }
 .claude-arrival[data-step="1"] .ca-icon {
@@ -1842,16 +1757,35 @@ body {
   height: 100%;
   display: block;
 }
+/* Slack-style label beneath the icon: small uppercase letter-spaced. */
+.claude-arrival .ca-icon-label {
+  position: absolute;
+  left: 50%;
+  bottom: -32px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  white-space: nowrap;
+}
 
-/* --- Claude code window. Scales in at step 3. --- */
+/* --- Claude code window. Opens at step 2, on the same press that
+   pacman eats the icon. A 0.8s entrance delay lets the icon-shrink
+   land first (icon shrink runs at delay 0.55s + 0.22s duration), so
+   the window scales in cleanly into the vacated space. --- */
 .claude-arrival .window {
   transform: translate(-50%, -50%) scale(0);
   opacity: 0;
   transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
 }
+.claude-arrival[data-step="2"] .window,
 .claude-arrival[data-step="3"] .window {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
+  transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1) 0.8s,
+              opacity 0.4s ease-out 0.8s;
 }
 
 /* --- Claude code splash content --- */
@@ -1983,13 +1917,25 @@ body {
 .cw .cw-ok   { color: #4cd97c; font-weight: 700; }
 .cw .cw-err  { color: #ff6f6f; font-weight: 700; }
 .cw .cw-err-text { color: #ffb1b1; }
-.cw .cw-arrow { color: var(--orange); font-weight: 700; margin-right: 8px; }
+.cw .cw-arrow {
+  color: var(--offwhite);
+  font-weight: 700;
+}
+/* Prompt lines mix the arrow span with a .typewriter (inline-block,
+   overflow: hidden — which warps its baseline). vertical-align tricks are
+   unreliable when overflow:hidden is involved, so use flex centering on
+   the line and own the gap from here. */
+.cw .cw-line-p1, .cw .cw-line-p2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .cw .tool {
   display: inline-block;
   padding: 1px 8px;
   border-radius: 4px;
-  background: rgba(236, 90, 32, 0.18);
-  color: var(--orange);
+  background: rgba(200, 251, 243, 0.15);
+  color: var(--blue);
   font-size: 13px;
   margin-right: 10px;
 }
@@ -2000,14 +1946,24 @@ body {
   color: var(--ecru);
 }
 
-/* Step gating — show lines as their step arrives */
+/* Step gating — show lines as their step arrives.
+   MCP block at step 1 reveals the 4 lines in cascade:
+   slack-cmd → slack-ok → atlassian-cmd → atlassian-ok. */
+.cw[data-step="1"] .cw-line-mcp0a, .cw[data-step="2"] .cw-line-mcp0a,
+.cw[data-step="3"] .cw-line-mcp0a, .cw[data-step="4"] .cw-line-mcp0a,
+.cw[data-step="5"] .cw-line-mcp0a { opacity: 1; transform: translateY(0); }
+
+.cw[data-step="1"] .cw-line-mcp0b, .cw[data-step="2"] .cw-line-mcp0b,
+.cw[data-step="3"] .cw-line-mcp0b, .cw[data-step="4"] .cw-line-mcp0b,
+.cw[data-step="5"] .cw-line-mcp0b { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+
 .cw[data-step="1"] .cw-line-mcp1, .cw[data-step="2"] .cw-line-mcp1,
 .cw[data-step="3"] .cw-line-mcp1, .cw[data-step="4"] .cw-line-mcp1,
-.cw[data-step="5"] .cw-line-mcp1 { opacity: 1; transform: translateY(0); }
+.cw[data-step="5"] .cw-line-mcp1 { opacity: 1; transform: translateY(0); transition-delay: 0.6s; }
 
 .cw[data-step="1"] .cw-line-mcp2, .cw[data-step="2"] .cw-line-mcp2,
 .cw[data-step="3"] .cw-line-mcp2, .cw[data-step="4"] .cw-line-mcp2,
-.cw[data-step="5"] .cw-line-mcp2 { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+.cw[data-step="5"] .cw-line-mcp2 { opacity: 1; transform: translateY(0); transition-delay: 0.9s; }
 
 .cw[data-step="2"] .cw-line-p1, .cw[data-step="3"] .cw-line-p1,
 .cw[data-step="4"] .cw-line-p1, .cw[data-step="5"] .cw-line-p1 { opacity: 1; transform: translateY(0); }
@@ -2033,19 +1989,6 @@ body {
   max-width: 60ch;
   transition: max-width 1.6s steps(52, end);
 }
-
-/* Prompt input at the bottom */
-.cw .cw-input {
-  margin-top: auto;
-  padding: 14px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: rgba(255, 255, 255, 0.45);
-}
-.cw .cw-placeholder { font-style: italic; }
 
 /* =====================================================================
  * Scene: skill (1 step)

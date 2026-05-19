@@ -1,112 +1,11 @@
-// Boring Driven Development — interactive presentation
-// Pacman-flavored slideshow. Each scene is independent.
-// Navigation:  ← / ↑ = back     → / ↓ / Space = forward
-
-const STAGE_W = 1600;
-const STAGE_H = 900;
-
-// ---------------------- Reusable bits ----------------------
-
-const pacman = (dir = "right", size = 80) => `
-  <div class="pacman dir-${dir}" style="width:${size}px;height:${size}px">
-    <div class="half top"></div>
-    <div class="half bottom"></div>
-    <div class="eye"></div>
-  </div>
-`;
-
-const ghost = (color, label = "", size = 70) => `
-  <div class="ghost" style="width:${size}px;height:${size * (80 / 70)}px">
-    <svg viewBox="0 0 70 80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path fill="${color}" d="
-        M5 35
-        a30 30 0 0 1 60 0
-        L65 72
-        L57 80
-        L50 72
-        L42 80
-        L35 72
-        L28 80
-        L20 72
-        L13 80
-        L5 72
-        Z"/>
-      <circle cx="22" cy="34" r="9" fill="#fff"/>
-      <circle cx="48" cy="34" r="9" fill="#fff"/>
-      <circle cx="24" cy="36" r="4" fill="#0a0a0a"/>
-      <circle cx="50" cy="36" r="4" fill="#0a0a0a"/>
-    </svg>
-    ${label ? `<div class="ghost-label">${label}</div>` : ""}
-  </div>
-`;
-
-// All icons live as standalone files under icons/.
-// Scenes reference them with <img src="icons/foo.svg" ...>.
-//   icons/slack-mark.svg     — official 2019 Slack mark (4 colors)
-//   icons/jira-mark.svg      — Atlassian Jira chevrons
-//   icons/claude-octopus.svg — legacy Claude CLI mascot (orange)
-//   icons/claude-ai-icon.svg — Claude AI 4-petal burst
-//   icons/pixel-octopus.svg  — Claude Code pixel mascot
-//   icons/send-arrow.svg     — slack composer send button glyph
-//   icons/search.svg         — jira toolbar search field icon
+// Boring Driven Development — scene content.
+// Each scene is independent. The framework (helpers + navigation) lives
+// in runtime.js. Helpers referenced here (pacman, ghost, appWindow) are
+// defined there; they're only called when render() runs, so the load
+// order (scenes.js → runtime.js) is fine.
 //
-// Multi-color SVGs work directly via <img>; single-color SVGs have the
-// fill baked in (since CSS can't reach into <img>-loaded SVGs). When a
-// new icon needs runtime color, fall back to inlining the SVG markup
-// directly in the render() call.
-
-// ---------------------- appWindow() ----------------------
-//
-// Reusable shell for any "app window" in the deck. Returns the standard
-// two-card HTML (header card + body card) styled by the .window classes
-// in styles.css. See the "Reusable building blocks" section of
-// CLAUDE.md for the full pattern, themes, and variant matrix.
-//
-// opts:
-//   variant   "bold" (default) — large colored header (slack, jira)
-//             "frame"           — mac titlebar with traffic lights (claude code, vscode)
-//   theme     "violet"   slack purple
-//             "jira"     atlassian blue
-//             "terminal" claude code dark
-//             "editor"   vscode dark
-//             (omit for a plain shell — header colours come from your CSS)
-//   title     string  — used as the centered title in the frame variant
-//   header    HTML    — header content for the bold variant
-//   body      HTML    — body content (always required)
-//   modal     HTML    — optional content rendered after .window-body
-//                       (positioned absolutely by your CSS — e.g. the
-//                       jira create-issue modal overlay)
-//   width     px (default 1100)
-//   height    px (default 720)
-//   className extra classes to put on the .window root (e.g. for an
-//             entrance state like .my-scene-window or a utility class)
-//
-// Per-scene CSS drives the entrance/exit by targeting the .window
-// element through the scene root, e.g.:
-//   .my-scene .window               { transform: translate(60%, -50%); opacity: 0; }
-//   .my-scene[data-step="0"] .window { transform: translate(-50%, -50%); opacity: 1; }
-//   .my-scene[data-step="N"] .window { transform: translate(-180%, -50%); opacity: 0; }
-const appWindow = (opts = {}) => {
-  const variant = opts.variant || "bold";
-  const theme = opts.theme ? ` window-theme--${opts.theme}` : "";
-  const extra = opts.className ? ` ${opts.className}` : "";
-  const w = opts.width || 1100;
-  const h = opts.height || 720;
-  const headerInner =
-    variant === "frame"
-      ? `<div class="window-traffic"><span></span><span></span><span></span></div>
-         <div class="window-title">${opts.title || ""}</div>`
-      : opts.header || "";
-  return `
-    <div class="window${theme}${extra}" style="width:${w}px;height:${h}px">
-      <div class="window-header window-header--${variant}">${headerInner}</div>
-      <div class="window-body">${opts.body || ""}</div>
-      ${opts.modal || ""}
-    </div>
-  `;
-};
-
-// ---------------------- Scenes ----------------------
+// See CLAUDE.md for the scene shape and the merged-scene authoring
+// pattern.
 
 const scenes = [
   // 1 — Intro (merged title → slack flow, 7 steps)
@@ -115,8 +14,8 @@ const scenes = [
   {
     id: "title",
     notes:
-      "Title → slack flow in one scene. 13 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug → composer+typing → delete → claude appears → pacman eats claude → slack flies left.",
-    steps: 13,
+      "Title → slack flow in one scene. 10 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug → composer+typing → delete. After the last step the deck cuts to the jira scene; slack vanishes on the same press as jira flies in from the right.",
+    steps: 10,
     render: () => `
       <div class="scene intro">
         <!-- Title text overlay (fades out from step 1+) -->
@@ -185,12 +84,6 @@ const scenes = [
           </div>
         </div>
 
-        <!-- Claude octopus (appears at step 10, eaten at step 11) -->
-        <div class="intro-claude">
-          <img class="claude-logo-svg" src="icons/claude-octopus.svg" alt=""/>
-          <div class="intro-claude-label">claude</div>
-        </div>
-
         <!-- 4 dots: title pellets in step 0, trail in step 1, eaten in step 2+ -->
         <div class="intro-dots">
           <div class="dot"></div>
@@ -211,11 +104,11 @@ const scenes = [
   //   2 — summary typewriter fills
   //   3 — tedious required fields fill in staggered (type, team, story
   //       points, labels, structured description) → "look at all this"
-  //   4 — jira window flies off the left
+  //   4 — jira window scales down + fades out (disappear animation)
   {
     id: "jira",
     notes:
-      "Schematic Jira: backlog → create modal → struggle filling fields → fly left. Same two-card aesthetic as the slack window in the title scene.",
+      "Schematic Jira: backlog → create modal → struggle filling fields → window scales down and fades out. Same two-card aesthetic as the slack window in the title scene.",
     steps: 5,
     render: () => `
       <div class="scene jira">
@@ -325,7 +218,17 @@ const scenes = [
     render: () => `
       <div class="scene claude-arrival">
         <div class="ca-pacman">${pacman("right", 84)}</div>
-        <div class="ca-icon"><img src="icons/claude-ai-icon.svg" alt=""/></div>
+        <!-- 3 dots stacked vertically between pacman start (top 100) and
+             icon (top 450) — eaten in stagger at step 2 as pacman descends. -->
+        <div class="ca-dots">
+          <div class="ca-dot"></div>
+          <div class="ca-dot"></div>
+          <div class="ca-dot"></div>
+        </div>
+        <div class="ca-icon">
+          <img src="icons/claude-ai-icon.svg" alt=""/>
+          <div class="ca-icon-label">claude</div>
+        </div>
         ${appWindow({
           variant: "frame",
           theme: "terminal",
@@ -377,6 +280,8 @@ const scenes = [
                 <span class="cw-tip">tip: press <kbd>/</kbd> for commands</span>
               </div>
               <div class="cw-transcript">
+                <div class="cw-line cw-line-mcp0a">› /mcp slack connect</div>
+                <div class="cw-line cw-line-mcp0b"><span class="cw-ok">✓</span> Connected to slack-mcp — 4 tools available</div>
                 <div class="cw-line cw-line-mcp1">› /mcp atlassian connect</div>
                 <div class="cw-line cw-line-mcp2"><span class="cw-ok">✓</span> Connected to atlassian-mcp — 7 tools available</div>
 
@@ -397,11 +302,6 @@ const scenes = [
 
                 <div class="cw-line cw-line-s1"><span class="cw-ok">✓</span> Saved <code>.claude/skills/jira-grw.md</code></div>
                 <div class="cw-line cw-line-s2 cw-indent cw-muted">Use it next time — it'll fill the required fields and structure for you.</div>
-              </div>
-              <div class="cw-input">
-                <span class="cw-arrow">›</span>
-                <span class="cw-placeholder">Type a message…</span>
-                <span class="cursor is-on"></span>
               </div>
             </div>
           `,
@@ -502,32 +402,7 @@ const scenes = [
     `,
   },
 
-  // 6 — Abstract / hook (legacy slide kept for reuse)
-  {
-    id: "abstract",
-    notes: "The core idea. Frustration as a signal.",
-    render: () => `
-      <div class="scene abstract-scene">
-        <div class="abstract-kicker">The idea</div>
-        <h2 class="abstract-h2">
-          Creativity in engineering doesn't always start with inspiration.<br/>
-          Sometimes it starts with <em>frustration.</em>
-        </h2>
-        <p class="abstract-body">
-          What you don't feel like doing is your best signal for where to improve.
-          You don't need to be a naturally creative person — you just need to pay
-          attention to what bores you.
-        </p>
-        <div style="position:absolute; right:120px; bottom:120px; display:flex; gap:30px; align-items:center;">
-          ${ghost("var(--orange)", "")}
-          ${ghost("var(--pink)", "")}
-          ${pacman("right", 90)}
-        </div>
-      </div>
-    `,
-  },
-
-  // 7 — GitHub PR (legacy)
+  // 6 — GitHub PR (legacy)
   {
     id: "github",
     notes: "Stage 4: ship it.",
@@ -601,154 +476,24 @@ const scenes = [
     `,
   },
 
-  // 8 — Outro (legacy slide)
+  // 7 — Abstract / hook (legacy slide kept for reuse)
   {
-    id: "outro",
-    notes: "The takeaway.",
+    id: "abstract",
+    notes:
+      "The core idea. Inspiration vs frustration — pink ghost above, two-line heading, pacman + ghosts in the bottom-right corner.",
     render: () => `
-      <div class="scene outro-scene">
-        <div class="outro-tag">The takeaway</div>
-        <h1 class="outro-h1">
-          Pay attention to<br/>
-          what <span class="yellow">bores you.</span>
-        </h1>
-        <p class="outro-sub">
-          That's where the next workflow is hiding.
-        </p>
-        <div class="outro-footer">
-          ${pacman("right", 36)}
-          <span>Jan Marek · Mews · @janmarek</span>
+      <div class="scene abstract-scene">
+        <div class="abstract-ghost">${ghost("var(--pink)", "")}</div>
+        <h2 class="abstract-h2">
+          Creativity in engineering doesn't always start with <span class="pink">inspiration.</span><br/>
+          Sometimes it starts with <em>frustration.</em>
+        </h2>
+        <div style="position:absolute; right:120px; bottom:120px; display:flex; gap:30px; align-items:center;">
+          ${ghost("var(--orange)", "")}
+          ${ghost("var(--pink)", "")}
+          ${pacman("right", 90)}
         </div>
       </div>
     `,
   },
 ];
-
-// ---------------------- Runtime ----------------------
-//
-// Navigation model: (sceneIndex, stepIndex).
-// → advances step within scene; at last step, jumps to next scene step 0.
-// ← reverse.
-//
-// CSS hooks: the scene root carries `data-step="N"`. To let scenes animate
-// from a clean "before" state into step 0 on first mount, data-step is set
-// in the next animation frame after the HTML is inserted (so transitions
-// have a starting style to interpolate from).
-
-const stage = document.getElementById("stage");
-const counterEl = document.getElementById("counter");
-
-let sceneIndex = 0;
-let stepIndex = 0;
-
-function clamp(n, min, max) {
-  return Math.max(min, Math.min(max, n));
-}
-
-function stepsOf(scene) {
-  return Math.max(1, scene.steps || 1);
-}
-
-function updateHud(scene) {
-  const total = stepsOf(scene);
-  const stepSuffix = total > 1 ? ` · step ${stepIndex + 1}/${total}` : "";
-  counterEl.textContent = `${sceneIndex + 1} / ${scenes.length} · ${scene.id}${stepSuffix}`;
-}
-
-function mountScene(i, step = 0) {
-  sceneIndex = clamp(i, 0, scenes.length - 1);
-  const scene = scenes[sceneIndex];
-  stepIndex = clamp(step, 0, stepsOf(scene) - 1);
-
-  let html = "";
-  try {
-    html = scene.render();
-  } catch (err) {
-    console.error("Scene render failed:", scene && scene.id, err);
-    html = `<div class="scene"><div class="scene-fallback">Scene "${scene && scene.id}" failed to render — press → to continue.</div></div>`;
-  }
-  stage.innerHTML = html;
-  const root = stage.firstElementChild;
-
-  // Apply data-step on next frame so transitions interpolate from the
-  // pre-step default state into the step-0 state.
-  requestAnimationFrame(() => {
-    if (!root || !root.isConnected) return;
-    root.dataset.step = String(stepIndex);
-    if (typeof scene.onStep === "function") {
-      try { scene.onStep(root, stepIndex, -1); } catch (e) { console.error(e); }
-    }
-  });
-
-  updateHud(scene);
-}
-
-function applyStep(step) {
-  const scene = scenes[sceneIndex];
-  const prev = stepIndex;
-  stepIndex = clamp(step, 0, stepsOf(scene) - 1);
-  const root = stage.firstElementChild;
-  if (root) root.dataset.step = String(stepIndex);
-  if (typeof scene.onStep === "function") {
-    try { scene.onStep(root, stepIndex, prev); } catch (e) { console.error(e); }
-  }
-  updateHud(scene);
-}
-
-function next() {
-  const scene = scenes[sceneIndex];
-  if (stepIndex < stepsOf(scene) - 1) {
-    applyStep(stepIndex + 1);
-  } else if (sceneIndex < scenes.length - 1) {
-    mountScene(sceneIndex + 1, 0);
-  }
-}
-
-function prev() {
-  if (stepIndex > 0) {
-    applyStep(stepIndex - 1);
-  } else if (sceneIndex > 0) {
-    const target = scenes[sceneIndex - 1];
-    mountScene(sceneIndex - 1, stepsOf(target) - 1);
-  }
-}
-
-document.addEventListener("keydown", (e) => {
-  if (e.metaKey || e.ctrlKey || e.altKey) return;
-  switch (e.key) {
-    case "ArrowRight":
-    case "ArrowDown":
-    case " ":
-    case "PageDown":
-      e.preventDefault();
-      next();
-      break;
-    case "ArrowLeft":
-    case "ArrowUp":
-    case "PageUp":
-      e.preventDefault();
-      prev();
-      break;
-    case "Home":
-      e.preventDefault();
-      mountScene(0, 0);
-      break;
-    case "End":
-      e.preventDefault();
-      mountScene(scenes.length - 1, stepsOf(scenes[scenes.length - 1]) - 1);
-      break;
-  }
-});
-
-function fit() {
-  const pad = 40;
-  const sw = (window.innerWidth - pad) / STAGE_W;
-  const sh = (window.innerHeight - pad) / STAGE_H;
-  const s = Math.min(sw, sh);
-  stage.style.transform = `scale(${s})`;
-}
-window.addEventListener("resize", fit);
-fit();
-
-// Initial mount — always start at scene 0, step 0. No URL hash sync.
-mountScene(0, 0);
