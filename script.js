@@ -68,6 +68,57 @@ const claudeOctopus = `
   </svg>
 `;
 
+// ---------------------- appWindow() ----------------------
+//
+// Reusable shell for any "app window" in the deck. Returns the standard
+// two-card HTML (header card + body card) styled by the .window classes
+// in styles.css. See the "Reusable building blocks" section of
+// CLAUDE.md for the full pattern, themes, and variant matrix.
+//
+// opts:
+//   variant   "bold" (default) — large colored header (slack, jira)
+//             "frame"           — mac titlebar with traffic lights (claude code, vscode)
+//   theme     "violet"   slack purple
+//             "jira"     atlassian blue
+//             "terminal" claude code dark
+//             "editor"   vscode dark
+//             (omit for a plain shell — header colours come from your CSS)
+//   title     string  — used as the centered title in the frame variant
+//   header    HTML    — header content for the bold variant
+//   body      HTML    — body content (always required)
+//   modal     HTML    — optional content rendered after .window-body
+//                       (positioned absolutely by your CSS — e.g. the
+//                       jira create-issue modal overlay)
+//   width     px (default 1100)
+//   height    px (default 720)
+//   className extra classes to put on the .window root (e.g. for an
+//             entrance state like .my-scene-window or a utility class)
+//
+// Per-scene CSS drives the entrance/exit by targeting the .window
+// element through the scene root, e.g.:
+//   .my-scene .window               { transform: translate(60%, -50%); opacity: 0; }
+//   .my-scene[data-step="0"] .window { transform: translate(-50%, -50%); opacity: 1; }
+//   .my-scene[data-step="N"] .window { transform: translate(-180%, -50%); opacity: 0; }
+const appWindow = (opts = {}) => {
+  const variant = opts.variant || "bold";
+  const theme = opts.theme ? ` window-theme--${opts.theme}` : "";
+  const extra = opts.className ? ` ${opts.className}` : "";
+  const w = opts.width || 1100;
+  const h = opts.height || 720;
+  const headerInner =
+    variant === "frame"
+      ? `<div class="window-traffic"><span></span><span></span><span></span></div>
+         <div class="window-title">${opts.title || ""}</div>`
+      : opts.header || "";
+  return `
+    <div class="window${theme}${extra}" style="width:${w}px;height:${h}px">
+      <div class="window-header window-header--${variant}">${headerInner}</div>
+      <div class="window-body">${opts.body || ""}</div>
+      ${opts.modal || ""}
+    </div>
+  `;
+};
+
 // ---------------------- Pacman maze ----------------------
 // Coordinate system: 1480 x 660
 

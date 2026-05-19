@@ -53,6 +53,144 @@ The bare element rules (no `[data-step]` selector) are effectively your **"befor
 
 In-scene step changes (e.g. step 2 → step 3) just toggle `data-step`. CSS transitions between adjacent step rules animate the diff.
 
+## Reusable building blocks
+
+Use these instead of writing from scratch each scene. Iteration is much
+faster when you compose the same primitives every time and only write
+the scene-specific bits.
+
+### `appWindow()` — the standard two-card "app window"
+
+Every "app window" in the deck (slack, jira, claude code, vscode, …)
+follows the same recipe: two flush stacked elements (header plate +
+body plate) with one drop-shadow on the wrapper. Visually one rounded
+window; technically two elements (so the WebKit antialiasing fringe at
+the header/body joint can't appear — see Common pitfalls).
+
+JS helper in `script.js`:
+
+```js
+appWindow({
+  variant: "bold",       // "bold" (large colored header) or "frame" (mac titlebar)
+  theme:   "violet",     // "violet" | "jira" | "terminal" | "editor"
+  title:   "claude code",// frame variant — centered title between traffic lights
+  header:  `<span># product-feedback</span>`,  // bold variant — header content
+  body:    `<div class="...">…</div>`,         // always required
+  modal:   `<div class="...modal...">…</div>`, // optional overlay after .window-body
+  width:   1100,         // px — default 1100
+  height:  720,          // px — default 720
+  className: "my-scene-window", // extra classes on .window root
+})
+```
+
+CSS lives at the top of `styles.css`: `.window`, `.window-header`,
+`.window-body`, header variants `.window-header--bold` / `--frame`,
+and color themes `.window-theme--violet|jira|terminal|editor`.
+
+Variant matrix:
+
+| theme       | header background | body background | typical use      |
+|-------------|-------------------|-----------------|------------------|
+| `violet`    | `#3f0e40` (slack) | offwhite        | slack channels   |
+| `jira`      | `#0747a6`         | offwhite        | jira             |
+| `terminal`  | (default `#2a2a2e` from frame) | `#0a0a0a` | claude code |
+| `editor`    | (default from frame)           | `#1e1e1e` | vscode      |
+
+Per-scene CSS still owns the entrance/exit by targeting the `.window`
+through the scene root and the `[data-step]` selector. The canonical
+pattern:
+
+```css
+.my-scene .window {              /* "before scene" — off-stage right */
+  transform: translate(60%, -50%) scale(1);
+  opacity: 0;
+}
+.my-scene[data-step="0"] .window,
+.my-scene[data-step="1"] .window { /* "centered" */
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.my-scene[data-step="N"] .window { /* "exit left" */
+  transform: translate(-180%, -50%) scale(1);
+  opacity: 0;
+  transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2),
+              opacity 0.55s ease-in 0.2s;
+}
+```
+
+### `.typewriter` + `.cursor` — animated text reveal
+
+Wrap text in `.typewriter` and pair with a `.cursor` sibling. The
+parent reveals the text one char at a time when its `max-width`
+animates via `steps()`. The cursor is inline-block so it naturally
+follows the right edge.
+
+```html
+<div class="sw-input">
+  <span class="typewriter"><span>please create a ticket in jira</span></span><span class="cursor is-on"></span>
+</div>
+```
+
+Drive it per step:
+
+```css
+.my-scene[data-step="2"] .typewriter {
+  max-width: 32ch;
+  transition: max-width 1.8s steps(31, end);
+}
+.my-scene[data-step="3"] .typewriter { max-width: 0; }   /* delete = reverse-type */
+```
+
+Reverse-nav is clean: pressing `←` un-types the message. Per-scene
+font-size determines `ch` width so pick `max-width` in `ch` slightly
+larger than the actual char count (e.g. 32ch for 30 chars).
+
+### `.stagger-fill` + `.stagger-item` — "look at all this" reveal
+
+Children of a `.stagger-fill` parent fade in with per-`:nth-child`
+delays. The "look at all the fields you have to fill" beat from the
+jira create modal. Defaults handle up to 8 items; override via
+inline `transition-delay` if you need more.
+
+```html
+<div class="stagger-fill">
+  <div class="stagger-item">…</div>
+  <div class="stagger-item">…</div>
+</div>
+```
+
+The scene's per-step CSS activates the reveal at the active step:
+
+```css
+.my-scene[data-step="3"] .stagger-fill > .stagger-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+```
+
+### Window fly-in / fly-out transitions
+
+The window CSS already has a generous default `transition` list
+(`transform`, `opacity`, `filter`). For specific tuning, override on
+the active-step selector — see the canonical patterns in the title
+scene (slack fly-left at step 12) and the jira scene (jira fly-in from
+the right at step 0, fly-left at step 4).
+
+Typical values:
+- Fly-in:  `transform 0.65s cubic-bezier(.34, 1.2, .64, 1)` from
+  `translate(60%, -50%)` to `translate(-50%, -50%)`.
+- Fly-out: `transform 0.75s cubic-bezier(.7, 0, .84, 0.2)` to
+  `translate(-180%, -50%)`, plus `opacity 0.55s ease-in 0.2s`.
+
+### When to extract vs hard-code
+
+If a pattern is used in 2+ scenes, extract it. The window class,
+typewriter, and stagger-fill are reused; they live in the
+"Reusable building blocks" CSS block at the top of `styles.css`.
+Scene-specific styling (the exact ticket-row layout for the jira list,
+the chomp animation on pacman) is fine to keep co-located with the
+scene.
+
 ## The merged-scene pattern (dominant for this deck)
 
 The single most important architectural choice: **a continuous visual sequence is ONE scene with N steps, not N scenes**.
