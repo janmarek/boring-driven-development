@@ -1345,7 +1345,8 @@ body {
 .intro[data-step="8"] .intro-titles,
 .intro[data-step="9"] .intro-titles,
 .intro[data-step="10"] .intro-titles,
-.intro[data-step="11"] .intro-titles {
+.intro[data-step="11"] .intro-titles,
+.intro[data-step="12"] .intro-titles {
   opacity: 0;
 }
 
@@ -1435,6 +1436,12 @@ body {
   opacity: 1;
   transition-duration: 1.5s, 1.5s, 0.3s;
 }
+/* Step 12: pacman stays put while the slack window flies off the left */
+.intro[data-step="12"] .intro-pacman {
+  left: 1400px; top: 220px;
+  opacity: 1;
+  transition-duration: 0.3s, 0.3s, 0.3s;
+}
 
 /* --- Dots (4 of them, persist as title pellets → trail dots → eaten) --- */
 .intro .intro-dots {
@@ -1471,7 +1478,8 @@ body {
 .intro[data-step="8"] .intro-dots .dot,
 .intro[data-step="9"] .intro-dots .dot,
 .intro[data-step="10"] .intro-dots .dot,
-.intro[data-step="11"] .intro-dots .dot { top: 450px; }
+.intro[data-step="11"] .intro-dots .dot,
+.intro[data-step="12"] .intro-dots .dot { top: 450px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(1),
 .intro[data-step="2"] .intro-dots .dot:nth-child(1),
@@ -1483,7 +1491,8 @@ body {
 .intro[data-step="8"] .intro-dots .dot:nth-child(1),
 .intro[data-step="9"] .intro-dots .dot:nth-child(1),
 .intro[data-step="10"] .intro-dots .dot:nth-child(1),
-.intro[data-step="11"] .intro-dots .dot:nth-child(1) { left: 470px; }
+.intro[data-step="11"] .intro-dots .dot:nth-child(1),
+.intro[data-step="12"] .intro-dots .dot:nth-child(1) { left: 470px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(2),
 .intro[data-step="2"] .intro-dots .dot:nth-child(2),
@@ -1495,7 +1504,8 @@ body {
 .intro[data-step="8"] .intro-dots .dot:nth-child(2),
 .intro[data-step="9"] .intro-dots .dot:nth-child(2),
 .intro[data-step="10"] .intro-dots .dot:nth-child(2),
-.intro[data-step="11"] .intro-dots .dot:nth-child(2) { left: 570px; }
+.intro[data-step="11"] .intro-dots .dot:nth-child(2),
+.intro[data-step="12"] .intro-dots .dot:nth-child(2) { left: 570px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(3),
 .intro[data-step="2"] .intro-dots .dot:nth-child(3),
@@ -1507,7 +1517,8 @@ body {
 .intro[data-step="8"] .intro-dots .dot:nth-child(3),
 .intro[data-step="9"] .intro-dots .dot:nth-child(3),
 .intro[data-step="10"] .intro-dots .dot:nth-child(3),
-.intro[data-step="11"] .intro-dots .dot:nth-child(3) { left: 670px; }
+.intro[data-step="11"] .intro-dots .dot:nth-child(3),
+.intro[data-step="12"] .intro-dots .dot:nth-child(3) { left: 670px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(4),
 .intro[data-step="2"] .intro-dots .dot:nth-child(4),
@@ -1519,7 +1530,8 @@ body {
 .intro[data-step="8"] .intro-dots .dot:nth-child(4),
 .intro[data-step="9"] .intro-dots .dot:nth-child(4),
 .intro[data-step="10"] .intro-dots .dot:nth-child(4),
-.intro[data-step="11"] .intro-dots .dot:nth-child(4) { left: 770px; }
+.intro[data-step="11"] .intro-dots .dot:nth-child(4),
+.intro[data-step="12"] .intro-dots .dot:nth-child(4) { left: 770px; }
 
 /* Step 3+: dots get eaten — opacity 0, scale 0 */
 .intro[data-step="3"] .intro-dots .dot,
@@ -1530,7 +1542,8 @@ body {
 .intro[data-step="8"] .intro-dots .dot,
 .intro[data-step="9"] .intro-dots .dot,
 .intro[data-step="10"] .intro-dots .dot,
-.intro[data-step="11"] .intro-dots .dot {
+.intro[data-step="11"] .intro-dots .dot,
+.intro[data-step="12"] .intro-dots .dot {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
@@ -1618,7 +1631,17 @@ body {
   transition: transform 0.22s ease-in 0.4s;
 }
 
-/* --- Schematic Slack window (appears step 5) --- */
+/* --- Schematic Slack window (appears step 5) ---
+   Technically two stacked elements (a purple header plate and an
+   offwhite body plate) but visually one continuous window. We split
+   them only to dodge the WebKit antialiasing fringe that appears when
+   a single overflow:hidden + border-radius container clips two
+   different-coloured children. The split here is invisible: header
+   gets rounded top corners, body gets rounded bottom corners, and the
+   joint at the middle is a straight horizontal seam (no antialiasing
+   to mis-render). A single drop-shadow on the wrapper traces the
+   combined silhouette so the whole assembly casts one cohesive
+   shadow. */
 .intro .intro-window {
   position: absolute;
   left: 50%;
@@ -1626,14 +1649,11 @@ body {
   transform: translate(-50%, -50%) scale(0);
   width: 920px;
   height: 600px;
-  background: var(--offwhite);
-  border-radius: 24px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
   opacity: 0;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
-  transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
+  filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.55));
+  transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out, left 0.7s ease-in, filter 0.4s ease-out;
 }
 .intro[data-step="6"] .intro-window,
 .intro[data-step="7"] .intro-window,
@@ -1643,6 +1663,12 @@ body {
 .intro[data-step="11"] .intro-window {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
+}
+/* Step 12: slack window slides off the left edge and fades out */
+.intro[data-step="12"] .intro-window {
+  transform: translate(-180%, -50%) scale(1);
+  opacity: 0;
+  transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2), opacity 0.55s ease-in 0.2s;
 }
 
 .intro .intro-window .sw-header {
@@ -1655,9 +1681,6 @@ body {
   gap: 14px;
   font-size: 24px;
   font-weight: 700;
-  /* Round the top corners explicitly so we don't rely on the parent's
-     overflow-hidden clip — that path leaves a 1px antialiasing fringe
-     on the bottom edge of the purple header in WebKit. */
   border-radius: 24px 24px 0 0;
 }
 .intro .intro-window .sw-hash { font-size: 28px; opacity: 0.85; }
@@ -1668,6 +1691,9 @@ body {
   flex-direction: column;
   gap: 24px;
   color: #1d1c1d;
+  background: var(--offwhite);
+  border-radius: 0 0 24px 24px;
+  position: relative;
 }
 .intro .intro-window .sw-msg {
   display: flex;
@@ -1701,7 +1727,8 @@ body {
 .intro[data-step="8"] .intro-window .new-msg,
 .intro[data-step="9"] .intro-window .new-msg,
 .intro[data-step="10"] .intro-window .new-msg,
-.intro[data-step="11"] .intro-window .new-msg {
+.intro[data-step="11"] .intro-window .new-msg,
+.intro[data-step="12"] .intro-window .new-msg {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1719,12 +1746,15 @@ body {
   color: #1d1c1d;
 }
 
-/* --- Composer at bottom of slack window (appears step 8) --- */
+/* --- Composer at bottom of slack window body (appears step 8) ---
+   Positioned absolutely against .sw-body (which is position: relative)
+   so the message list above lays out naturally and the composer hugs
+   the bottom edge of the offwhite body card. */
 .intro .intro-window .sw-composer {
   position: absolute;
-  left: 36px;
-  right: 36px;
-  bottom: 28px;
+  left: 28px;
+  right: 28px;
+  bottom: 24px;
   display: flex;
   gap: 12px;
   align-items: stretch;
@@ -1745,16 +1775,19 @@ body {
   flex: 1;
   border: 1px solid #c9c5c0;
   border-radius: 10px;
-  padding: 14px 16px;
+  padding: 16px 18px;
   background: #fff;
   display: flex;
   align-items: center;
-  min-height: 52px;
-  font-size: 20px;
+  min-height: 60px;
+  /* Match Petr's bug-message text style (size 22, weight 500, line-height 1.4)
+     so the reply reads as a message we're about to send, not a tiny widget. */
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.4;
   color: #1d1c1d;
   overflow: hidden;
   white-space: nowrap;
-  line-height: 1.2;
 }
 
 /* Typewriter-revealed text. Width animates 0 → 32ch in 31 discrete
@@ -1796,9 +1829,9 @@ body {
 }
 
 .intro .intro-window .sw-send {
-  flex: 0 0 52px;
-  width: 52px;
-  height: 52px;
+  flex: 0 0 60px;
+  width: 60px;
+  height: 60px;
   border: none;
   border-radius: 10px;
   background: #007a5a;
@@ -1808,8 +1841,8 @@ body {
   cursor: pointer;
 }
 .intro .intro-window .sw-send svg {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   display: block;
 }
 
@@ -1851,4 +1884,328 @@ body {
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.55);
+}
+
+/* =====================================================================
+ * Jira scene — 5 steps. Same two-card aesthetic as the slack window
+ * inside the title scene: a dark navy header plate and an offwhite
+ * body plate stacked with a small gap.
+ *
+ *   0 — backlog flies in from the right
+ *   1 — create-issue modal scales in (over the list)
+ *   2 — summary typewriter fills
+ *   3 — required fields (type, team, story points, budget, labels,
+ *       description) fill in staggered: the visual "look at all this"
+ *   4 — jira window flies off the left
+ * ===================================================================== */
+
+.jira {
+  display: block;
+  overflow: hidden;
+  background: var(--black);
+}
+
+.jira .jira-window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* Default = "before scene" state: off-screen right, ready to slide in */
+  transform: translate(60%, -50%) scale(1);
+  opacity: 0;
+  width: 1100px;
+  height: 720px;
+  display: flex;
+  flex-direction: column;
+  /* Same technical-split-with-single-shadow approach as the slack window:
+     header + body are two flush elements; the wrapper casts one shadow. */
+  filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.55));
+  transition: transform 0.65s cubic-bezier(.34, 1.2, .64, 1), opacity 0.45s ease-out;
+}
+.jira[data-step="0"] .jira-window,
+.jira[data-step="1"] .jira-window,
+.jira[data-step="2"] .jira-window,
+.jira[data-step="3"] .jira-window {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.jira[data-step="4"] .jira-window {
+  transform: translate(-180%, -50%) scale(1);
+  opacity: 0;
+  transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2), opacity 0.55s ease-in 0.2s;
+}
+
+.jira .jw-header {
+  flex: 0 0 76px;
+  background: #0747a6;
+  color: #fff;
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  gap: 20px;
+  font-size: 20px;
+  font-weight: 600;
+}
+.jira .jw-logo {
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: #fff;
+}
+.jira .jw-crumbs {
+  flex: 1;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 18px;
+}
+.jira .jw-create {
+  background: #1d7afc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.jira[data-step="1"] .jw-create,
+.jira[data-step="2"] .jw-create,
+.jira[data-step="3"] .jw-create {
+  box-shadow: 0 0 0 4px rgba(29, 122, 252, 0.35);
+}
+
+.jira .jw-body {
+  flex: 1;
+  background: var(--offwhite);
+  border-radius: 0 0 24px 24px;
+  padding: 22px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.jira .jw-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.jira .jw-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 130px;
+  gap: 24px;
+  align-items: center;
+  padding: 14px 18px;
+  background: #fff;
+  border: 1px solid #e3e1dc;
+  border-radius: 10px;
+  font-size: 16px;
+}
+.jira .jw-key {
+  font-weight: 700;
+  color: #0747a6;
+  letter-spacing: -0.01em;
+}
+.jira .jw-summary {
+  height: 12px;
+  border-radius: 6px;
+  background: #d6d3cf;
+}
+.jira .jw-status {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: center;
+  color: #fff;
+}
+.jira .jw-status.todo { background: #5e6c84; }
+.jira .jw-status.progress { background: #0052cc; }
+.jira .jw-status.review { background: #ff8b00; }
+.jira .jw-status.done { background: #36b37e; }
+
+/* Modal — overlays the list from step 1 onward */
+.jira .jw-modal {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0.85);
+  width: 760px;
+  max-height: calc(100% - 40px);
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 30px 80px rgba(9, 30, 66, 0.45), 0 0 0 1px #dfe1e6;
+  opacity: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.55s cubic-bezier(.34, 1.5, .64, 1), opacity 0.4s ease-out;
+}
+.jira[data-step="1"] .jw-modal,
+.jira[data-step="2"] .jw-modal,
+.jira[data-step="3"] .jw-modal {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.jira .jw-modal-header {
+  padding: 18px 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 20px;
+  font-weight: 600;
+  color: #172b4d;
+  border-bottom: 1px solid #f0f1f4;
+}
+.jira .jw-x { font-size: 24px; color: #6b778c; }
+.jira .jw-modal-body {
+  padding: 18px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: hidden;
+}
+.jira .jw-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px;
+}
+.jira .jw-field { display: flex; flex-direction: column; gap: 4px; }
+.jira .jw-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #42526e;
+}
+.jira .jw-field label .req { color: #de350b; margin-left: 2px; }
+
+.jira .jw-input,
+.jira .jw-select,
+.jira .jw-textarea {
+  border: 2px solid #dfe1e6;
+  border-radius: 4px;
+  padding: 8px 10px;
+  background: #fafbfc;
+  color: #172b4d;
+  font-size: 15px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.jira .jw-textarea {
+  min-height: 130px;
+  align-items: flex-start;
+  flex-direction: column;
+  white-space: normal;
+  line-height: 1.45;
+}
+
+/* --- Summary typewriter (step 2) --- */
+.jira .jw-typing-wrap {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+  vertical-align: middle;
+  transition: max-width 0.4s steps(38, end);
+}
+.jira[data-step="2"] .jw-typing-wrap,
+.jira[data-step="3"] .jw-typing-wrap {
+  max-width: 40ch;
+  transition: max-width 1.4s steps(38, end);
+}
+.jira .jw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: #4c9aff;
+  vertical-align: middle;
+  margin-left: 2px;
+  opacity: 0;
+  animation: blink 0.9s steps(1) infinite;
+}
+.jira[data-step="2"] .jw-cursor { opacity: 1; }
+.jira[data-step="2"] .jw-field-summary .jw-input,
+.jira[data-step="3"] .jw-field-summary .jw-input {
+  border-color: #4c9aff;
+  background: #fff;
+}
+
+/* --- The other fields: fill in staggered at step 3.
+   Each .jw-fill is hidden by default (opacity 0, translateY) and slides
+   in with its own transition-delay so the audience sees them appear in
+   sequence — the visual "look at all the required fields" beat. --- */
+.jira .jw-fill {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+.jira .jw-field-desc .jw-fill {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+}
+.jira[data-step="3"] .jw-fill {
+  opacity: 1;
+  transform: translateY(0);
+}
+.jira[data-step="3"] .jw-field-type    .jw-fill { transition-delay: 0.10s; }
+.jira[data-step="3"] .jw-field-team    .jw-fill { transition-delay: 0.40s; }
+.jira[data-step="3"] .jw-field-points  .jw-fill { transition-delay: 0.70s; }
+.jira[data-step="3"] .jw-field-budget  .jw-fill { transition-delay: 1.00s; }
+.jira[data-step="3"] .jw-field-labels  .jw-fill { transition-delay: 1.30s; }
+.jira[data-step="3"] .jw-field-desc    .jw-fill { transition-delay: 1.60s; }
+
+.jira .jw-chip {
+  background: #deebff;
+  color: #0747a6;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.jira .jw-line {
+  display: block;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #42526e;
+}
+.jira .jw-line.jw-line-h {
+  color: #172b4d;
+  font-weight: 700;
+  margin-top: 4px;
+}
+.jira .jw-line.jw-line-h:first-child { margin-top: 0; }
+
+.jira .jw-modal-footer {
+  margin-top: auto;
+  padding: 14px 26px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  border-top: 1px solid #f0f1f4;
+  background: #fafbfc;
+}
+.jira .jw-btn {
+  background: #fff;
+  border: 1px solid #dfe1e6;
+  border-radius: 4px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #172b4d;
+  cursor: pointer;
+}
+.jira .jw-btn.primary {
+  background: #0052cc;
+  border-color: #0052cc;
+  color: #fff;
+  font-weight: 600;
 }

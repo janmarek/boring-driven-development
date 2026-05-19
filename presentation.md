@@ -32,17 +32,18 @@ what bores you.
 
 ## Scene list
 
-| # | id            | steps | What happens |
-|---|---------------|-------|--------------|
-| 1 | `title`       | 12    | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window → bug report → composer+typing → delete → claude appears → pacman eats claude. One continuous scene. |
-| 2 | `abstract`    | 1     | (legacy) frustration-as-signal hook. |
-| 3 | `map`         | 1     | (legacy) lifecycle as a Pac-Man maze. |
-| 4 | `slack`       | 1     | (legacy) full Slack UI. To be replaced. |
-| 5 | `jira-list`   | 1     | (legacy) Jira backlog. To be replaced. |
-| 6 | `jira-create` | 1     | (legacy) Jira create-issue form. To be replaced. |
-| 7 | `claude`      | 1     | (legacy) Claude CLI. To be replaced. |
-| 8 | `github`      | 1     | (legacy) GitHub PR. To be replaced. |
-| 9 | `outro`       | 1     | (legacy) takeaway. |
+| #  | id            | steps | What happens |
+|----|---------------|-------|--------------|
+| 1  | `title`       | 13    | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window (two-card schematic) → bug report → composer+typing "please create a ticket in jira" → delete → claude appears → pacman eats claude → slack window flies left. One continuous scene. |
+| 2  | `jira`        | 5     | Schematic Jira backlog flies in → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, budget, labels, structured description) → window flies left. |
+| 3  | `abstract`    | 1     | (legacy) frustration-as-signal hook. |
+| 4  | `map`         | 1     | (legacy) lifecycle as a Pac-Man maze. |
+| 5  | `slack`       | 1     | (legacy) full Slack UI. To be replaced. |
+| 6  | `jira-list`   | 1     | (legacy) Jira backlog. To be replaced. |
+| 7  | `jira-create` | 1     | (legacy) Jira create-issue form. To be replaced. |
+| 8  | `claude`      | 1     | (legacy) Claude CLI. To be replaced. |
+| 9  | `github`      | 1     | (legacy) GitHub PR. To be replaced. |
+| 10 | `outro`       | 1     | (legacy) takeaway. |
 
 Legacy scenes are kept in the array so Jan can revisit them when redesigning
 their replacements.
@@ -92,26 +93,46 @@ pacman+dots travel are the recurring pattern for this presentation —
 when adding scenes, prefer one merged scene with N step-keyed positions
 over multiple scenes connected by hard cuts.
 
-### 2. `abstract` — _(legacy, 1 step)_
+### 2. `jira` — 5 steps
+
+Schematic Jira flow that follows the slack window leaving in title-step 12.
+Same two-card aesthetic (dark-navy header plate + offwhite body plate).
+
+- **Step 0** — Backlog flies in from the right: header bar with "▣ Jira",
+  "Growth · Backlog" crumbs, and a "+ Create" button; below it a list of
+  ticket rows (key + summary bar + status pill).
+- **Step 1** — "+ Create" button gets a focus ring; the create-issue
+  modal scales in over the list.
+- **Step 2** — Summary typewriter fills: _"tax field disappears on
+  second submit"_ with a blue blinking cursor.
+- **Step 3** — Required fields fill in staggered with per-field
+  `transition-delay`: issue type → R&D team → story points → budget →
+  labels → structured description (What & Why / Implementation /
+  Acceptance criteria). The audience sees the "look at all this" beat
+  unfold.
+- **Step 4** — Jira window flies left and disappears, same way the
+  slack window leaves at title-step 12.
+
+### 3. `abstract` — _(legacy, 1 step)_
 
 The hook. Frustration as a creative signal. Kept from v1 for reuse.
 
-### 3. `map` — _(legacy, 1 step)_
+### 4. `map` — _(legacy, 1 step)_
 
 Full lifecycle as a Pac-Man maze with the apps drawn as ghosts. Kept from v1
 for reuse.
 
-### 4. `slack` — _(legacy, 1 step, to be replaced)_
+### 5. `slack` — _(legacy, 1 step, to be replaced)_
 
 Full Slack UI mock with a thread. To be reworked into a schematic version
 matching the new title aesthetic.
 
-### 5. `jira-list` · 6. `jira-create` · 7. `claude` · 8. `github` — _(legacy)_
+### 6. `jira-list` · 7. `jira-create` · 8. `claude` · 9. `github` — _(legacy)_
 
 Detailed app mocks from v1. Each will be replaced by a schematic counterpart
 that follows the same transition flow Jan is building scene-by-scene.
 
-### 9. `outro` — _(legacy, 1 step)_
+### 10. `outro` — _(legacy, 1 step)_
 
 Takeaway slide. Will be revisited at the end.
 

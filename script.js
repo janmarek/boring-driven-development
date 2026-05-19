@@ -126,8 +126,8 @@ const scenes = [
   {
     id: "title",
     notes:
-      "Title → slack flow in one scene. 12 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug → composer+typing → delete → claude appears → pacman eats claude.",
-    steps: 12,
+      "Title → slack flow in one scene. 13 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug → composer+typing → delete → claude appears → pacman eats claude → slack flies left.",
+    steps: 13,
     render: () => `
       <div class="scene intro">
         <!-- Title text overlay (fades out from step 1+) -->
@@ -184,17 +184,17 @@ const scenes = [
                 <div class="sw-text">hey, found a bug 🐛 — the tax field disappears on second submit.</div>
               </div>
             </div>
-          </div>
-          <!-- Composer: appears at step 8, types message, deletes at step 9 -->
-          <div class="sw-composer">
-            <div class="sw-input">
-              <span class="sw-typing"><span class="sw-typed-text">please create a ticket in jira</span></span><span class="sw-cursor"></span>
+            <!-- Composer: appears at step 8, types message, deletes at step 9 -->
+            <div class="sw-composer">
+              <div class="sw-input">
+                <span class="sw-typing"><span class="sw-typed-text">please create a ticket in jira</span></span><span class="sw-cursor"></span>
+              </div>
+              <button class="sw-send" aria-label="Send">
+                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M3 17 L17 10 L3 3 L5 10 Z" fill="currentColor"/>
+                </svg>
+              </button>
             </div>
-            <button class="sw-send" aria-label="Send">
-              <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <path d="M3 17 L17 10 L3 3 L5 10 Z" fill="currentColor"/>
-              </svg>
-            </button>
           </div>
         </div>
 
@@ -218,7 +218,100 @@ const scenes = [
     `,
   },
 
-  // 2 — Abstract / hook
+  // 2 — Jira flow (schematic). 5 beats:
+  //   0 — backlog flies in from the right
+  //   1 — "+ Create" → create-issue modal scales in
+  //   2 — summary typewriter fills
+  //   3 — tedious required fields fill in staggered (type, team, story
+  //       points, labels, structured description) → "look at all this"
+  //   4 — jira window flies off the left
+  {
+    id: "jira",
+    notes:
+      "Schematic Jira: backlog → create modal → struggle filling fields → fly left. Same two-card aesthetic as the slack window in the title scene.",
+    steps: 5,
+    render: () => `
+      <div class="scene jira">
+        <div class="jira-window">
+          <div class="jw-header">
+            <span class="jw-logo">▣ Jira</span>
+            <span class="jw-crumbs">Growth · Backlog</span>
+            <button class="jw-create">+ Create</button>
+          </div>
+          <div class="jw-body">
+            <div class="jw-list">
+              ${[
+                ["GRW-1408", "todo", 70],
+                ["GRW-1407", "progress", 55],
+                ["GRW-1406", "review", 80],
+                ["GRW-1405", "todo", 45],
+                ["GRW-1404", "progress", 65],
+                ["GRW-1403", "todo", 50],
+                ["GRW-1402", "done", 75],
+                ["GRW-1401", "todo", 35],
+              ]
+                .map(
+                  ([key, status, summaryWidth]) => `
+                    <div class="jw-row">
+                      <span class="jw-key">${key}</span>
+                      <span class="jw-summary" style="width:${summaryWidth}%"></span>
+                      <span class="jw-status ${status}">${
+                        { todo: "To Do", progress: "In Progress", review: "In Review", done: "Done" }[status]
+                      }</span>
+                    </div>`
+                )
+                .join("")}
+            </div>
+            <!-- Modal: appears at step 1 over the list -->
+            <div class="jw-modal">
+              <div class="jw-modal-header">
+                <span>Create issue</span>
+                <span class="jw-x">×</span>
+              </div>
+              <div class="jw-modal-body">
+                <div class="jw-field jw-field-summary">
+                  <label>Summary <span class="req">*</span></label>
+                  <div class="jw-input"><span class="jw-typing-wrap"><span class="jw-typed">tax field disappears on second submit</span></span><span class="jw-cursor"></span></div>
+                </div>
+                <div class="jw-grid">
+                  <div class="jw-field jw-field-type">
+                    <label>Issue type <span class="req">*</span></label>
+                    <div class="jw-select"><span class="jw-fill"><span>● Bug</span></span></div>
+                  </div>
+                  <div class="jw-field jw-field-team">
+                    <label>R&amp;D team <span class="req">*</span></label>
+                    <div class="jw-select"><span class="jw-fill"><span>Ecosystem Experience</span></span></div>
+                  </div>
+                  <div class="jw-field jw-field-points">
+                    <label>Story points <span class="req">*</span></label>
+                    <div class="jw-select"><span class="jw-fill"><span>3</span></span></div>
+                  </div>
+                  <div class="jw-field jw-field-budget">
+                    <label>Budget <span class="req">*</span></label>
+                    <div class="jw-select"><span class="jw-fill"><span>KTLO</span></span></div>
+                  </div>
+                </div>
+                <div class="jw-field jw-field-labels">
+                  <label>Labels <span class="req">*</span></label>
+                  <div class="jw-select"><span class="jw-fill"><span class="jw-chip">payments</span><span class="jw-chip">tax</span><span class="jw-chip">bug-bash</span></span></div>
+                </div>
+                <div class="jw-field jw-field-desc">
+                  <label>Description <span class="req">*</span></label>
+                  <div class="jw-textarea"><span class="jw-fill"><span class="jw-line jw-line-h">**What &amp; Why**</span><span class="jw-line">Tax field disappears on second submit during checkout —</span><span class="jw-line">guest can't pay, support tickets piling up.</span><span class="jw-line jw-line-h">**Implementation suggestions**</span><span class="jw-line">Inspect CheckoutFlow state machine, re-render on resubmit.</span><span class="jw-line jw-line-h">**Acceptance criteria**</span><span class="jw-line">• Tax line visible on every submit attempt</span><span class="jw-line">• Regression test for double-submit</span></span></div>
+                </div>
+              </div>
+              <div class="jw-modal-footer">
+                <button class="jw-btn">Cancel</button>
+                <button class="jw-btn primary">Create</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+  },
+
+  // 3 — Abstract / hook
   {
     id: "abstract",
     notes: "The core idea. Frustration as a signal.",
