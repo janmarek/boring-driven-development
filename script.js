@@ -40,6 +40,46 @@ const ghost = (color, label = "", size = 70) => `
   </div>
 `;
 
+// Claude AI mark (the 4-petal burst from the Wikipedia Claude-ai-icon).
+// Stylized version — four rounded petals radiating out at 45° angles.
+// Uses currentColor so the surrounding CSS dictates the colour.
+const claudeAIIconSVG = `
+  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g fill="currentColor">
+      <path d="M32 4 C 33 22, 40 30, 60 32 C 40 34, 33 42, 32 60 C 31 42, 24 34, 4 32 C 24 30, 31 22, 32 4 Z"/>
+    </g>
+  </svg>
+`;
+
+// Pixel-octopus mascot used as the splash mascot inside the Claude code
+// window. ~14×11 grid, brown body with two black eyes and four short
+// stubby legs at the bottom. shape-rendering: crispEdges keeps the pixel
+// look from blurring at scale.
+const pixelOctopus = `
+  <svg viewBox="0 0 14 11" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">
+    <g fill="#c97b5a">
+      <rect x="2" y="0" width="10" height="1"/>
+      <rect x="1" y="1" width="12" height="1"/>
+      <rect x="0" y="2" width="14" height="5"/>
+      <rect x="1" y="7" width="12" height="1"/>
+      <!-- Legs -->
+      <rect x="1" y="8" width="2" height="2"/>
+      <rect x="4" y="8" width="2" height="2"/>
+      <rect x="8" y="8" width="2" height="2"/>
+      <rect x="11" y="8" width="2" height="2"/>
+      <rect x="1" y="10" width="1" height="1"/>
+      <rect x="4" y="10" width="1" height="1"/>
+      <rect x="8" y="10" width="1" height="1"/>
+      <rect x="11" y="10" width="1" height="1"/>
+    </g>
+    <!-- Eyes -->
+    <g fill="#000">
+      <rect x="3" y="3" width="2" height="2"/>
+      <rect x="9" y="3" width="2" height="2"/>
+    </g>
+  </svg>
+`;
+
 // Atlassian Jira mark (the three stacked offset chevrons).
 // Source: svgrepo.com/svg/atlassian-jira.
 // Path uses fill="currentColor" so CSS color cascades in.
@@ -385,7 +425,44 @@ const scenes = [
     `,
   },
 
-  // 3 — Abstract / hook
+  // 3 — Claude arrival (4 steps).
+  //   0 — pacman appears center-top facing right (no rotation yet)
+  //   1 — pacman rotates 90° to face down; Claude AI icon scales in
+  //       at the centre below it
+  //   2 — pacman descends to icon position; icon scales out with a
+  //       delayed transition timed to pacman's arrival (eaten)
+  //   3 — Claude code window scales in (frame variant + terminal theme)
+  //       with the pixel-octopus mascot and "claude" branding inside
+  {
+    id: "claude-arrival",
+    notes:
+      "Pacman descends, eats Claude AI icon, Claude code window appears with the pixel octopus.",
+    steps: 4,
+    render: () => `
+      <div class="scene claude-arrival">
+        <div class="ca-pacman">${pacman("right", 84)}</div>
+        <div class="ca-icon">${claudeAIIconSVG}</div>
+        ${appWindow({
+          variant: "frame",
+          theme: "terminal",
+          title: "claude code",
+          width: 1100,
+          height: 720,
+          body: `
+            <div class="ca-claude-body">
+              <div class="ca-octopus">${pixelOctopus}</div>
+              <div class="ca-claude-text">
+                <h2>claude</h2>
+                <p>tip: press <kbd>/</kbd> for commands</p>
+              </div>
+            </div>
+          `,
+        })}
+      </div>
+    `,
+  },
+
+  // 4 — Abstract / hook
   {
     id: "abstract",
     notes: "The core idea. Frustration as a signal.",

@@ -2501,3 +2501,133 @@ body {
   color: #fff;
   font-weight: 600;
 }
+
+
+/* =====================================================================
+ * Scene: claude-arrival (4 steps)
+ *
+ *   0 — pacman at top-center, facing right
+ *   1 — pacman rotates to face down + Claude AI icon scales in below
+ *   2 — pacman descends to icon; icon scales out as pacman arrives (eaten)
+ *   3 — Claude code window scales in (frame + terminal theme)
+ * ===================================================================== */
+
+.claude-arrival {
+  display: block;
+  overflow: hidden;
+  background: var(--black);
+}
+
+/* --- Pacman descender. Margin-based centring leaves transform free for
+   the rotation animation. --- */
+.claude-arrival .ca-pacman {
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  left: 800px;
+  top: 100px;
+  margin-left: -42px;
+  margin-top: -42px;
+  opacity: 1;
+  transition: top 0.8s ease-in-out, opacity 0.4s ease-out;
+}
+.claude-arrival[data-step="2"] .ca-pacman { top: 450px; }
+.claude-arrival[data-step="3"] .ca-pacman { top: 1000px; opacity: 0; }
+
+/* Rotate the pacman SVG itself from step 1+. The .half elements inside
+   keep their own chomp animation transforms — those are on children,
+   not on .pacman. */
+.claude-arrival .ca-pacman .pacman {
+  transition: transform 0.5s ease-in-out;
+}
+.claude-arrival[data-step="1"] .ca-pacman .pacman,
+.claude-arrival[data-step="2"] .ca-pacman .pacman,
+.claude-arrival[data-step="3"] .ca-pacman .pacman {
+  transform: rotate(90deg);
+}
+
+/* --- Claude AI icon. Visible only at step 1; eaten with a delayed
+   shrink at step 2 so the shrink lands as pacman arrives. --- */
+.claude-arrival .ca-icon {
+  position: absolute;
+  left: 800px;
+  top: 450px;
+  width: 160px;
+  height: 160px;
+  margin-left: -80px;
+  margin-top: -80px;
+  transform: scale(0);
+  opacity: 0;
+  color: var(--orange);
+  filter: drop-shadow(0 0 30px rgba(236, 90, 32, 0.55));
+  transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1), opacity 0.4s ease-out;
+}
+.claude-arrival[data-step="1"] .ca-icon {
+  transform: scale(1);
+  opacity: 1;
+}
+.claude-arrival[data-step="2"] .ca-icon,
+.claude-arrival[data-step="3"] .ca-icon {
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.22s ease-in 0.55s, opacity 0.22s ease-in 0.55s;
+}
+.claude-arrival .ca-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* --- Claude code window. Scales in at step 3. --- */
+.claude-arrival .window {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
+}
+.claude-arrival[data-step="3"] .window {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+/* --- Claude code splash content --- */
+.claude-arrival .ca-claude-body {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 40px;
+}
+.claude-arrival .ca-octopus {
+  width: 280px;
+  height: 220px;
+  filter: drop-shadow(0 8px 20px rgba(201, 123, 90, 0.4));
+}
+.claude-arrival .ca-octopus svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.claude-arrival .ca-claude-text { text-align: center; }
+.claude-arrival .ca-claude-text h2 {
+  font-size: 56px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: -0.02em;
+  color: var(--offwhite);
+  font-family: "Söhne", sans-serif;
+}
+.claude-arrival .ca-claude-text p {
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 12px 0 0;
+}
+.claude-arrival .ca-claude-text kbd {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+}
