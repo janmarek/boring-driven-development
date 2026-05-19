@@ -1341,7 +1341,11 @@ body {
 .intro[data-step="4"] .intro-titles,
 .intro[data-step="5"] .intro-titles,
 .intro[data-step="6"] .intro-titles,
-.intro[data-step="7"] .intro-titles {
+.intro[data-step="7"] .intro-titles,
+.intro[data-step="8"] .intro-titles,
+.intro[data-step="9"] .intro-titles,
+.intro[data-step="10"] .intro-titles,
+.intro[data-step="11"] .intro-titles {
   opacity: 0;
 }
 
@@ -1417,10 +1421,19 @@ body {
   transition-duration: 0.6s, 0.6s, 0.4s;
 }
 .intro[data-step="6"] .intro-pacman,
-.intro[data-step="7"] .intro-pacman {
+.intro[data-step="7"] .intro-pacman,
+.intro[data-step="8"] .intro-pacman,
+.intro[data-step="9"] .intro-pacman,
+.intro[data-step="10"] .intro-pacman {
   left: 1700px; top: 380px;
   opacity: 0;
   transition-duration: 0.7s, 0.7s, 0.4s;
+}
+/* Step 11: pacman returns from offstage right and travels to claude */
+.intro[data-step="11"] .intro-pacman {
+  left: 1400px; top: 220px;
+  opacity: 1;
+  transition-duration: 1.5s, 1.5s, 0.3s;
 }
 
 /* --- Dots (4 of them, persist as title pellets → trail dots → eaten) --- */
@@ -1454,7 +1467,11 @@ body {
 .intro[data-step="4"] .intro-dots .dot,
 .intro[data-step="5"] .intro-dots .dot,
 .intro[data-step="6"] .intro-dots .dot,
-.intro[data-step="7"] .intro-dots .dot { top: 450px; }
+.intro[data-step="7"] .intro-dots .dot,
+.intro[data-step="8"] .intro-dots .dot,
+.intro[data-step="9"] .intro-dots .dot,
+.intro[data-step="10"] .intro-dots .dot,
+.intro[data-step="11"] .intro-dots .dot { top: 450px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(1),
 .intro[data-step="2"] .intro-dots .dot:nth-child(1),
@@ -1462,7 +1479,11 @@ body {
 .intro[data-step="4"] .intro-dots .dot:nth-child(1),
 .intro[data-step="5"] .intro-dots .dot:nth-child(1),
 .intro[data-step="6"] .intro-dots .dot:nth-child(1),
-.intro[data-step="7"] .intro-dots .dot:nth-child(1) { left: 470px; }
+.intro[data-step="7"] .intro-dots .dot:nth-child(1),
+.intro[data-step="8"] .intro-dots .dot:nth-child(1),
+.intro[data-step="9"] .intro-dots .dot:nth-child(1),
+.intro[data-step="10"] .intro-dots .dot:nth-child(1),
+.intro[data-step="11"] .intro-dots .dot:nth-child(1) { left: 470px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(2),
 .intro[data-step="2"] .intro-dots .dot:nth-child(2),
@@ -1470,7 +1491,11 @@ body {
 .intro[data-step="4"] .intro-dots .dot:nth-child(2),
 .intro[data-step="5"] .intro-dots .dot:nth-child(2),
 .intro[data-step="6"] .intro-dots .dot:nth-child(2),
-.intro[data-step="7"] .intro-dots .dot:nth-child(2) { left: 570px; }
+.intro[data-step="7"] .intro-dots .dot:nth-child(2),
+.intro[data-step="8"] .intro-dots .dot:nth-child(2),
+.intro[data-step="9"] .intro-dots .dot:nth-child(2),
+.intro[data-step="10"] .intro-dots .dot:nth-child(2),
+.intro[data-step="11"] .intro-dots .dot:nth-child(2) { left: 570px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(3),
 .intro[data-step="2"] .intro-dots .dot:nth-child(3),
@@ -1478,7 +1503,11 @@ body {
 .intro[data-step="4"] .intro-dots .dot:nth-child(3),
 .intro[data-step="5"] .intro-dots .dot:nth-child(3),
 .intro[data-step="6"] .intro-dots .dot:nth-child(3),
-.intro[data-step="7"] .intro-dots .dot:nth-child(3) { left: 670px; }
+.intro[data-step="7"] .intro-dots .dot:nth-child(3),
+.intro[data-step="8"] .intro-dots .dot:nth-child(3),
+.intro[data-step="9"] .intro-dots .dot:nth-child(3),
+.intro[data-step="10"] .intro-dots .dot:nth-child(3),
+.intro[data-step="11"] .intro-dots .dot:nth-child(3) { left: 670px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(4),
 .intro[data-step="2"] .intro-dots .dot:nth-child(4),
@@ -1486,14 +1515,22 @@ body {
 .intro[data-step="4"] .intro-dots .dot:nth-child(4),
 .intro[data-step="5"] .intro-dots .dot:nth-child(4),
 .intro[data-step="6"] .intro-dots .dot:nth-child(4),
-.intro[data-step="7"] .intro-dots .dot:nth-child(4) { left: 770px; }
+.intro[data-step="7"] .intro-dots .dot:nth-child(4),
+.intro[data-step="8"] .intro-dots .dot:nth-child(4),
+.intro[data-step="9"] .intro-dots .dot:nth-child(4),
+.intro[data-step="10"] .intro-dots .dot:nth-child(4),
+.intro[data-step="11"] .intro-dots .dot:nth-child(4) { left: 770px; }
 
 /* Step 3+: dots get eaten — opacity 0, scale 0 */
 .intro[data-step="3"] .intro-dots .dot,
 .intro[data-step="4"] .intro-dots .dot,
 .intro[data-step="5"] .intro-dots .dot,
 .intro[data-step="6"] .intro-dots .dot,
-.intro[data-step="7"] .intro-dots .dot {
+.intro[data-step="7"] .intro-dots .dot,
+.intro[data-step="8"] .intro-dots .dot,
+.intro[data-step="9"] .intro-dots .dot,
+.intro[data-step="10"] .intro-dots .dot,
+.intro[data-step="11"] .intro-dots .dot {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
@@ -1599,7 +1636,11 @@ body {
   transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
 }
 .intro[data-step="6"] .intro-window,
-.intro[data-step="7"] .intro-window {
+.intro[data-step="7"] .intro-window,
+.intro[data-step="8"] .intro-window,
+.intro[data-step="9"] .intro-window,
+.intro[data-step="10"] .intro-window,
+.intro[data-step="11"] .intro-window {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
@@ -1614,6 +1655,10 @@ body {
   gap: 14px;
   font-size: 24px;
   font-weight: 700;
+  /* Round the top corners explicitly so we don't rely on the parent's
+     overflow-hidden clip — that path leaves a 1px antialiasing fringe
+     on the bottom edge of the purple header in WebKit. */
+  border-radius: 24px 24px 0 0;
 }
 .intro .intro-window .sw-hash { font-size: 28px; opacity: 0.85; }
 .intro .intro-window .sw-body {
@@ -1652,7 +1697,11 @@ body {
   transform: translateY(20px);
   transition: opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s;
 }
-.intro[data-step="7"] .intro-window .new-msg {
+.intro[data-step="7"] .intro-window .new-msg,
+.intro[data-step="8"] .intro-window .new-msg,
+.intro[data-step="9"] .intro-window .new-msg,
+.intro[data-step="10"] .intro-window .new-msg,
+.intro[data-step="11"] .intro-window .new-msg {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1668,4 +1717,138 @@ body {
   font-weight: 500;
   line-height: 1.4;
   color: #1d1c1d;
+}
+
+/* --- Composer at bottom of slack window (appears step 8) --- */
+.intro .intro-window .sw-composer {
+  position: absolute;
+  left: 36px;
+  right: 36px;
+  bottom: 28px;
+  display: flex;
+  gap: 12px;
+  align-items: stretch;
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+  pointer-events: none;
+}
+.intro[data-step="8"] .intro-window .sw-composer,
+.intro[data-step="9"] .intro-window .sw-composer,
+.intro[data-step="10"] .intro-window .sw-composer,
+.intro[data-step="11"] .intro-window .sw-composer {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.intro .intro-window .sw-input {
+  flex: 1;
+  border: 1px solid #c9c5c0;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  font-size: 20px;
+  color: #1d1c1d;
+  overflow: hidden;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* Typewriter-revealed text. Width animates 0 → 32ch in 31 discrete
+   steps over ~1.8s, so each character "appears" in sequence.
+   At step 9 the same animation reverses, giving a backspace effect. */
+.intro .intro-window .sw-typing {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+  vertical-align: middle;
+  transition: max-width 0.4s steps(31, end);
+}
+.intro[data-step="8"] .intro-window .sw-typing {
+  max-width: 32ch;
+  transition: max-width 1.8s steps(31, end);
+}
+.intro[data-step="9"] .intro-window .sw-typing,
+.intro[data-step="10"] .intro-window .sw-typing,
+.intro[data-step="11"] .intro-window .sw-typing {
+  max-width: 0;
+  transition: max-width 0.7s steps(31, end);
+}
+
+.intro .intro-window .sw-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: #1d1c1d;
+  vertical-align: middle;
+  margin-left: 2px;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+.intro[data-step="8"] .intro-window .sw-cursor,
+.intro[data-step="9"] .intro-window .sw-cursor {
+  opacity: 1;
+  animation: blink 0.9s steps(1) infinite;
+}
+
+.intro .intro-window .sw-send {
+  flex: 0 0 52px;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 10px;
+  background: #007a5a;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.intro .intro-window .sw-send svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+/* --- Claude octopus (appears step 10, eaten step 11) --- */
+.intro .intro-claude {
+  position: absolute;
+  left: 1400px;
+  top: 220px;
+  width: 160px;
+  height: 160px;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  filter: drop-shadow(0 0 30px rgba(236, 90, 32, 0.55));
+  transition: transform 0.5s cubic-bezier(.34, 1.7, .64, 1), opacity 0.4s ease-out;
+}
+.intro[data-step="10"] .intro-claude {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+/* Step 11: claude gets eaten as pacman arrives — delayed shrink */
+.intro[data-step="11"] .intro-claude {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.25s ease-in 1.3s, opacity 0.25s ease-in 1.3s;
+}
+.intro .intro-claude svg {
+  width: 100%;
+  height: 100%;
+  color: var(--orange);
+  display: block;
+}
+.intro .intro-claude .intro-claude-label {
+  position: absolute;
+  left: 50%;
+  bottom: -38px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
 }

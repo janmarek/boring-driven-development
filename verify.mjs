@@ -72,8 +72,17 @@ await page.evaluate(() => mountScene(0, 0));
 for (let i = 0; i < scenes.length; i++) {
   const s = scenes[i];
   for (let step = 0; step < s.steps; step++) {
-    // Wait for any in-flight transitions / animations to play out
-    await page.waitForTimeout(s.id === "slack-arrival" && step === 0 ? 2800 : 900);
+    // Wait for any in-flight transitions / animations to play out.
+    // Some steps have long transitions that must finish before the screenshot:
+    //  - slack-arrival step 0: legacy long pacman traverse (2.8s)
+    //  - title step 3: pacman traverses centre + dots staggered eat (~1.5s)
+    //  - title step 8: typewriter animation reveals message (~1.8s)
+    //  - title step 11: pacman returns from offstage and eats claude (~1.6s)
+    let wait = 900;
+    if (s.id === "slack-arrival" && step === 0) wait = 2800;
+    else if (s.id === "title" && (step === 3 || step === 8 || step === 11)) wait = 2200;
+    else if (s.id === "title" && step === 9) wait = 1100; // reverse typewriter
+    await page.waitForTimeout(wait);
     const filename = `${String(i + 1).padStart(2, "0")}-${s.id}-step${step}.png`;
     await page.locator("#stage").screenshot({ path: join(shotDir, filename) });
     total++;

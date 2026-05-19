@@ -126,8 +126,8 @@ const scenes = [
   {
     id: "title",
     notes:
-      "Title → slack flow in one scene. 8 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug.",
-    steps: 8,
+      "Title → slack flow in one scene. 12 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug → composer+typing → delete → claude appears → pacman eats claude.",
+    steps: 12,
     render: () => `
       <div class="scene intro">
         <!-- Title text overlay (fades out from step 1+) -->
@@ -185,6 +185,23 @@ const scenes = [
               </div>
             </div>
           </div>
+          <!-- Composer: appears at step 8, types message, deletes at step 9 -->
+          <div class="sw-composer">
+            <div class="sw-input">
+              <span class="sw-typing"><span class="sw-typed-text">please create a ticket in jira</span></span><span class="sw-cursor"></span>
+            </div>
+            <button class="sw-send" aria-label="Send">
+              <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M3 17 L17 10 L3 3 L5 10 Z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Claude octopus (appears at step 10, eaten at step 11) -->
+        <div class="intro-claude">
+          ${claudeOctopus}
+          <div class="intro-claude-label">claude</div>
         </div>
 
         <!-- 4 dots: title pellets in step 0, trail in step 1, eaten in step 2+ -->

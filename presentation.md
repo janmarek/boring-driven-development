@@ -34,7 +34,7 @@ what bores you.
 
 | # | id            | steps | What happens |
 |---|---------------|-------|--------------|
-| 1 | `title`       | 8     | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window → bug report. One continuous scene. |
+| 1 | `title`       | 12    | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window → bug report → composer+typing → delete → claude appears → pacman eats claude. One continuous scene. |
 | 2 | `abstract`    | 1     | (legacy) frustration-as-signal hook. |
 | 3 | `map`         | 1     | (legacy) lifecycle as a Pac-Man maze. |
 | 4 | `slack`       | 1     | (legacy) full Slack UI. To be replaced. |
@@ -51,11 +51,11 @@ their replacements.
 
 ## Scenes — detail
 
-### 1. `title` — 8 steps
+### 1. `title` — 12 steps
 
-Opening card and the whole title → Slack flow, merged into one scene so the
-pacman + dots persist as the same DOM elements throughout (smooth animation
-across every beat).
+Opening card and the whole title → Slack flow → "ask Claude instead" beat,
+merged into one scene so the pacman + dots persist as the same DOM elements
+throughout (smooth animation across every beat).
 
 - **Step 0** — Full title card.
   - Big yellow-and-white **BORING DRIVEN DEVELOPMENT** (top-left).
@@ -75,6 +75,17 @@ across every beat).
   `#product-feedback` window scales in at the centre.
 - **Step 7** — Petr's bug message slides into the window: _"hey, found a bug 🐛
   — the tax field disappears on second submit."_
+- **Step 8** — Composer (text input + green send button) slides up from the
+  bottom of the Slack window. A blinking cursor appears and a typewriter
+  animation reveals the reply, character by character: _"please create a
+  ticket in jira"_.
+- **Step 9** — The typed message is deleted (typewriter reversed). The input
+  goes back to empty. Narrative beat: never send it.
+- **Step 10** — A Claude octopus icon scales in to the upper-right of the
+  stage (outside the Slack window), with a soft orange glow and a "claude"
+  label.
+- **Step 11** — Pacman fades back in from offstage right and travels left
+  to the Claude icon. As pacman arrives, Claude shrinks to nothing — eaten.
 
 Each step is reversible with `←`. Continuous moves like the
 pacman+dots travel are the recurring pattern for this presentation —
