@@ -12,10 +12,11 @@ Run it: open `index.html` directly in a browser, or serve the directory (`python
 
 The presentation MUST stay safe to drive forward live. Keep this in mind for every change:
 
-- `→` / `↓` / `Space` / `PageDown` / right-half click → next step (or next scene if at last step)
-- `←` / `↑` / `PageUp` / left-half click → previous step (or previous scene)
+- `→` / `↓` / `Space` / `PageDown` → next step (or next scene if at last step)
+- `←` / `↑` / `PageUp` → previous step (or previous scene)
 - `Home` / `End` → first / last
 - URL hash mirrors current scene id (e.g. `#title`) for deep-linking
+- **Keyboard only.** Click-to-advance was removed (iter 11) — Jan doesn't want stray clicks during the talk to skip a beat. Don't add a click handler back.
 - Scene render is wrapped in try/catch — if a scene throws, a visible fallback is shown but navigation keeps working. Never bypass this safety net.
 
 ## Architecture
@@ -372,5 +373,5 @@ Current set:
 - **No frameworks. No build step.** Don't add React/Vue/etc. "Just open `index.html`" is a feature.
 - **Each beat the user controls is a step.** Don't auto-chain beats — the talk's whole feel depends on the speaker pressing → when they're ready.
 - **Update `presentation.md` whenever scenes/steps change.** It's the human-readable spec; `script.js` is the implementation. They must stay in sync.
-- **Keep legacy scenes/CSS for reuse.** Per user preference. Old `.slack-arrival`, `.title-scene`, etc. styles in `styles.css` are intentionally unused; don't garbage-collect them.
+- **Legacy scenes were pruned in iter 11.** The flow-recreation legacies (map, slack, jira-list, jira-create, claude CLI) and the now-unused `.slack-arrival` CSS were removed once the new scenes (jira, claude-arrival, claude-work, skill) covered the same ground. Only `abstract`, `github`, and `outro` are kept as legacy slides for reuse. **Don't delete those** without an explicit ask, and don't re-introduce the removed ones without a reason — the new scenes are the canonical version of each beat.
 - The parent `/Users/janmarek/projects/CLAUDE.md` applies to a multi-repo workspace and is not relevant inside this directory.

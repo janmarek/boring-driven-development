@@ -4,7 +4,8 @@
 **Format:** HTML/CSS/JS presentation, Pac-Man-inspired
 **Run:** open `index.html` in a browser
 **Navigate:** `→` / `↓` / `Space` = forward · `←` / `↑` = back · `Home` / `End` = first / last
-**Click:** right half of screen = next, left half = previous
+**Keyboard only** — clicks don't advance, so stray taps during the talk
+won't skip a beat.
 
 Each scene may have multiple internal **steps**. Forward arrow walks through
 the steps inside a scene; once at the last step it jumps to the next scene.
@@ -32,24 +33,19 @@ what bores you.
 
 ## Scene list
 
-| #  | id              | steps | What happens |
-|----|-----------------|-------|--------------|
-| 1  | `title`         | 13    | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window (two-card schematic) → bug report → composer+typing "please create a ticket in jira" → delete → claude appears → pacman eats claude → slack window flies left. |
-| 2  | `jira`          | 5     | Schematic Mews Jira: detailed backlog flies in (Mews toolbar + table) → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, label chips one-by-one, structured description) → window flies left. |
-| 3  | `claude-arrival`| 4     | Pacman center-top, rotates to face down, descends, eats Claude AI icon → Claude code window scales in (mac frame + terminal theme) with the pixel-octopus mascot and "claude" branding. |
-| 4  | `claude-work`   | 6     | Terminal flow: MCP connect → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
-| 5  | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-grw.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
-| 6  | `abstract`      | 1     | (legacy) frustration-as-signal hook. |
-| 7  | `map`           | 1     | (legacy) lifecycle as a Pac-Man maze. |
-| 8  | `slack`         | 1     | (legacy) full Slack UI. To be replaced. |
-| 9  | `jira-list`     | 1     | (legacy) Jira backlog. To be replaced. |
-| 10 | `jira-create`   | 1     | (legacy) Jira create-issue form. To be replaced. |
-| 11 | `claude`        | 1     | (legacy) Claude CLI. To be replaced. |
-| 12 | `github`        | 1     | (legacy) GitHub PR. To be replaced. |
-| 13 | `outro`         | 1     | (legacy) takeaway. |
+| # | id              | steps | What happens |
+|---|-----------------|-------|--------------|
+| 1 | `title`         | 13    | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window (two-card schematic) → bug report → composer+typing "please create a ticket in jira" → delete → claude appears → pacman eats claude → slack window flies left. |
+| 2 | `jira`          | 5     | Schematic Mews Jira: detailed backlog flies in (Mews toolbar + table) → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, label chips one-by-one, structured description) → window flies left. |
+| 3 | `claude-arrival`| 4     | Pacman center-top, rotates to face down, descends, eats Claude AI icon → Claude code window scales in (mac frame + terminal theme) with the pixel-octopus mascot and "claude" branding. |
+| 4 | `claude-work`   | 6     | Terminal flow: MCP connect → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
+| 5 | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-grw.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
+| 6 | `abstract`      | 1     | (legacy slide) frustration-as-signal hook. Available for reuse. |
+| 7 | `github`        | 1     | (legacy) GitHub PR mock. Will be redone as a schematic scene later. |
+| 8 | `outro`         | 1     | (legacy slide) takeaway. Available for reuse. |
 
-Legacy scenes are kept in the array so Jan can revisit them when redesigning
-their replacements.
+Legacy scenes removed in iter 11 (map, slack, jira-list, jira-create, claude
+CLI) — the new scenes 2–5 cover the same ground.
 
 ---
 
@@ -160,28 +156,21 @@ account id), then body sections: When to use / Required fields /
 Description template (the same What & Why / Implementation /
 Acceptance criteria structure the jira modal demanded).
 
-### 6. `abstract` — _(legacy, 1 step)_
+### 6. `abstract` — _(legacy slide, 1 step)_
 
-The hook. Frustration as a creative signal. Kept from v1 for reuse.
+The hook. Frustration as a creative signal. Kept as a reusable
+text-only slide.
 
-### 7. `map` — _(legacy, 1 step)_
+### 7. `github` — _(legacy, 1 step)_
 
-Full lifecycle as a Pac-Man maze with the apps drawn as ghosts. Kept from v1
-for reuse.
+GitHub PR mock from v1. Detailed (mac frame + repo bar + diff +
+comment) — still in the deck so we can show the "ship it" beat at the
+end. Will eventually be re-done as a schematic scene following the
+same aesthetic as the new ones.
 
-### 8. `slack` — _(legacy, 1 step, to be replaced)_
+### 8. `outro` — _(legacy slide, 1 step)_
 
-Full Slack UI mock with a thread. To be reworked into a schematic version
-matching the new title aesthetic.
-
-### 9. `jira-list` · 10. `jira-create` · 11. `claude` · 12. `github` — _(legacy)_
-
-Detailed app mocks from v1. Each will be replaced by a schematic counterpart
-that follows the same transition flow Jan is building scene-by-scene.
-
-### 13. `outro` — _(legacy, 1 step)_
-
-Takeaway slide. Will be revisited at the end.
+Takeaway slide. Available for reuse.
 
 ---
 
@@ -212,7 +201,8 @@ Each scene is an object in the `scenes` array inside `script.js`:
   AND back as the user navigates with arrow keys. Reserve `@keyframes` for
   one-shot effects (like a pellet being eaten) that don't need to rewind.
 - Shared helpers in `script.js`: `pacman(dir, size)`, `ghost(color, label, size)`,
-  `mazeSVG`, `claudeOctopus`, `slackMarkSVG`.
+  `appWindow({ variant, theme, … })`. Icons live in `icons/*.svg` and are
+  referenced via `<img src="icons/foo.svg">` in render functions.
 
 ---
 
