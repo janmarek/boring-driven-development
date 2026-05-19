@@ -32,18 +32,17 @@ what bores you.
 
 ## Scene list
 
-| # | id              | steps | What happens |
-|---|-----------------|-------|--------------|
-| 1 | `title`         | 1     | Title card. |
-| 2 | `slack-arrival` | 5     | Pacman travels the map and lands on Slack → bug report appears. |
-| 3 | `abstract`      | 1     | (legacy) frustration-as-signal hook. |
-| 4 | `map`           | 1     | (legacy) lifecycle as a Pac-Man maze. |
-| 5 | `slack`         | 1     | (legacy) full Slack UI. To be replaced. |
-| 6 | `jira-list`     | 1     | (legacy) Jira backlog. To be replaced. |
-| 7 | `jira-create`   | 1     | (legacy) Jira create-issue form. To be replaced. |
-| 8 | `claude`        | 1     | (legacy) Claude CLI. To be replaced. |
-| 9 | `github`        | 1     | (legacy) GitHub PR. To be replaced. |
-| 10 | `outro`        | 1     | (legacy) takeaway. |
+| # | id            | steps | What happens |
+|---|---------------|-------|--------------|
+| 1 | `title`       | 7     | Title → fade+center → pacman eats dots → notification → eat → Slack window → bug report. One continuous scene. |
+| 2 | `abstract`    | 1     | (legacy) frustration-as-signal hook. |
+| 3 | `map`         | 1     | (legacy) lifecycle as a Pac-Man maze. |
+| 4 | `slack`       | 1     | (legacy) full Slack UI. To be replaced. |
+| 5 | `jira-list`   | 1     | (legacy) Jira backlog. To be replaced. |
+| 6 | `jira-create` | 1     | (legacy) Jira create-issue form. To be replaced. |
+| 7 | `claude`      | 1     | (legacy) Claude CLI. To be replaced. |
+| 8 | `github`      | 1     | (legacy) GitHub PR. To be replaced. |
+| 9 | `outro`       | 1     | (legacy) takeaway. |
 
 Legacy scenes are kept in the array so Jan can revisit them when redesigning
 their replacements.
@@ -52,53 +51,52 @@ their replacements.
 
 ## Scenes — detail
 
-### 1. `title` — 1 step
+### 1. `title` — 7 steps
 
-Opening card.
+Opening card and the whole title → Slack flow, merged into one scene so the
+pacman + dots persist as the same DOM elements throughout (smooth animation
+across every beat).
 
-- Big yellow-and-white title: **BORING DRIVEN DEVELOPMENT** (top-left, very large).
-- Tagline below: "Let your laziness and frustration guide your creativity in AI workflows."
-- Pacman + 4 pellets in the upper-right corner.
-- Footer: "Jan Marek" (left), Mews wordmark (right, large).
-
-### 2. `slack-arrival` — 5 steps
-
-Map-traversal transition from title into the start of the lifecycle.
-Every beat is advanced by `→`.
-
-- **Step 0** — Pacman starts at the left, travels right along a row of pellets,
-  eating them in sequence. The Slack icon scales in at the center as Pacman
-  arrives next to it.
-- **Step 1** — A red notification badge ("1") pops onto the Slack icon.
-- **Step 2** — Pacman moves the last short distance into the icon and "eats"
-  the badge — the badge disappears just as Pacman arrives.
-- **Step 3** — Slack icon expands into a schematic Slack window
-  (`#product-feedback` header, simplified message placeholders).
-- **Step 4** — A new message appears in the window: **Petr · PM** — _"hey,
-  found a bug 🐛 — the tax field disappears on second submit."_
+- **Step 0** — Full title card.
+  - Big yellow-and-white **BORING DRIVEN DEVELOPMENT** (top-left).
+  - Tagline: "Let your laziness and frustration guide your creativity in AI workflows."
+  - Pacman + 4 small pellets in the upper-right corner.
+  - Footer: "Jan Marek" (left), Mews wordmark (right).
+- **Step 1** — Title texts and Mews logo fade out. At the same time, pacman
+  and the 4 pellets slide from the upper-right down to the centre of the stage,
+  laying out into a horizontal trail. The Slack icon scales in on the right.
+- **Step 2** — Pacman moves right along the trail, eating the dots in sequence.
+- **Step 3** — A red notification badge ("1") pops onto the **top-right corner**
+  of the Slack icon.
+- **Step 4** — Pacman moves diagonally up-right to that corner and eats the
+  notification.
+- **Step 5** — Pacman exits right; the Slack icon shrinks; the schematic
+  `#product-feedback` window scales in at the centre.
+- **Step 6** — Petr's bug message slides into the window: _"hey, found a bug 🐛
+  — the tax field disappears on second submit."_
 
 Each step is reversible with `←`.
 
-### 3. `abstract` — _(legacy, 1 step)_
+### 2. `abstract` — _(legacy, 1 step)_
 
 The hook. Frustration as a creative signal. Kept from v1 for reuse.
 
-### 4. `map` — _(legacy, 1 step)_
+### 3. `map` — _(legacy, 1 step)_
 
 Full lifecycle as a Pac-Man maze with the apps drawn as ghosts. Kept from v1
 for reuse.
 
-### 5. `slack` — _(legacy, 1 step, to be replaced)_
+### 4. `slack` — _(legacy, 1 step, to be replaced)_
 
 Full Slack UI mock with a thread. To be reworked into a schematic version
-in step with the new `slack-arrival` aesthetic.
+matching the new title aesthetic.
 
-### 6. `jira-list` · 7. `jira-create` · 8. `claude` · 9. `github` — _(legacy)_
+### 5. `jira-list` · 6. `jira-create` · 7. `claude` · 8. `github` — _(legacy)_
 
 Detailed app mocks from v1. Each will be replaced by a schematic counterpart
 that follows the same transition flow Jan is building scene-by-scene.
 
-### 10. `outro` — _(legacy, 1 step)_
+### 9. `outro` — _(legacy, 1 step)_
 
 Takeaway slide. Will be revisited at the end.
 

@@ -120,69 +120,45 @@ const mazeSVG = `
 // ---------------------- Scenes ----------------------
 
 const scenes = [
-  // 1 — Title
+  // 1 — Intro (merged title → slack flow, 7 steps)
+  // Pacman + dots are the same DOM elements throughout, so the transition
+  // from title to slack flow animates smoothly.
   {
     id: "title",
-    notes: "Title card. Set the tone.",
+    notes:
+      "Title → slack flow in one scene. 7 beats: title → fade+center → eat dots → notify → eat notif → window → bug.",
+    steps: 7,
     render: () => `
-      <div class="scene title-scene">
-        <h1 class="title-h1">
-          Boring<br/>Driven<br/>
-          <span class="accent">Development</span>
-        </h1>
-        <p class="title-tagline">
-          Let your laziness and frustration<br/>
-          guide your creativity in AI workflows.
-        </p>
-        <div class="title-dots">
-          ${pacman("right", 84)}
-          <div class="pellet"></div>
-          <div class="pellet"></div>
-          <div class="pellet"></div>
-          <div class="pellet"></div>
-        </div>
-        <div class="title-footer">
-          <div class="title-author">Jan Marek</div>
-          <div class="title-mews">
-            <img src="MEWS_WORDMARK_WHITE.png" alt="Mews"/>
+      <div class="scene intro">
+        <!-- Title text overlay (fades out from step 1+) -->
+        <div class="intro-titles">
+          <h1 class="intro-h1">
+            Boring<br/>Driven<br/>
+            <span class="accent">Development</span>
+          </h1>
+          <p class="intro-tagline">
+            Let your laziness and frustration<br/>
+            guide your creativity in AI workflows.
+          </p>
+          <div class="intro-footer">
+            <div class="intro-author">Jan Marek</div>
+            <div class="intro-mews">
+              <img src="MEWS_WORDMARK_WHITE.png" alt="Mews"/>
+            </div>
           </div>
         </div>
-      </div>
-    `,
-  },
 
-  // 2 — Transition: pacman travels on the map and arrives at Slack
-  {
-    id: "slack-arrival",
-    notes:
-      "Map-traversal transition. 5 controllable beats: travel → notification → eat → window opens → bug message.",
-    steps: 5,
-    render: () => `
-      <div class="scene slack-arrival">
-        <div class="map-grid"></div>
-
-        <!-- Trail of pellets pacman will eat -->
-        <div class="trail">
-          <div class="trail-dot"></div>
-          <div class="trail-dot"></div>
-          <div class="trail-dot"></div>
-          <div class="trail-dot"></div>
-          <div class="trail-dot"></div>
-          <div class="trail-dot"></div>
-          <div class="trail-dot"></div>
-        </div>
-
-        <!-- Slack icon target -->
-        <div class="slack-icon">
+        <!-- Slack icon (appears at step 1, lives at right side, shrinks at step 5) -->
+        <div class="intro-slack">
           <div class="slack-mark">${slackMarkSVG}</div>
-          <div class="slack-label">slack</div>
+          <div class="intro-slack-label">slack</div>
         </div>
 
-        <!-- Notification that pops out of the Slack icon -->
-        <div class="notif-pellet">1</div>
+        <!-- Notification badge on the top-right corner of the slack icon -->
+        <div class="intro-badge">1</div>
 
-        <!-- Schematic window that opens at step 3 -->
-        <div class="schematic-window">
+        <!-- Schematic Slack window (scales in at step 5) -->
+        <div class="intro-window">
           <div class="sw-header">
             <span class="sw-hash">#</span>
             <span>product-feedback</span>
@@ -205,21 +181,27 @@ const scenes = [
               <div class="sw-avatar"></div>
               <div class="sw-bubble">
                 <div class="sw-name">Petr · PM</div>
-                <div class="sw-text">
-                  hey, found a bug <span class="emoji">🐛</span> — the tax field disappears on second submit.
-                </div>
+                <div class="sw-text">hey, found a bug 🐛 — the tax field disappears on second submit.</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Pacman traveler -->
-        <div class="traveler">${pacman("right", 72)}</div>
+        <!-- 4 dots: title pellets in step 0, trail in step 1, eaten in step 2+ -->
+        <div class="intro-dots">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+
+        <!-- Pacman traveler (persists across all steps) -->
+        <div class="intro-pacman">${pacman("right", 84)}</div>
       </div>
     `,
   },
 
-  // 3 — Abstract / hook
+  // 2 — Abstract / hook
   {
     id: "abstract",
     notes: "The core idea. Frustration as a signal.",

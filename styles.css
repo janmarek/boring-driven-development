@@ -1297,3 +1297,364 @@ body {
   color: #1d1c1d;
 }
 .slack-arrival .new-msg .sw-text .emoji { font-size: 26px; }
+
+/* ===================================================
+ * Intro scene — merged title→slack flow (7 controllable steps)
+ * step 0 — full title
+ * step 1 — texts/logo fade out, pacman+dots move to centre, slack icon pops in
+ * step 2 — pacman moves right, dots eaten in stagger
+ * step 3 — notification badge appears on top-right of slack icon
+ * step 4 — pacman moves up-right to corner, eats notification
+ * step 5 — pacman exits, slack icon shrinks, schematic window expands
+ * step 6 — bug-report message slides into the window
+ * =================================================== */
+
+.intro {
+  display: block;
+  overflow: hidden;
+  background: var(--black);
+}
+
+/* --- Title text overlay (fades out from step 1+) --- */
+.intro-titles {
+  position: absolute;
+  inset: 0;
+  padding: 110px 100px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 36px;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.85s ease-out;
+}
+.intro[data-step="1"] .intro-titles,
+.intro[data-step="2"] .intro-titles,
+.intro[data-step="3"] .intro-titles,
+.intro[data-step="4"] .intro-titles,
+.intro[data-step="5"] .intro-titles,
+.intro[data-step="6"] .intro-titles {
+  opacity: 0;
+}
+
+.intro-titles .intro-h1 {
+  font-size: 168px;
+  line-height: 0.92;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  margin: 0;
+  color: var(--offwhite);
+}
+.intro-titles .intro-h1 .accent { color: var(--yellow); }
+
+.intro-titles .intro-tagline {
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1.3;
+  max-width: 1100px;
+  color: var(--ecru);
+  margin: 0;
+}
+
+.intro-titles .intro-footer {
+  position: absolute;
+  left: 100px;
+  right: 100px;
+  bottom: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.intro-titles .intro-author {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ecru);
+}
+
+.intro-titles .intro-mews {
+  height: 72px;
+}
+.intro-titles .intro-mews img {
+  height: 100%;
+  display: block;
+}
+
+/* --- Pacman traveler (persists across all steps) --- */
+.intro .intro-pacman {
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  /* Default = step 0: upper-right with pellets */
+  left: 1320px;
+  top: 180px;
+  transition-property: left, top, opacity;
+  transition-duration: 0.85s, 0.85s, 0.4s;
+  transition-timing-function: ease-in-out;
+}
+.intro[data-step="1"] .intro-pacman {
+  left: 600px; top: 450px;
+}
+.intro[data-step="2"] .intro-pacman {
+  left: 1080px; top: 450px;
+  transition-duration: 1.5s, 1.5s, 0.4s;
+}
+.intro[data-step="3"] .intro-pacman {
+  left: 1080px; top: 450px;
+}
+.intro[data-step="4"] .intro-pacman {
+  left: 1340px; top: 370px;
+  transition-duration: 0.6s, 0.6s, 0.4s;
+}
+.intro[data-step="5"] .intro-pacman,
+.intro[data-step="6"] .intro-pacman {
+  left: 1700px; top: 370px;
+  opacity: 0;
+  transition-duration: 0.7s, 0.7s, 0.4s;
+}
+
+/* --- Dots (4 of them, persist as title pellets → trail dots → eaten) --- */
+.intro .intro-dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.intro .intro-dots .dot {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  background: var(--offwhite);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  top: 180px;
+  transition: left 0.85s ease-in-out, top 0.85s ease-in-out,
+              opacity 0.2s ease-out, transform 0.2s ease-out;
+}
+/* Step 0 default positions: cluster next to pacman */
+.intro .intro-dots .dot:nth-child(1) { left: 1410px; }
+.intro .intro-dots .dot:nth-child(2) { left: 1450px; }
+.intro .intro-dots .dot:nth-child(3) { left: 1490px; }
+.intro .intro-dots .dot:nth-child(4) { left: 1530px; }
+
+/* Step 1+: dots move to trail position (and stay there) */
+.intro[data-step="1"] .intro-dots .dot,
+.intro[data-step="2"] .intro-dots .dot,
+.intro[data-step="3"] .intro-dots .dot,
+.intro[data-step="4"] .intro-dots .dot,
+.intro[data-step="5"] .intro-dots .dot,
+.intro[data-step="6"] .intro-dots .dot { top: 450px; }
+
+.intro[data-step="1"] .intro-dots .dot:nth-child(1),
+.intro[data-step="2"] .intro-dots .dot:nth-child(1),
+.intro[data-step="3"] .intro-dots .dot:nth-child(1),
+.intro[data-step="4"] .intro-dots .dot:nth-child(1),
+.intro[data-step="5"] .intro-dots .dot:nth-child(1),
+.intro[data-step="6"] .intro-dots .dot:nth-child(1) { left: 720px; }
+
+.intro[data-step="1"] .intro-dots .dot:nth-child(2),
+.intro[data-step="2"] .intro-dots .dot:nth-child(2),
+.intro[data-step="3"] .intro-dots .dot:nth-child(2),
+.intro[data-step="4"] .intro-dots .dot:nth-child(2),
+.intro[data-step="5"] .intro-dots .dot:nth-child(2),
+.intro[data-step="6"] .intro-dots .dot:nth-child(2) { left: 820px; }
+
+.intro[data-step="1"] .intro-dots .dot:nth-child(3),
+.intro[data-step="2"] .intro-dots .dot:nth-child(3),
+.intro[data-step="3"] .intro-dots .dot:nth-child(3),
+.intro[data-step="4"] .intro-dots .dot:nth-child(3),
+.intro[data-step="5"] .intro-dots .dot:nth-child(3),
+.intro[data-step="6"] .intro-dots .dot:nth-child(3) { left: 920px; }
+
+.intro[data-step="1"] .intro-dots .dot:nth-child(4),
+.intro[data-step="2"] .intro-dots .dot:nth-child(4),
+.intro[data-step="3"] .intro-dots .dot:nth-child(4),
+.intro[data-step="4"] .intro-dots .dot:nth-child(4),
+.intro[data-step="5"] .intro-dots .dot:nth-child(4),
+.intro[data-step="6"] .intro-dots .dot:nth-child(4) { left: 1020px; }
+
+/* Step 2+: dots get eaten — opacity 0, scale 0 */
+.intro[data-step="2"] .intro-dots .dot,
+.intro[data-step="3"] .intro-dots .dot,
+.intro[data-step="4"] .intro-dots .dot,
+.intro[data-step="5"] .intro-dots .dot,
+.intro[data-step="6"] .intro-dots .dot {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+}
+/* Step 2 specifically: staggered timing so pacman appears to eat them in sequence */
+.intro[data-step="2"] .intro-dots .dot:nth-child(1) {
+  transition: opacity 0.18s ease-out 0.32s, transform 0.18s ease-out 0.32s;
+}
+.intro[data-step="2"] .intro-dots .dot:nth-child(2) {
+  transition: opacity 0.18s ease-out 0.62s, transform 0.18s ease-out 0.62s;
+}
+.intro[data-step="2"] .intro-dots .dot:nth-child(3) {
+  transition: opacity 0.18s ease-out 0.92s, transform 0.18s ease-out 0.92s;
+}
+.intro[data-step="2"] .intro-dots .dot:nth-child(4) {
+  transition: opacity 0.18s ease-out 1.22s, transform 0.18s ease-out 1.22s;
+}
+
+/* --- Slack icon (appears step 1, shrinks step 5) --- */
+.intro .intro-slack {
+  position: absolute;
+  left: 1300px;
+  top: 450px;
+  width: 160px;
+  height: 160px;
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1), opacity 0.4s ease-out;
+}
+.intro[data-step="1"] .intro-slack,
+.intro[data-step="2"] .intro-slack,
+.intro[data-step="3"] .intro-slack,
+.intro[data-step="4"] .intro-slack {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.intro .intro-slack .slack-mark {
+  width: 100%;
+  height: 100%;
+  background: var(--offwhite);
+  border-radius: 32px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+.intro .intro-slack .slack-mark svg {
+  width: 75%;
+  height: 75%;
+}
+.intro .intro-slack .intro-slack-label {
+  position: absolute;
+  left: 50%;
+  bottom: -38px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* --- Notification badge (top-right corner of slack icon) --- */
+.intro .intro-badge {
+  position: absolute;
+  /* Slack icon center (1300, 450), size 160 → top-right corner at (1380, 370) */
+  left: 1380px;
+  top: 370px;
+  width: 56px;
+  height: 56px;
+  background: var(--orange);
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 24px;
+  transform: translate(-50%, -50%) scale(0);
+  box-shadow: 0 0 24px rgba(236, 90, 32, 0.7), 0 0 0 5px var(--black);
+  transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1);
+}
+.intro[data-step="3"] .intro-badge {
+  transform: translate(-50%, -50%) scale(1);
+}
+.intro[data-step="4"] .intro-badge {
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.22s ease-in 0.4s;
+}
+
+/* --- Schematic Slack window (appears step 5) --- */
+.intro .intro-window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 920px;
+  height: 600px;
+  background: var(--offwhite);
+  border-radius: 24px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
+}
+.intro[data-step="5"] .intro-window,
+.intro[data-step="6"] .intro-window {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.intro .intro-window .sw-header {
+  flex: 0 0 80px;
+  background: #3f0e40;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 14px;
+  font-size: 24px;
+  font-weight: 700;
+}
+.intro .intro-window .sw-hash { font-size: 28px; opacity: 0.85; }
+.intro .intro-window .sw-body {
+  flex: 1;
+  padding: 28px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  color: #1d1c1d;
+}
+.intro .intro-window .sw-msg {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.intro .intro-window .sw-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: #d6d3cf;
+  flex-shrink: 0;
+}
+.intro .intro-window .sw-bubble { flex: 1; }
+.intro .intro-window .sw-line {
+  height: 12px;
+  border-radius: 6px;
+  background: #d6d3cf;
+  margin-top: 6px;
+}
+.intro .intro-window .sw-line:first-child { margin-top: 0; }
+.intro .intro-window .sw-line.short { width: 35%; }
+.intro .intro-window .sw-line.mid { width: 60%; }
+
+.intro .intro-window .new-msg {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s;
+}
+.intro[data-step="6"] .intro-window .new-msg {
+  opacity: 1;
+  transform: translateY(0);
+}
+.intro .intro-window .new-msg .sw-avatar { background: var(--orange); }
+.intro .intro-window .new-msg .sw-name {
+  font-weight: 700;
+  font-size: 17px;
+  color: #1d1c1d;
+  margin-bottom: 4px;
+}
+.intro .intro-window .new-msg .sw-text {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #1d1c1d;
+}
