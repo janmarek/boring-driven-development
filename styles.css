@@ -1951,6 +1951,15 @@ body {
   font-size: 22px;
   letter-spacing: -0.01em;
   color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.jira .jw-logo svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  color: #fff;
 }
 .jira .jw-crumbs {
   flex: 1;

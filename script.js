@@ -40,6 +40,15 @@ const ghost = (color, label = "", size = 70) => `
   </div>
 `;
 
+// Atlassian Jira mark (the three stacked offset chevrons).
+// Source: svgrepo.com/svg/atlassian-jira.
+// Path uses fill="currentColor" so CSS color cascades in.
+const jiraMarkSVG = `
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <path fill="currentColor" d="M11.53,2a4.37,4.37,0,0,0,4.35,4.35h1.78v1.7A4.35,4.35,0,0,0,22,12.4V2.84A.85.85,0,0,0,21.16,2H11.53M6.77,6.8a4.36,4.36,0,0,0,4.34,4.34h1.8v1.72a4.36,4.36,0,0,0,4.34,4.34V7.63a.84.84,0,0,0-.83-.83H6.77M2,11.6a4.34,4.34,0,0,0,4.35,4.34H8.13v1.72A4.36,4.36,0,0,0,12.47,22V12.43a.85.85,0,0,0-.84-.84H2Z"/>
+  </svg>
+`;
+
 // Official Slack icon (2019). From https://commons.wikimedia.org/wiki/File:Slack_icon_2019.svg
 const slackMarkSVG = `
   <svg viewBox="0 0 127 127" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -234,7 +243,7 @@ const scenes = [
       <div class="scene jira">
         <div class="jira-window">
           <div class="jw-header">
-            <span class="jw-logo">▣ Jira</span>
+            <span class="jw-logo">${jiraMarkSVG}<span>Jira</span></span>
             <span class="jw-crumbs">Growth · Backlog</span>
             <button class="jw-create">+ Create</button>
           </div>
