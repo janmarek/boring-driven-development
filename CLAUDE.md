@@ -4,90 +4,214 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A Pac-Man-inspired HTML/CSS/JS presentation for a talk titled **Boring Driven Development** by Jan Marek (Mews). Pure static files — no build step, no dependencies, no package manager.
+A Pac-Man-inspired HTML/CSS/JS presentation for a talk titled **Boring Driven Development** by Jan Marek (Mews). Pure static files — no build step, no dependencies, no framework.
 
-To run it: open `index.html` directly in a browser, or serve the directory with any static server (`python3 -m http.server`, `npx serve`, etc.).
+Run it: open `index.html` directly in a browser, or serve the directory (`python3 -m http.server`, `npx serve`, etc.). Local fonts and the wordmark PNG load fine over `file://`.
 
 ## Navigation contract
 
 The presentation MUST stay safe to drive forward live. Keep this in mind for every change:
 
-- `→` / `↓` / `Space` / `PageDown` / right-half click → next scene
-- `←` / `↑` / `PageUp` / left-half click → previous scene
+- `→` / `↓` / `Space` / `PageDown` / right-half click → next step (or next scene if at last step)
+- `←` / `↑` / `PageUp` / left-half click → previous step (or previous scene)
 - `Home` / `End` → first / last
-- URL hash mirrors current scene id (e.g. `#claude`) for deep-linking
+- URL hash mirrors current scene id (e.g. `#title`) for deep-linking
 - Scene render is wrapped in try/catch — if a scene throws, a visible fallback is shown but navigation keeps working. Never bypass this safety net.
 
 ## Architecture
 
 Three files do all the work:
 
-- **`index.html`** — shell with a single `<div id="stage">` and a `<div id="hud">` counter. Don't add structural HTML here; build inside scenes.
-- **`styles.css`** — design system + per-scene styles. The stage has fixed internal coordinates **1600 × 900**; JS applies a uniform `transform: scale(...)` on resize so it fits any viewport without breaking layout. Author scenes against the 1600×900 frame, not the viewport.
-- **`script.js`** — scene registry + runtime. The entire presentation is the `scenes` array; everything else is plumbing.
+- **`index.html`** — shell with `<div id="stage">` + `<div id="hud">`. Don't add structural HTML here; build inside scenes.
+- **`styles.css`** — design system + per-scene styles. Stage is **1600 × 900 internal coordinates**; JS applies a uniform `transform: scale(...)` on resize. Author against 1600×900, not the viewport.
+- **`script.js`** — scene registry + runtime. The whole presentation is the `scenes` array; everything else is plumbing.
 
-### Adding / editing a scene
-
-Scenes are objects in the `scenes` array in `script.js`:
+### Scene shape
 
 ```js
 {
-  id: "kebab-case-id",         // used for hash + slide counter
-  notes: "one-liner",          // optional, runtime ignores it
-  steps: 5,                    // optional, defaults to 1
-  render: () => `<div class="scene">…</div>`,
-  onStep: (root, step, prev) => { … } // optional, called on each step change
+  id: "kebab-case-id",         // used for URL hash + slide counter
+  notes: "one-liner",          // optional, runtime ignores
+  steps: 8,                    // optional, defaults to 1
+  render: () => `<div class="scene my-scene">…</div>`,
+  onStep: (root, step, prev) => {…} // optional, called on each step change
 }
 ```
 
-Rules:
-- The returned root must have `class="scene"` (positioned absolute, fills the stage).
-- A scene can have multiple **steps**. The runtime navigates step-by-step within
-  a scene before advancing to the next scene. The current step is exposed via a
-  `data-step="N"` attribute on the scene root. Drive in-scene animation with CSS:
-  ```css
-  .my-scene[data-step="2"] .thing { transform: scale(1); }
-  ```
-- On first mount of a scene, `data-step` is set on the next animation frame so
-  CSS `transition`s interpolate from the bare element rules ("before" state) into
-  the step-0 state. Define the bare rules as your initial state.
-- Prefer `transition` over `@keyframes` for things that should reverse cleanly when
-  the user navigates backward. Use `@keyframes` only for one-shot effects (e.g. a
-  pellet being eaten) that don't need to rewind.
-- Shared helpers near the top of `script.js`: `pacman(dir, size)`, `ghost(color, label, size)`,
-  `mazeSVG`, `claudeOctopus`, `slackMarkSVG`. Reuse them.
-- Legacy app-window scenes (Slack/Jira/Claude/GitHub from v1) use this pattern:
-  ```html
-  <div class="app-window">
-    <div class="app-titlebar">…</div>
-    <div class="app-body …">…</div>
-  </div>
-  ```
-- Whenever you add, remove, rename, or restructure a scene, update `presentation.md`
-  to match. `presentation.md` is the human-readable spec, `script.js` is its
-  implementation — they must stay in sync.
+The returned root must have `class="scene"`. The runtime writes `data-step="N"` on it. Drive in-scene animation with CSS keyed off `data-step`.
 
-### Brand system
+### Mount + step lifecycle (important)
 
-- **Colors** (CSS custom properties on `:root`): `--pink --orange --yellow --ecru --blue --mauve --offwhite --black`. Maze walls use `--wall` (pink). Dots use `--dot` (off-white). Always reference these variables, never hard-code hex.
-- **Typography**: Söhne (loaded from `fonts/`) at weights 400 (Buch), 500 (Kräftig), 600 (Halbfett), 700 (Dreiviertelfett), 800 (Extrafett).
-- **Logo**: `MEWS_WORDMARK_WHITE.png` — white wordmark on transparent background, use only on dark surfaces.
+`mountScene()` does this:
+
+1. `stage.innerHTML = scene.render()`.
+2. **On the next animation frame**, sets `root.dataset.step = stepIndex`.
+
+The rAF deferral is load-bearing: it gives the browser one frame to compute the **bare** element rules (no `[data-step]` matching), then applies the step state. CSS `transition`s therefore interpolate from the bare state into the step-0 state on initial mount. If you set `data-step` synchronously after `innerHTML`, the browser folds both into one layout and you get no entrance transition.
+
+The bare element rules (no `[data-step]` selector) are effectively your **"before scene begins" state**. Step 0 is the **"scene begins" state**. The difference between them is what animates on initial mount.
+
+In-scene step changes (e.g. step 2 → step 3) just toggle `data-step`. CSS transitions between adjacent step rules animate the diff.
+
+## The merged-scene pattern (dominant for this deck)
+
+The single most important architectural choice: **a continuous visual sequence is ONE scene with N steps, not N scenes**.
+
+Why: mounting a new scene swaps the DOM. Pacman at the end of scene A and pacman at the start of scene B are different DOM elements, so transitions can't span them — you get a hard cut. With one scene, the same `.intro-pacman` DOM element animates via CSS transitions across all steps. The visual continuity is the whole point.
+
+The `title` scene is the canonical example: 8 steps, single DOM tree containing pacman, dots, slack icon, notification, schematic window. Each element has CSS rules per `[data-step="N"]` that change its position / opacity / scale. Transitions interpolate the changes when the user navigates.
+
+When the user describes a flow that includes multiple "beats" (pacman moves, icon appears, badge pops, message arrives, etc.), default to extending an existing scene's `steps` count rather than creating a new scene.
+
+## Authoring step-driven animation
+
+For each element you want to animate across steps:
+
+1. Define **default** properties (the "before scene begins" or step-0 state).
+2. Add a `transition` rule for the properties you'll vary.
+3. Write `[data-step="N"]` selectors for every step where the property differs from the previous step.
+
+Example for an element that moves between three positions:
+
+```css
+.intro .intro-pacman {
+  position: absolute;
+  width: 84px;
+  height: 84px;
+  transform: translate(-50%, -50%);
+  left: 1320px;   /* step 0 default: upper right */
+  top: 180px;
+  transition-property: left, top, opacity;
+  transition-duration: 0.85s, 0.85s, 0.4s;  /* one value per property */
+  transition-timing-function: ease-in-out;
+}
+.intro[data-step="1"] .intro-pacman { left: 350px; top: 450px; }
+.intro[data-step="3"] .intro-pacman {
+  left: 780px; top: 450px;
+  transition-duration: 1.5s, 1.5s, 0.4s;     /* longer travel = longer duration */
+}
+.intro[data-step="5"] .intro-pacman {
+  left: 1000px; top: 380px;
+  transition-duration: 0.6s, 0.6s, 0.4s;
+}
+```
+
+### Per-step duration overrides
+
+A single element often needs different transition durations for different step transitions — pacman crossing the whole screen (1.5s) vs. nudging up to a corner (0.6s). Override `transition-duration` per step. The comma-separated values must match the order of `transition-property`.
+
+### `transition` vs `@keyframes`
+
+Use **`transition`** for anything that should reverse cleanly when the user navigates backward. CSS transitions interpolate both directions automatically.
+
+Use **`@keyframes`** only for one-shot effects that don't need to rewind (a pellet being eaten, a screen shake). `animation-fill-mode: forwards` plus `animation-delay` is the right tool for staggered "eaten in sequence" effects, but the reverse-nav doesn't restore them — that's a known trade-off.
+
+The staggered dot-eating uses `transition` with per-`:nth-child` `transition-delay`, not `@keyframes`. That way pressing ← un-eats the dots cleanly.
+
+### Holding a state across steps
+
+If an element should stay in the same position for several adjacent steps, **list all those steps in the selector**:
+
+```css
+.intro[data-step="3"] .intro-pacman,
+.intro[data-step="4"] .intro-pacman {
+  left: 780px; top: 450px;
+}
+```
+
+It's verbose, but explicit. When you insert a new step in the middle of a flow, you have to shift all subsequent step numbers — accept the find-and-replace.
+
+## Coordinate authoring
+
+The stage is 1600 × 900. Author with absolute pixel coordinates. Pacman is 84px; the slack icon is 160px; the notification badge is 56px. When placing two elements next to each other, do edge-to-edge math:
+
+```
+gap = (right_center - right_half) - (left_center + left_half)
+```
+
+If `gap` is ≤ 0, the elements overlap visually. A 30–80px gap usually reads as "next to" without touching. The first take of the slack-arrival scene had pacman ending at 830 and the slack icon at 950 — edge gap of −2px, hence the touching/overlap that the user flagged.
+
+Slack icon top-right corner = `(icon_center_x + 80, icon_center_y - 80)`. The notification badge centers on that point. When you move the slack icon, update the notification position too.
+
+## Common pitfalls I've hit
+
+- **`.scene` is `position: absolute; inset: 0`.** Don't override with `position: relative` in your scene's class — that drops `inset` (which only applies to absolutely-positioned elements), the scene collapses to height 0 (no in-flow content, since children are absolute), and `overflow: hidden` on the parent clips everything. Result: black screen. If you need a different stacking context inside the scene, do it on a child, not the root.
+
+- **`:nth-child(N)` matches position among ALL siblings, not among elements-of-this-class.** If your `.trail-dot:nth-child(1)` shares a parent with non-trail-dot siblings, the first dot is `:nth-child(2)`, etc. Either wrap the targets in a dedicated parent so the indices align, or use `:nth-of-type` (works only if elements share an HTML tag and that tag isn't used by anything else under the parent).
+
+- **Transitions don't trigger when the element's computed value doesn't change.** If you write `.intro[data-step="0"] .x { left: 100px }` and the element's default (no selector) is also `left: 100px`, the rAF data-step assignment won't fire a transition. Define the bare element rules to be different from step-0 if you want an entrance animation; if you don't, leave them identical and accept the instant-snap.
+
+- **rAF defer is required for the entrance transition.** Setting `data-step` synchronously after `innerHTML` collapses to a single layout pass; the browser sees no change. The runtime already handles this; don't bypass it.
+
+- **Forward and backward navigation aren't perfectly symmetric.** Anything done with `@keyframes ... forwards` (one-shot animation) sticks at the end state and won't rewind on ←. That's acceptable for "eaten" effects but not for state you want to scrub. Use `transition` for scrubbable state.
+
+- **Multiple elements at the same logical position need separate CSS rules.** Pacman, the slack icon, and the notification all sit at roughly (950, 450) during step 4, but each has its own CSS rule and its own transition. Don't try to use a wrapper to position them as a group — they animate independently.
+
+## Verification with Playwright
+
+`verify.mjs` boots a local HTTP server, drives the deck via real keyboard arrow presses, and dumps a PNG of `#stage` per scene/step into `verify-shots/` (gitignored).
+
+```sh
+node verify.mjs        # ~15s end-to-end
+```
+
+Use this after any visual change. It catches:
+- Positioning issues (read the PNG, eyeball the gaps)
+- Selector mismatches (elements not appearing where you expect)
+- Black-screen regressions (the `position: relative` bug above)
+- Step-by-step state correctness (since keyboard navigation matches real flow, including transition timing)
+
+The walker waits 2.8s on `title-step0` (long travel transition) and 900ms on every other step. If you add a scene with a transition longer than 900ms, bump the wait in `verify.mjs`.
+
+Read the screenshots with the `Read` tool — Claude Code renders PNGs inline. Always look at the ones you changed; never assume "the code looks right, so it works." Several bugs in this project (notably the `position: relative` black-screen and the `:nth-child` indexing mismatch) were invisible from code review and only caught by looking at the rendered output.
+
+## The iteration loop with Jan
+
+Jan drives the deck scene-by-scene, giving directional feedback ("move this left", "fade this in as its own step", "the slack window looks good"). The workflow is:
+
+1. **Read the feedback as a concrete brief.** Jan tends to bundle multiple small asks in one message. Pick them apart and treat each as a tracked task.
+2. **Make the change.** Prefer editing existing CSS rules / scene step counts over adding new scenes. Continuous-flow changes mean shifting step numbers in CSS — accept the find-and-replace.
+3. **Verify with Playwright.** Run `node verify.mjs`, then `Read` the screenshots for the steps you changed. Eyeball the result against what Jan asked for. If something's off (overlap, wrong position, wrong timing), iterate before reporting.
+4. **Update `presentation.md`** to match the new scene/step layout. Step numbers in the doc must match `data-step` values used in CSS. The doc is the spec; mismatched docs are bugs.
+5. **Commit.** One commit per iteration ("iter N: <one-line summary>"). Include both the user-visible change and the why in the message body. Co-author trailer goes on every commit (`Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>`).
+6. **Tell Jan what changed** in a short message with the new step list and what to look at. Leave a question or two open so the next direction can be quick.
+
+Commit cadence is **per iteration**, not per individual file edit. One direction from Jan → one commit (even if it touches CSS, JS, and the doc together). The history reads as a series of "iter N: …" steps tracking the design conversation.
+
+### When to update CLAUDE.md
+
+Whenever I hit a bug whose root cause wasn't obvious from the code (the `position: relative` collapse, the `:nth-child` mismatch, the rAF requirement for entrance transitions), add it to **Common pitfalls** so it doesn't bite the next time.
+
+Whenever Jan establishes a new pattern ("continuous moves are the common theme", "merge into one scene with steps rather than split"), document it so future scenes follow the same approach instead of reinventing.
+
+Don't document things already obvious from a quick read of the code (file structure, what `pacman()` returns, etc.).
+
+## Brand system
+
+- **Colors** (CSS custom properties on `:root`): `--pink --orange --yellow --ecru --blue --mauve --offwhite --black`. Always use the variables, never hard-coded hex.
+- **Typography**: Söhne (loaded from `fonts/`) at weights 400 / 500 / 600 / 700 / 800.
+- **Logo**: `MEWS_WORDMARK_WHITE.png` — white wordmark on transparent background, use only on dark surfaces. The PNG has wide transparent padding around the wordmark, so a 72px-tall `<img>` only shows ~25px of actual mark.
 
 ## Files
 
 ```
-index.html          shell
-styles.css          fonts, palette, scene styles
-script.js           scenes[] + runtime
-presentation.md     human-readable scene spec (keep in sync with scenes[])
-fonts/              Söhne .otf files (5 weights)
+index.html              shell
+styles.css              fonts, palette, scene styles
+script.js               scenes[] + runtime
+presentation.md         human-readable scene spec (keep in sync with scenes[])
+verify.mjs              Playwright walker (boots local server, screenshots each step)
+package.json            dev deps (Playwright)
+fonts/                  Söhne .otf files (5 weights)
 MEWS_WORDMARK_WHITE.png
-Screenshot ….png    reference: Mews brand palette
+slack-icon.svg          official Slack 2019 icon (also inlined as slackMarkSVG in script.js)
+Screenshot ….png        reference: Mews brand palette
 ```
 
 ## Conventions that aren't obvious from the code
 
-- **Stage is 1600×900, not responsive.** Don't introduce media queries for breakpoint-style layouts inside scenes. The whole stage is scaled uniformly by JS.
-- **No frameworks.** Don't add React/Vue/build tooling. The "no build, just open in browser" property is a feature.
-- **Each beat the user controls is a step.** When a scene has internal animation that should be paced by the speaker (pacman moving, an icon appearing, a message arriving), each beat becomes a `step`. Don't auto-chain beats — the talk's whole feel depends on the speaker pressing → when they're ready.
+- **Stage is 1600×900, not responsive.** Don't add media queries inside scenes. The whole stage is scaled uniformly by JS.
+- **No frameworks. No build step.** Don't add React/Vue/etc. "Just open `index.html`" is a feature.
+- **Each beat the user controls is a step.** Don't auto-chain beats — the talk's whole feel depends on the speaker pressing → when they're ready.
+- **Update `presentation.md` whenever scenes/steps change.** It's the human-readable spec; `script.js` is the implementation. They must stay in sync.
+- **Keep legacy scenes/CSS for reuse.** Per user preference. Old `.slack-arrival`, `.title-scene`, etc. styles in `styles.css` are intentionally unused; don't garbage-collect them.
 - The parent `/Users/janmarek/projects/CLAUDE.md` applies to a multi-repo workspace and is not relevant inside this directory.
