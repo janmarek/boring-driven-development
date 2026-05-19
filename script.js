@@ -354,7 +354,7 @@ const scenes = [
                 <div class="jw-grid">
                   <div class="jw-field jw-field-type">
                     <label>Issue type <span class="req">*</span></label>
-                    <div class="jw-select"><span class="jw-fill"><span>● Bug</span></span></div>
+                    <div class="jw-select"><span class="jw-fill"><span class="jw-type-icon jw-type-bug"></span><span>Bug</span></span></div>
                   </div>
                   <div class="jw-field jw-field-team">
                     <label>R&amp;D team <span class="req">*</span></label>
@@ -364,14 +364,10 @@ const scenes = [
                     <label>Story points <span class="req">*</span></label>
                     <div class="jw-select"><span class="jw-fill"><span>3</span></span></div>
                   </div>
-                  <div class="jw-field jw-field-budget">
-                    <label>Budget <span class="req">*</span></label>
-                    <div class="jw-select"><span class="jw-fill"><span>KTLO</span></span></div>
-                  </div>
                 </div>
                 <div class="jw-field jw-field-labels">
                   <label>Labels <span class="req">*</span></label>
-                  <div class="jw-select"><span class="jw-fill"><span class="jw-chip">payments</span><span class="jw-chip">tax</span><span class="jw-chip">bug-bash</span></span></div>
+                  <div class="jw-select"><span class="jw-chip">payments</span><span class="jw-chip">tax</span><span class="jw-chip">bug-bash</span></div>
                 </div>
                 <div class="jw-field jw-field-desc">
                   <label>Description <span class="req">*</span></label>

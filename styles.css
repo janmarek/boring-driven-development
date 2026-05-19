@@ -2436,12 +2436,24 @@ body {
   opacity: 1;
   transform: translateY(0);
 }
-.jira[data-step="3"] .jw-field-type    .jw-fill { transition-delay: 0.10s; }
-.jira[data-step="3"] .jw-field-team    .jw-fill { transition-delay: 0.40s; }
-.jira[data-step="3"] .jw-field-points  .jw-fill { transition-delay: 0.70s; }
-.jira[data-step="3"] .jw-field-budget  .jw-fill { transition-delay: 1.00s; }
-.jira[data-step="3"] .jw-field-labels  .jw-fill { transition-delay: 1.30s; }
-.jira[data-step="3"] .jw-field-desc    .jw-fill { transition-delay: 1.60s; }
+/* Larger gaps between fields so the audience can register each one
+   as it lands — "look at all the required stuff" beat. */
+.jira[data-step="3"] .jw-field-type    .jw-fill { transition-delay: 0.20s; }
+.jira[data-step="3"] .jw-field-team    .jw-fill { transition-delay: 0.80s; }
+.jira[data-step="3"] .jw-field-points  .jw-fill { transition-delay: 1.40s; }
+.jira[data-step="3"] .jw-field-desc    .jw-fill { transition-delay: 3.80s; }
+
+/* Labels are special: each chip animates in individually, one after
+   the other, after the other fields have settled. */
+.jira .jw-field-labels .jw-chip {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+.jira[data-step="3"] .jw-field-labels .jw-chip { opacity: 1; transform: translateY(0); }
+.jira[data-step="3"] .jw-field-labels .jw-chip:nth-child(1) { transition-delay: 2.00s; }
+.jira[data-step="3"] .jw-field-labels .jw-chip:nth-child(2) { transition-delay: 2.60s; }
+.jira[data-step="3"] .jw-field-labels .jw-chip:nth-child(3) { transition-delay: 3.20s; }
 
 .jira .jw-chip {
   background: #deebff;

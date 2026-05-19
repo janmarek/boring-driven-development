@@ -84,7 +84,7 @@ for (let i = 0; i < scenes.length; i++) {
     else if (s.id === "title" && step === 9) wait = 1100;     // reverse typewriter
     else if (s.id === "title" && step === 12) wait = 1100;    // slack flies left
     else if (s.id === "jira" && step === 2) wait = 1800;      // summary typewriter
-    else if (s.id === "jira" && step === 3) wait = 2400;      // 6 staggered field fills (last delay 1.6s + 0.3s anim)
+    else if (s.id === "jira" && step === 3) wait = 4400;      // staggered field fills (last delay 3.80s + 0.3s anim)
     else if (s.id === "jira" && step === 4) wait = 1100;      // jira flies left
     await page.waitForTimeout(wait);
     const filename = `${String(i + 1).padStart(2, "0")}-${s.id}-step${step}.png`;
