@@ -340,10 +340,31 @@ presentation.md         human-readable scene spec (keep in sync with scenes[])
 verify.mjs              Playwright walker (boots local server, screenshots each step)
 package.json            dev deps (Playwright)
 fonts/                  Söhne .otf files (5 weights)
+icons/                  all reusable icons as standalone .svg files
+                        (referenced via <img src="icons/foo.svg">)
 MEWS_WORDMARK_WHITE.png
-slack-icon.svg          official Slack 2019 icon (also inlined as slackMarkSVG in script.js)
 Screenshot ….png        reference: Mews brand palette
 ```
+
+### `icons/` convention
+
+Icons live as standalone files under `icons/` rather than inlined in
+`script.js`, to keep the JS readable. Scenes reference them via
+`<img src="icons/foo.svg" alt="">`. Because `<img>`-loaded SVGs are
+opaque to CSS (can't reach `currentColor`), the file should bake the
+final fill colors in. When an icon needs runtime-varied color, fall
+back to inlining the SVG markup directly in the render() call.
+
+Current set:
+
+| File                     | Used by                                  |
+|--------------------------|------------------------------------------|
+| `slack-mark.svg`         | title scene — slack icon                 |
+| `claude-octopus.svg`     | title scene + legacy claude              |
+| `claude-ai-icon.svg`     | claude-arrival — Anthropic burst         |
+| `pixel-octopus.svg`      | claude-arrival — Claude Code mascot      |
+| `send-arrow.svg`         | title scene — slack composer send button |
+| `search.svg`             | jira scene — toolbar search field        |
 
 ## Conventions that aren't obvious from the code
 

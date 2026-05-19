@@ -1335,7 +1335,7 @@ body {
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
   position: relative;
 }
-.slack-arrival .slack-mark svg {
+.slack-arrival .slack-mark img {
   width: 75%;
   height: 75%;
 }
@@ -1771,7 +1771,7 @@ body {
   place-items: center;
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
 }
-.intro .intro-slack .slack-mark svg {
+.intro .intro-slack .slack-mark img {
   width: 75%;
   height: 75%;
 }
@@ -2024,7 +2024,7 @@ body {
   place-items: center;
   cursor: pointer;
 }
-.intro .intro-window .sw-send svg {
+.intro .intro-window .sw-send img {
   width: 24px;
   height: 24px;
   display: block;
@@ -2052,7 +2052,7 @@ body {
   opacity: 0;
   transition: transform 0.25s ease-in 1.3s, opacity 0.25s ease-in 1.3s;
 }
-.intro .intro-claude svg {
+.intro .intro-claude img {
   width: 100%;
   height: 100%;
   color: var(--orange);
@@ -2164,7 +2164,7 @@ body {
   color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
 }
-.jira .jw-search svg {
+.jira .jw-search img {
   width: 16px;
   height: 16px;
   flex: 0 0 16px;
@@ -2572,7 +2572,7 @@ body {
   opacity: 0;
   transition: transform 0.22s ease-in 0.55s, opacity 0.22s ease-in 0.55s;
 }
-.claude-arrival .ca-icon svg {
+.claude-arrival .ca-icon img {
   width: 100%;
   height: 100%;
   display: block;
@@ -2604,7 +2604,7 @@ body {
   height: 220px;
   filter: drop-shadow(0 8px 20px rgba(201, 123, 90, 0.4));
 }
-.claude-arrival .ca-octopus svg {
+.claude-arrival .ca-octopus img {
   width: 100%;
   height: 100%;
   display: block;

@@ -40,73 +40,20 @@ const ghost = (color, label = "", size = 70) => `
   </div>
 `;
 
-// Claude AI mark (the 4-petal burst from the Wikipedia Claude-ai-icon).
-// Stylized version — four rounded petals radiating out at 45° angles.
-// Uses currentColor so the surrounding CSS dictates the colour.
-const claudeAIIconSVG = `
-  <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <g fill="currentColor">
-      <path d="M32 4 C 33 22, 40 30, 60 32 C 40 34, 33 42, 32 60 C 31 42, 24 34, 4 32 C 24 30, 31 22, 32 4 Z"/>
-    </g>
-  </svg>
-`;
-
-// Pixel-octopus mascot used as the splash mascot inside the Claude code
-// window. ~14×11 grid, brown body with two black eyes and four short
-// stubby legs at the bottom. shape-rendering: crispEdges keeps the pixel
-// look from blurring at scale.
-const pixelOctopus = `
-  <svg viewBox="0 0 14 11" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" aria-hidden="true">
-    <g fill="#c97b5a">
-      <rect x="2" y="0" width="10" height="1"/>
-      <rect x="1" y="1" width="12" height="1"/>
-      <rect x="0" y="2" width="14" height="5"/>
-      <rect x="1" y="7" width="12" height="1"/>
-      <!-- Legs -->
-      <rect x="1" y="8" width="2" height="2"/>
-      <rect x="4" y="8" width="2" height="2"/>
-      <rect x="8" y="8" width="2" height="2"/>
-      <rect x="11" y="8" width="2" height="2"/>
-      <rect x="1" y="10" width="1" height="1"/>
-      <rect x="4" y="10" width="1" height="1"/>
-      <rect x="8" y="10" width="1" height="1"/>
-      <rect x="11" y="10" width="1" height="1"/>
-    </g>
-    <!-- Eyes -->
-    <g fill="#000">
-      <rect x="3" y="3" width="2" height="2"/>
-      <rect x="9" y="3" width="2" height="2"/>
-    </g>
-  </svg>
-`;
-
-// Atlassian Jira mark (the three stacked offset chevrons).
-// Source: svgrepo.com/svg/atlassian-jira.
-// Path uses fill="currentColor" so CSS color cascades in.
-const jiraMarkSVG = `
-  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path fill="currentColor" d="M11.53,2a4.37,4.37,0,0,0,4.35,4.35h1.78v1.7A4.35,4.35,0,0,0,22,12.4V2.84A.85.85,0,0,0,21.16,2H11.53M6.77,6.8a4.36,4.36,0,0,0,4.34,4.34h1.8v1.72a4.36,4.36,0,0,0,4.34,4.34V7.63a.84.84,0,0,0-.83-.83H6.77M2,11.6a4.34,4.34,0,0,0,4.35,4.34H8.13v1.72A4.36,4.36,0,0,0,12.47,22V12.43a.85.85,0,0,0-.84-.84H2Z"/>
-  </svg>
-`;
-
-// Official Slack icon (2019). From https://commons.wikimedia.org/wiki/File:Slack_icon_2019.svg
-const slackMarkSVG = `
-  <svg viewBox="0 0 127 127" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path d="M27.2 80c0 7.3-5.9 13.2-13.2 13.2C6.7 93.2.8 87.3.8 80c0-7.3 5.9-13.2 13.2-13.2h13.2V80zm6.6 0c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2v33c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V80z" fill="#E01E5A"/>
-    <path d="M47 27c-7.3 0-13.2-5.9-13.2-13.2C33.8 6.5 39.7.6 47 .6c7.3 0 13.2 5.9 13.2 13.2V27H47zm0 6.7c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H13.9C6.6 60.1.7 54.2.7 46.9c0-7.3 5.9-13.2 13.2-13.2H47z" fill="#36C5F0"/>
-    <path d="M99.9 46.9c0-7.3 5.9-13.2 13.2-13.2 7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H99.9V46.9zm-6.6 0c0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V13.8C66.9 6.5 72.8.6 80.1.6c7.3 0 13.2 5.9 13.2 13.2v33.1z" fill="#2EB67D"/>
-    <path d="M80.1 99.8c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2-7.3 0-13.2-5.9-13.2-13.2V99.8h13.2zm0-6.6c-7.3 0-13.2-5.9-13.2-13.2 0-7.3 5.9-13.2 13.2-13.2h33.1c7.3 0 13.2 5.9 13.2 13.2 0 7.3-5.9 13.2-13.2 13.2H80.1z" fill="#ECB22E"/>
-  </svg>
-`;
-
-const claudeOctopus = `
-  <svg class="claude-logo-svg" viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <path d="M32 6c-9.4 0-17 7.2-17 16.1v9.5c0 .9-.4 1.7-1.1 2.3l-3.2 2.6c-.9.7-.5 2.1.6 2.3l3.5.6c.9.2 1.5.9 1.6 1.8.6 5.2 5 9.3 10.4 9.3 1.2 0 2.4-.2 3.4-.6.6-.2 1.2-.2 1.7 0 1.1.4 2.2.6 3.4.6 5.4 0 9.8-4.1 10.4-9.3.1-.9.7-1.6 1.6-1.8l3.5-.6c1.1-.2 1.5-1.6.6-2.3l-3.2-2.6c-.7-.6-1.1-1.4-1.1-2.3v-9.5C49 13.2 41.4 6 32 6z"/>
-    <circle cx="25" cy="24" r="3" fill="#0a0a0a"/>
-    <circle cx="39" cy="24" r="3" fill="#0a0a0a"/>
-    <path d="M14 44c-2 1-4 4-6 4M22 50c-1 2-2 5-4 6M32 53c0 2 0 5-1 6M42 50c1 2 2 5 4 6M50 44c2 1 4 4 6 4" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-  </svg>
-`;
+// All icons live as standalone files under icons/.
+// Scenes reference them with <img src="icons/foo.svg" ...>.
+//   icons/slack-mark.svg     — official 2019 Slack mark (4 colors)
+//   icons/jira-mark.svg      — Atlassian Jira chevrons
+//   icons/claude-octopus.svg — legacy Claude CLI mascot (orange)
+//   icons/claude-ai-icon.svg — Claude AI 4-petal burst
+//   icons/pixel-octopus.svg  — Claude Code pixel mascot
+//   icons/send-arrow.svg     — slack composer send button glyph
+//   icons/search.svg         — jira toolbar search field icon
+//
+// Multi-color SVGs work directly via <img>; single-color SVGs have the
+// fill baked in (since CSS can't reach into <img>-loaded SVGs). When a
+// new icon needs runtime color, fall back to inlining the SVG markup
+// directly in the render() call.
 
 // ---------------------- appWindow() ----------------------
 //
@@ -250,7 +197,7 @@ const scenes = [
 
         <!-- Slack icon (appears at step 1, lives at right side, shrinks at step 5) -->
         <div class="intro-slack">
-          <div class="slack-mark">${slackMarkSVG}</div>
+          <div class="slack-mark"><img src="icons/slack-mark.svg" alt="Slack"/></div>
           <div class="intro-slack-label">slack</div>
         </div>
 
@@ -290,9 +237,7 @@ const scenes = [
                 <span class="sw-typing"><span class="sw-typed-text">please create a ticket in jira</span></span><span class="sw-cursor"></span>
               </div>
               <button class="sw-send" aria-label="Send">
-                <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M3 17 L17 10 L3 3 L5 10 Z" fill="currentColor"/>
-                </svg>
+                <img src="icons/send-arrow.svg" alt=""/>
               </button>
             </div>
           </div>
@@ -300,7 +245,7 @@ const scenes = [
 
         <!-- Claude octopus (appears at step 10, eaten at step 11) -->
         <div class="intro-claude">
-          ${claudeOctopus}
+          <img class="claude-logo-svg" src="icons/claude-octopus.svg" alt=""/>
           <div class="intro-claude-label">claude</div>
         </div>
 
@@ -338,10 +283,7 @@ const scenes = [
               <img src="MEWS_WORDMARK_WHITE.png" alt="Mews"/>
             </div>
             <div class="jw-search">
-              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6" fill="none"/>
-                <line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
-              </svg>
+              <img src="icons/search.svg" alt=""/>
               <span>Search</span>
             </div>
             <button class="jw-create">+ Create</button>
@@ -441,7 +383,7 @@ const scenes = [
     render: () => `
       <div class="scene claude-arrival">
         <div class="ca-pacman">${pacman("right", 84)}</div>
-        <div class="ca-icon">${claudeAIIconSVG}</div>
+        <div class="ca-icon"><img src="icons/claude-ai-icon.svg" alt=""/></div>
         ${appWindow({
           variant: "frame",
           theme: "terminal",
@@ -450,7 +392,7 @@ const scenes = [
           height: 720,
           body: `
             <div class="ca-claude-body">
-              <div class="ca-octopus">${pixelOctopus}</div>
+              <div class="ca-octopus"><img src="icons/pixel-octopus.svg" alt=""/></div>
               <div class="ca-claude-text">
                 <h2>claude</h2>
                 <p>tip: press <kbd>/</kbd> for commands</p>
@@ -729,7 +671,7 @@ const scenes = [
             <div class="claude-bar">claude code · v1.0 · /Users/jan/projects/mews</div>
             <div class="claude-screen">
               <div class="claude-logo">
-                ${claudeOctopus}
+                <img class="claude-logo-svg" src="icons/claude-octopus.svg" alt=""/>
                 <div class="claude-logo-text">claude<small>tip: press / for commands</small></div>
               </div>
               <div class="claude-line claude-muted">› Implementing GRW-1405 — split bill across multiple cards.</div>
