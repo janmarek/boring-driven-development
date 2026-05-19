@@ -98,18 +98,21 @@ const scenes = [
     `,
   },
 
-  // 2 — Jira flow (schematic). 5 beats:
+  // 2 — Jira flow (schematic). 4 beats:
   //   0 — backlog flies in from the right
   //   1 — "+ Create" → create-issue modal scales in
   //   2 — summary typewriter fills
   //   3 — tedious required fields fill in staggered (type, team, story
   //       points, labels, structured description) → "look at all this"
-  //   4 — jira window scales down + fades out (disappear animation)
+  // Advancing past step 3 plays a disappear animation (window scales
+  // down + fades out) via the runtime's exitDuration mechanism — no
+  // dedicated "empty" exit step.
   {
     id: "jira",
     notes:
-      "Schematic Jira: backlog → create modal → struggle filling fields → window scales down and fades out. Same two-card aesthetic as the slack window in the title scene.",
-    steps: 5,
+      "Schematic Jira: backlog → create modal → struggle filling fields. Disappear animation runs on advance via exitDuration + .is-exiting.",
+    steps: 4,
+    exitDuration: 500,
     render: () => `
       <div class="scene jira">
         <div class="jira-window">
@@ -202,24 +205,27 @@ const scenes = [
     `,
   },
 
-  // 3 — Claude arrival (4 steps).
+  // 3 — Claude arrival (3 steps).
   //   0 — pacman appears center-top facing right (no rotation yet)
-  //   1 — pacman rotates 90° to face down; Claude AI icon scales in
-  //       at the centre below it
-  //   2 — pacman descends to icon position; icon scales out with a
-  //       delayed transition timed to pacman's arrival (eaten)
-  //   3 — Claude code window scales in (frame variant + terminal theme)
-  //       with the pixel-octopus mascot and "claude" branding inside
+  //   1 — pacman rotates 90° to face down; Claude AI icon (with CLAUDE
+  //       label) scales in low in the stage; 3 dots appear between
+  //       pacman and the icon
+  //   2 — pacman descends along the dot trail, eating each dot in
+  //       sequence, then eats the icon
+  // The claude code window used to scale in here as a splash with
+  // "tip: press / for commands" — no useful content. Dropped; the
+  // window's cool scale-in entrance now lives in claude-work step 0
+  // with the actual terminal content inside.
   {
     id: "claude-arrival",
     notes:
-      "Pacman descends, eats Claude AI icon, Claude code window appears with the pixel octopus.",
-    steps: 4,
+      "Pacman descends along a 3-dot trail, eats the Claude AI icon. No window — claude-work's window does the entrance with real content.",
+    steps: 3,
     render: () => `
       <div class="scene claude-arrival">
         <div class="ca-pacman">${pacman("right", 84)}</div>
         <!-- 3 dots stacked vertically between pacman start (top 100) and
-             icon (top 450) — eaten in stagger at step 2 as pacman descends. -->
+             icon (top 620) — eaten in stagger at step 2 as pacman descends. -->
         <div class="ca-dots">
           <div class="ca-dot"></div>
           <div class="ca-dot"></div>
@@ -229,22 +235,6 @@ const scenes = [
           <img src="icons/claude-ai-icon.svg" alt=""/>
           <div class="ca-icon-label">claude</div>
         </div>
-        ${appWindow({
-          variant: "frame",
-          theme: "terminal",
-          title: "claude code",
-          width: 1100,
-          height: 720,
-          body: `
-            <div class="ca-claude-body">
-              <div class="ca-octopus"><img src="icons/pixel-octopus.svg" alt=""/></div>
-              <div class="ca-claude-text">
-                <h2>claude</h2>
-                <p>tip: press <kbd>/</kbd> for commands</p>
-              </div>
-            </div>
-          `,
-        })}
       </div>
     `,
   },
@@ -490,7 +480,6 @@ const scenes = [
         </h2>
         <div style="position:absolute; right:120px; bottom:120px; display:flex; gap:30px; align-items:center;">
           ${ghost("var(--orange)", "")}
-          ${ghost("var(--pink)", "")}
           ${pacman("right", 90)}
         </div>
       </div>

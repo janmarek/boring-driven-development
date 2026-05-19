@@ -36,8 +36,8 @@ what bores you.
 | # | id              | steps | What happens |
 |---|-----------------|-------|--------------|
 | 1 | `title`         | 10    | Title → fade+center → pacman eats dot trail → Slack icon appears → notification → eat → Slack window (two-card schematic) → bug report → composer+typing "please create a ticket in jira" → delete. Advance from the last step cuts straight to the jira scene flying in. |
-| 2 | `jira`          | 5     | Schematic Mews Jira: detailed backlog flies in (Mews toolbar + table) → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, label chips one-by-one, structured description) → window scales down + fades out. |
-| 3 | `claude-arrival`| 4     | Pacman center-top, rotates to face down, descends along a 3-dot trail, eats Claude AI icon → Claude code window scales in (mac frame + terminal theme) with the pixel-octopus mascot and "claude" branding. |
+| 2 | `jira`          | 4     | Schematic Mews Jira: detailed backlog flies in (Mews toolbar + table) → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, label chips one-by-one, structured description). Advancing past step 3 plays a 500ms scale-down + fade disappear before claude-arrival mounts (`exitDuration` + `.is-exiting`). |
+| 3 | `claude-arrival`| 3     | Pacman center-top, rotates to face down, descends along a 3-dot trail, eats Claude AI icon (with `CLAUDE` label). No window — claude-work's window does the scale-in entrance next with real terminal content. |
 | 4 | `claude-work`   | 6     | Terminal flow: MCP connect (slack + atlassian) → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
 | 5 | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-grw.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
 | 6 | `github`        | 1     | (legacy) GitHub PR mock. Will be redone as a schematic scene later. |
@@ -89,7 +89,7 @@ pacman+dots travel are the recurring pattern for this presentation —
 when adding scenes, prefer one merged scene with N step-keyed positions
 over multiple scenes connected by hard cuts.
 
-### 2. `jira` — 5 steps
+### 2. `jira` — 4 steps + exit animation
 
 Schematic Jira flow that follows the slack window from the title scene.
 Same two-card aesthetic (dark-navy header plate + offwhite body plate).
@@ -109,30 +109,29 @@ jira arriving together.
   labels → structured description (What & Why / Implementation /
   Acceptance criteria). The audience sees the "look at all this" beat
   unfold.
-- **Step 4** — Jira window scales down and fades out — explicit disappear
-  beat before the deck advances to `claude-arrival`. (Slack uses a
-  fly-left exit; this exit uses scale-down so each scene's leave feels
-  distinct.)
+- **Exit (no separate step)** — Advancing past step 3 sets `.is-exiting`
+  on the scene root for 500ms (`exitDuration`), during which the window
+  scales down and fades out before the DOM swap to claude-arrival.
+  Avoids an empty "post-window" step in the HUD while still giving the
+  audience a visible disappear.
 
-### 3. `claude-arrival` — 4 steps
+### 3. `claude-arrival` — 3 steps
 
-Bridge scene from the jira backlog to the Claude code splash.
+Bridge scene from the jira backlog to the claude code terminal. Just
+the "pacman eats Claude" beat — the window itself appears in
+`claude-work` with the real terminal content, not as an empty splash.
 
 - **Step 0** — Pacman appears center-top of the stage, facing right.
 - **Step 1** — Pacman rotates 90° to face down. At the same time, the
   Claude AI icon (the official rounded mark, sourced from Wikimedia,
   with a "CLAUDE" label below) scales in low in the stage, and a
   vertical trail of 3 small dots appears between pacman and the icon.
-- **Step 2** — Pacman descends to the icon's position, eating each of
+- **Step 2** — Pacman descends along the dot trail, eating each of
   the 3 dots in sequence on the way down. The icon scales out with a
-  delayed transition timed to pacman's arrival — eaten. **On the same
-  press**, the Claude code window scales in (delayed 0.8s so it lands
-  after the icon vanishes), mac titlebar with traffic lights and
-  "claude code" title, dark body, pixel-octopus mascot prominent in
-  the middle with the "claude · tip: press / for commands" splash.
-- **Step 3** — Holds the open window state (no further animation;
-  hand-off slide for the speaker before the deck advances to
-  `claude-work`).
+  delayed transition timed to pacman's arrival — eaten.
+
+Pressing → from step 2 mounts `claude-work`, whose window scale-in
+entrance carries the audience into the next beat.
 
 ### 4. `claude-work` — 6 steps
 
@@ -176,8 +175,9 @@ scene following the same aesthetic as the new ones.
 
 The closing hook. Pink ghost above the heading, two-line statement
 with "inspiration." in pink and "frustration." in yellow. No body
-paragraph — the heading is the whole message. Pacman + two ghosts
-in the bottom-right corner.
+paragraph — the heading is the whole message. Pacman + a single
+orange ghost in the bottom-right corner (the pink ghost that used to
+trail pacman was removed).
 
 ---
 

@@ -1249,11 +1249,12 @@ body {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
-/* Step 4: window scales down + fades out so the audience sees an explicit
-   disappear before the deck advances to claude-arrival. (Slack already
-   uses a fly-left exit; using scale-down here keeps each scene's exit
-   visually distinct.) */
-.jira[data-step="4"] .jira-window {
+/* Exit animation — runtime adds .is-exiting on the press that advances
+   past the last step, then waits `exitDuration` ms before the DOM swap
+   so the disappear plays out. The same press triggers claude-arrival's
+   pacman entrance, so jira fading down and the next scene starting
+   read as a single beat. */
+.jira.is-exiting .jira-window {
   transform: translate(-50%, -50%) scale(0.82);
   opacity: 0;
   transition: transform 0.5s cubic-bezier(.7, 0, .84, 0.2),
@@ -1674,7 +1675,6 @@ body {
   transition: top 0.8s ease-in-out, opacity 0.4s ease-out;
 }
 .claude-arrival[data-step="2"] .ca-pacman { top: 620px; }
-.claude-arrival[data-step="3"] .ca-pacman { top: 1100px; opacity: 0; }
 
 /* Rotate the pacman SVG itself from step 1+. The .half elements inside
    keep their own chomp animation transforms — those are on children,
@@ -1683,8 +1683,7 @@ body {
   transition: transform 0.5s ease-in-out;
 }
 .claude-arrival[data-step="1"] .ca-pacman .pacman,
-.claude-arrival[data-step="2"] .ca-pacman .pacman,
-.claude-arrival[data-step="3"] .ca-pacman .pacman {
+.claude-arrival[data-step="2"] .ca-pacman .pacman {
   transform: rotate(90deg);
 }
 
@@ -1709,8 +1708,7 @@ body {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
-.claude-arrival[data-step="2"] .ca-dots .ca-dot,
-.claude-arrival[data-step="3"] .ca-dots .ca-dot {
+.claude-arrival[data-step="2"] .ca-dots .ca-dot {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
@@ -1746,8 +1744,7 @@ body {
   transform: scale(1);
   opacity: 1;
 }
-.claude-arrival[data-step="2"] .ca-icon,
-.claude-arrival[data-step="3"] .ca-icon {
+.claude-arrival[data-step="2"] .ca-icon {
   transform: scale(0);
   opacity: 0;
   transition: transform 0.22s ease-in 0.55s, opacity 0.22s ease-in 0.55s;
@@ -1771,65 +1768,6 @@ body {
   white-space: nowrap;
 }
 
-/* --- Claude code window. Opens at step 2, on the same press that
-   pacman eats the icon. A 0.8s entrance delay lets the icon-shrink
-   land first (icon shrink runs at delay 0.55s + 0.22s duration), so
-   the window scales in cleanly into the vacated space. --- */
-.claude-arrival .window {
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
-}
-.claude-arrival[data-step="2"] .window,
-.claude-arrival[data-step="3"] .window {
-  transform: translate(-50%, -50%) scale(1);
-  opacity: 1;
-  transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1) 0.8s,
-              opacity 0.4s ease-out 0.8s;
-}
-
-/* --- Claude code splash content --- */
-.claude-arrival .ca-claude-body {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 30px;
-  padding: 40px;
-}
-.claude-arrival .ca-octopus {
-  width: 280px;
-  height: 220px;
-  filter: drop-shadow(0 8px 20px rgba(201, 123, 90, 0.4));
-}
-.claude-arrival .ca-octopus img {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-.claude-arrival .ca-claude-text { text-align: center; }
-.claude-arrival .ca-claude-text h2 {
-  font-size: 56px;
-  font-weight: 800;
-  margin: 0;
-  letter-spacing: -0.02em;
-  color: var(--offwhite);
-  font-family: "Söhne", sans-serif;
-}
-.claude-arrival .ca-claude-text p {
-  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.5);
-  margin: 12px 0 0;
-}
-.claude-arrival .ca-claude-text kbd {
-  background: rgba(255, 255, 255, 0.12);
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-family: inherit;
-  font-size: 14px;
-}
 
 /* =====================================================================
  * Scene: claude-work (6 steps)
@@ -1852,8 +1790,22 @@ body {
   background: var(--black);
 }
 
+/* Window scale-in entrance. Bare state is hidden (scale 0, opacity 0);
+   step 0+ snaps to the open state. The rAF-deferred data-step apply in
+   the runtime guarantees the browser sees the bare state first, so the
+   transition interpolates into step 0. */
 .cw .window {
-  /* match claude-arrival window position so the boundary cut is invisible */
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1),
+              opacity 0.4s ease-out;
+}
+.cw[data-step="0"] .window,
+.cw[data-step="1"] .window,
+.cw[data-step="2"] .window,
+.cw[data-step="3"] .window,
+.cw[data-step="4"] .window,
+.cw[data-step="5"] .window {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }

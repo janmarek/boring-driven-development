@@ -37,12 +37,29 @@ Four files do all the work:
   id: "kebab-case-id",         // used for URL hash + slide counter
   notes: "one-liner",          // optional, runtime ignores
   steps: 8,                    // optional, defaults to 1
+  exitDuration: 500,           // optional ms — see "Exit animations" below
   render: () => `<div class="scene my-scene">…</div>`,
   onStep: (root, step, prev) => {…} // optional, called on each step change
 }
 ```
 
 The returned root must have `class="scene"`. The runtime writes `data-step="N"` on it. Drive in-scene animation with CSS keyed off `data-step`.
+
+### Exit animations
+
+When a scene needs a visible disappear before the next scene mounts (e.g. the jira window scaling down on the press that advances to claude-arrival), declare `exitDuration` in ms. On `next()` past the last step, the runtime adds `.is-exiting` to the scene root, waits `exitDuration`, then swaps the DOM. Input is ignored during the wait so a rapid-fire press can't double-mount.
+
+Author the exit purely in CSS, scoped to `.is-exiting`:
+
+```css
+.jira.is-exiting .jira-window {
+  transform: translate(-50%, -50%) scale(0.82);
+  opacity: 0;
+  transition: transform 0.5s, opacity 0.45s;
+}
+```
+
+This avoids the "post-flight, nothing visible" problem you get from putting the exit in its own step — the HUD never shows an empty extra step, and the audience still sees the disappear.
 
 ### Mount + step lifecycle (important)
 

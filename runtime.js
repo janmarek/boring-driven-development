@@ -126,6 +126,12 @@ const counterEl = document.getElementById("counter");
 
 let sceneIndex = 0;
 let stepIndex = 0;
+// True between "user pressed → past the last step" and the next scene
+// being mounted. Used to play a scene's exit animation (declared via
+// `exitDuration` on the scene + `.is-exiting` in CSS) before the DOM
+// swap. Input is ignored during this window so a rapid-fire user can't
+// double-mount.
+let isAdvancing = false;
 
 function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
@@ -182,15 +188,31 @@ function applyStep(step) {
 }
 
 function next() {
+  if (isAdvancing) return;
   const scene = scenes[sceneIndex];
   if (stepIndex < stepsOf(scene) - 1) {
     applyStep(stepIndex + 1);
   } else if (sceneIndex < scenes.length - 1) {
-    mountScene(sceneIndex + 1, 0);
+    const exitMs = scene.exitDuration || 0;
+    if (exitMs > 0) {
+      // Run the scene's exit animation (CSS keyed off .is-exiting) and
+      // delay the DOM swap until it finishes. This lets a scene have a
+      // disappear animation without a dedicated "empty" exit step.
+      const root = stage.firstElementChild;
+      if (root) root.classList.add("is-exiting");
+      isAdvancing = true;
+      setTimeout(() => {
+        isAdvancing = false;
+        mountScene(sceneIndex + 1, 0);
+      }, exitMs);
+    } else {
+      mountScene(sceneIndex + 1, 0);
+    }
   }
 }
 
 function prev() {
+  if (isAdvancing) return;
   if (stepIndex > 0) {
     applyStep(stepIndex - 1);
   } else if (sceneIndex > 0) {
@@ -217,10 +239,12 @@ document.addEventListener("keydown", (e) => {
       break;
     case "Home":
       e.preventDefault();
+      isAdvancing = false;
       mountScene(0, 0);
       break;
     case "End":
       e.preventDefault();
+      isAdvancing = false;
       mountScene(scenes.length - 1, stepsOf(scenes[scenes.length - 1]) - 1);
       break;
   }
