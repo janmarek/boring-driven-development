@@ -168,13 +168,15 @@ const scenes = [
         <div class="map-grid"></div>
 
         <!-- Trail of pellets pacman will eat -->
-        <div class="trail-dot"></div>
-        <div class="trail-dot"></div>
-        <div class="trail-dot"></div>
-        <div class="trail-dot"></div>
-        <div class="trail-dot"></div>
-        <div class="trail-dot"></div>
-        <div class="trail-dot"></div>
+        <div class="trail">
+          <div class="trail-dot"></div>
+          <div class="trail-dot"></div>
+          <div class="trail-dot"></div>
+          <div class="trail-dot"></div>
+          <div class="trail-dot"></div>
+          <div class="trail-dot"></div>
+          <div class="trail-dot"></div>
+        </div>
 
         <!-- Slack icon target -->
         <div class="slack-icon">

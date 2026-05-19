@@ -1030,7 +1030,6 @@ body {
  */
 .slack-arrival {
   display: block;
-  position: relative;
   overflow: hidden;
   background: var(--black);
 }
@@ -1068,8 +1067,8 @@ body {
 .slack-arrival .trail-dot {
   position: absolute;
   top: 460px;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background: var(--offwhite);
   border-radius: 50%;
   transform: translate(-50%, -50%) scale(1);
@@ -1077,13 +1076,13 @@ body {
   transition: opacity 0.18s ease-out, transform 0.18s ease-out;
 }
 
-.slack-arrival .trail-dot:nth-child(1) { left: 220px; }
-.slack-arrival .trail-dot:nth-child(2) { left: 300px; }
-.slack-arrival .trail-dot:nth-child(3) { left: 380px; }
-.slack-arrival .trail-dot:nth-child(4) { left: 460px; }
-.slack-arrival .trail-dot:nth-child(5) { left: 540px; }
-.slack-arrival .trail-dot:nth-child(6) { left: 620px; }
-.slack-arrival .trail-dot:nth-child(7) { left: 700px; }
+.slack-arrival .trail .trail-dot:nth-child(1) { left: 240px; }
+.slack-arrival .trail .trail-dot:nth-child(2) { left: 320px; }
+.slack-arrival .trail .trail-dot:nth-child(3) { left: 400px; }
+.slack-arrival .trail .trail-dot:nth-child(4) { left: 480px; }
+.slack-arrival .trail .trail-dot:nth-child(5) { left: 560px; }
+.slack-arrival .trail .trail-dot:nth-child(6) { left: 640px; }
+.slack-arrival .trail .trail-dot:nth-child(7) { left: 720px; }
 
 /* When scene is at step 0+, each dot fades out in sequence as pacman passes */
 .slack-arrival[data-step="0"] .trail-dot,
@@ -1093,13 +1092,13 @@ body {
 .slack-arrival[data-step="4"] .trail-dot {
   animation: dot-eaten 0.22s ease-out forwards;
 }
-.slack-arrival[data-step] .trail-dot:nth-child(1) { animation-delay: 0.30s; }
-.slack-arrival[data-step] .trail-dot:nth-child(2) { animation-delay: 0.60s; }
-.slack-arrival[data-step] .trail-dot:nth-child(3) { animation-delay: 0.90s; }
-.slack-arrival[data-step] .trail-dot:nth-child(4) { animation-delay: 1.20s; }
-.slack-arrival[data-step] .trail-dot:nth-child(5) { animation-delay: 1.50s; }
-.slack-arrival[data-step] .trail-dot:nth-child(6) { animation-delay: 1.80s; }
-.slack-arrival[data-step] .trail-dot:nth-child(7) { animation-delay: 2.10s; }
+.slack-arrival[data-step] .trail .trail-dot:nth-child(1) { animation-delay: 0.35s; }
+.slack-arrival[data-step] .trail .trail-dot:nth-child(2) { animation-delay: 0.65s; }
+.slack-arrival[data-step] .trail .trail-dot:nth-child(3) { animation-delay: 0.95s; }
+.slack-arrival[data-step] .trail .trail-dot:nth-child(4) { animation-delay: 1.25s; }
+.slack-arrival[data-step] .trail .trail-dot:nth-child(5) { animation-delay: 1.55s; }
+.slack-arrival[data-step] .trail .trail-dot:nth-child(6) { animation-delay: 1.85s; }
+.slack-arrival[data-step] .trail .trail-dot:nth-child(7) { animation-delay: 2.15s; }
 
 @keyframes dot-eaten {
   to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
@@ -1113,39 +1112,30 @@ body {
   transform: translate(-50%, -50%);
   transition: left 2.4s cubic-bezier(.4, 0, .2, 1), opacity 0.5s ease-out, transform 0.5s ease-out;
 }
-.slack-arrival[data-step="0"] .traveler { left: 760px; }
-.slack-arrival[data-step="1"] .traveler { left: 760px; transition-duration: 0.4s; }
-.slack-arrival[data-step="2"] .traveler { left: 820px; transition-duration: 0.6s; }
+.slack-arrival[data-step="0"] .traveler { left: 820px; }
+.slack-arrival[data-step="1"] .traveler { left: 820px; transition-duration: 0.4s; }
+.slack-arrival[data-step="2"] .traveler { left: 960px; transition-duration: 0.7s; }
 .slack-arrival[data-step="3"] .traveler {
-  left: 1380px;
+  left: 1700px;
   transition-duration: 0.9s;
   opacity: 0;
 }
 .slack-arrival[data-step="4"] .traveler {
-  left: 1380px;
+  left: 1700px;
   opacity: 0;
 }
 
 /* Slack icon target — schematic Slack mark */
 .slack-arrival .slack-icon {
   position: absolute;
-  left: 900px;
+  left: 1180px;
   top: 460px;
-  width: 140px;
-  height: 140px;
-  transform: translate(-50%, -50%) scale(0.6);
-  opacity: 0;
-  transition: transform 0.7s cubic-bezier(.34, 1.56, .64, 1), opacity 0.5s ease-out;
-}
-.slack-arrival[data-step="0"] .slack-icon,
-.slack-arrival[data-step="1"] .slack-icon,
-.slack-arrival[data-step="2"] .slack-icon {
+  width: 160px;
+  height: 160px;
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-  transition-delay: 1.4s;
+  transition: transform 0.7s cubic-bezier(.34, 1.56, .64, 1), opacity 0.5s ease-out;
 }
-.slack-arrival[data-step="1"] .slack-icon,
-.slack-arrival[data-step="2"] .slack-icon { transition-delay: 0s; }
 .slack-arrival[data-step="3"] .slack-icon,
 .slack-arrival[data-step="4"] .slack-icon {
   transform: translate(-50%, -50%) scale(0);
@@ -1182,31 +1172,31 @@ body {
 /* Notification that pops out of the Slack icon for pacman to eat */
 .slack-arrival .notif-pellet {
   position: absolute;
-  left: 900px;
+  left: 1180px;
   top: 460px;
-  width: 54px;
-  height: 54px;
+  width: 64px;
+  height: 64px;
   background: var(--orange);
   color: white;
   border-radius: 50%;
   display: grid;
   place-items: center;
   font-weight: 700;
-  font-size: 24px;
+  font-size: 28px;
   transform: translate(-50%, -50%) scale(0);
-  box-shadow: 0 0 26px rgba(236, 90, 32, 0.7);
+  box-shadow: 0 0 28px rgba(236, 90, 32, 0.8);
   transition:
-    transform 0.45s cubic-bezier(.34, 1.7, .64, 1),
-    left 0.45s cubic-bezier(.34, 1.7, .64, 1);
+    transform 0.5s cubic-bezier(.34, 1.7, .64, 1),
+    left 0.5s cubic-bezier(.34, 1.7, .64, 1);
 }
 .slack-arrival[data-step="1"] .notif-pellet {
-  left: 820px;
+  left: 1000px;
   transform: translate(-50%, -50%) scale(1);
 }
 .slack-arrival[data-step="2"] .notif-pellet {
-  left: 820px;
+  left: 1000px;
   transform: translate(-50%, -50%) scale(0);
-  transition: transform 0.18s ease-in 0.42s;
+  transition: transform 0.2s ease-in 0.5s;
 }
 
 /* Schematic window — appears at step 3 */
