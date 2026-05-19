@@ -70,8 +70,7 @@ body {
   inset: 0;
   display: grid;
   place-items: center;
-  background:
-    radial-gradient(circle at 50% 50%, #161616 0%, #000 70%);
+  background: var(--black);
 }
 
 #stage {
@@ -81,8 +80,6 @@ body {
   transform-origin: center center;
   background: var(--black);
   overflow: hidden;
-  border-radius: 6px;
-  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
 }
 
 #hud {
@@ -122,34 +119,15 @@ body {
 /* --- Title scene --- */
 .title-scene {
   flex-direction: column;
-  gap: 40px;
-  padding: 80px 100px;
+  gap: 36px;
+  padding: 110px 100px 80px;
   text-align: left;
   align-items: flex-start;
-  justify-content: center;
-}
-
-.title-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 18px;
-  font-size: 18px;
-  font-weight: 500;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--yellow);
-}
-
-.title-eyebrow .dot {
-  width: 10px;
-  height: 10px;
-  background: var(--yellow);
-  border-radius: 50%;
-  box-shadow: 0 0 18px var(--yellow);
+  justify-content: flex-start;
 }
 
 .title-h1 {
-  font-size: 156px;
+  font-size: 168px;
   line-height: 0.92;
   font-weight: 800;
   letter-spacing: -0.04em;
@@ -182,22 +160,13 @@ body {
 }
 
 .title-author {
-  font-size: 22px;
+  font-size: 28px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-.title-author .small {
-  display: block;
-  font-size: 14px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
 
 .title-mews {
-  height: 28px;
+  height: 72px;
 }
 .title-mews img {
   height: 100%;
@@ -206,8 +175,8 @@ body {
 
 .title-dots {
   position: absolute;
-  right: 80px;
-  top: 90px;
+  right: 100px;
+  top: 140px;
   display: flex;
   align-items: center;
   gap: 26px;
@@ -337,13 +306,13 @@ body {
   clip-path: polygon(0 0, 100% 0, 100% 50%, 0 50%);
   border-top-left-radius: 100%;
   border-top-right-radius: 100%;
-  animation: chomp-top 0.36s ease-in-out infinite alternate;
+  animation: chomp-top 0.58s ease-in-out infinite alternate;
 }
 .pacman .half.bottom {
   clip-path: polygon(0 50%, 100% 50%, 100% 100%, 0 100%);
   border-bottom-left-radius: 100%;
   border-bottom-right-radius: 100%;
-  animation: chomp-bottom 0.36s ease-in-out infinite alternate;
+  animation: chomp-bottom 0.58s ease-in-out infinite alternate;
 }
 .pacman .eye {
   position: absolute;
@@ -1048,3 +1017,293 @@ body {
 
 /* --- Helpers --- */
 .row { display: flex; align-items: center; gap: 10px; }
+
+/* ===================================================
+ * Slack-arrival transition scene
+ * ===================================================
+ * 5 controllable beats:
+ *   data-step="0" → pacman traverses dots and arrives next to Slack icon
+ *   data-step="1" → notification badge pops on Slack icon
+ *   data-step="2" → pacman moves to icon, badge gets eaten
+ *   data-step="3" → Slack icon expands into a schematic window
+ *   data-step="4" → first message appears in the window
+ */
+.slack-arrival {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: var(--black);
+}
+
+/* Faint map grid for "this is a map" feel */
+.slack-arrival .map-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(240, 136, 216, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(240, 136, 216, 0.06) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: center;
+  pointer-events: none;
+}
+
+.slack-arrival .map-walls {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.45;
+}
+
+.slack-arrival .label {
+  position: absolute;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+  transform: translateX(-50%);
+}
+
+/* Trail of pellets pacman eats */
+.slack-arrival .trail-dot {
+  position: absolute;
+  top: 460px;
+  width: 18px;
+  height: 18px;
+  background: var(--offwhite);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+}
+
+.slack-arrival .trail-dot:nth-child(1) { left: 220px; }
+.slack-arrival .trail-dot:nth-child(2) { left: 300px; }
+.slack-arrival .trail-dot:nth-child(3) { left: 380px; }
+.slack-arrival .trail-dot:nth-child(4) { left: 460px; }
+.slack-arrival .trail-dot:nth-child(5) { left: 540px; }
+.slack-arrival .trail-dot:nth-child(6) { left: 620px; }
+.slack-arrival .trail-dot:nth-child(7) { left: 700px; }
+
+/* When scene is at step 0+, each dot fades out in sequence as pacman passes */
+.slack-arrival[data-step="0"] .trail-dot,
+.slack-arrival[data-step="1"] .trail-dot,
+.slack-arrival[data-step="2"] .trail-dot,
+.slack-arrival[data-step="3"] .trail-dot,
+.slack-arrival[data-step="4"] .trail-dot {
+  animation: dot-eaten 0.22s ease-out forwards;
+}
+.slack-arrival[data-step] .trail-dot:nth-child(1) { animation-delay: 0.30s; }
+.slack-arrival[data-step] .trail-dot:nth-child(2) { animation-delay: 0.60s; }
+.slack-arrival[data-step] .trail-dot:nth-child(3) { animation-delay: 0.90s; }
+.slack-arrival[data-step] .trail-dot:nth-child(4) { animation-delay: 1.20s; }
+.slack-arrival[data-step] .trail-dot:nth-child(5) { animation-delay: 1.50s; }
+.slack-arrival[data-step] .trail-dot:nth-child(6) { animation-delay: 1.80s; }
+.slack-arrival[data-step] .trail-dot:nth-child(7) { animation-delay: 2.10s; }
+
+@keyframes dot-eaten {
+  to { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+
+/* Pacman traveler */
+.slack-arrival .traveler {
+  position: absolute;
+  top: 460px;
+  left: 140px;
+  transform: translate(-50%, -50%);
+  transition: left 2.4s cubic-bezier(.4, 0, .2, 1), opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.slack-arrival[data-step="0"] .traveler { left: 760px; }
+.slack-arrival[data-step="1"] .traveler { left: 760px; transition-duration: 0.4s; }
+.slack-arrival[data-step="2"] .traveler { left: 820px; transition-duration: 0.6s; }
+.slack-arrival[data-step="3"] .traveler {
+  left: 1380px;
+  transition-duration: 0.9s;
+  opacity: 0;
+}
+.slack-arrival[data-step="4"] .traveler {
+  left: 1380px;
+  opacity: 0;
+}
+
+/* Slack icon target — schematic Slack mark */
+.slack-arrival .slack-icon {
+  position: absolute;
+  left: 900px;
+  top: 460px;
+  width: 140px;
+  height: 140px;
+  transform: translate(-50%, -50%) scale(0.6);
+  opacity: 0;
+  transition: transform 0.7s cubic-bezier(.34, 1.56, .64, 1), opacity 0.5s ease-out;
+}
+.slack-arrival[data-step="0"] .slack-icon,
+.slack-arrival[data-step="1"] .slack-icon,
+.slack-arrival[data-step="2"] .slack-icon {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  transition-delay: 1.4s;
+}
+.slack-arrival[data-step="1"] .slack-icon,
+.slack-arrival[data-step="2"] .slack-icon { transition-delay: 0s; }
+.slack-arrival[data-step="3"] .slack-icon,
+.slack-arrival[data-step="4"] .slack-icon {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+}
+
+.slack-arrival .slack-mark {
+  width: 100%;
+  height: 100%;
+  background: var(--offwhite);
+  border-radius: 28px;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+.slack-arrival .slack-mark svg {
+  width: 75%;
+  height: 75%;
+}
+
+.slack-arrival .slack-label {
+  position: absolute;
+  left: 50%;
+  bottom: -38px;
+  transform: translateX(-50%);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* Notification that pops out of the Slack icon for pacman to eat */
+.slack-arrival .notif-pellet {
+  position: absolute;
+  left: 900px;
+  top: 460px;
+  width: 54px;
+  height: 54px;
+  background: var(--orange);
+  color: white;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 24px;
+  transform: translate(-50%, -50%) scale(0);
+  box-shadow: 0 0 26px rgba(236, 90, 32, 0.7);
+  transition:
+    transform 0.45s cubic-bezier(.34, 1.7, .64, 1),
+    left 0.45s cubic-bezier(.34, 1.7, .64, 1);
+}
+.slack-arrival[data-step="1"] .notif-pellet {
+  left: 820px;
+  transform: translate(-50%, -50%) scale(1);
+}
+.slack-arrival[data-step="2"] .notif-pellet {
+  left: 820px;
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.18s ease-in 0.42s;
+}
+
+/* Schematic window — appears at step 3 */
+.slack-arrival .schematic-window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 920px;
+  height: 600px;
+  background: var(--offwhite);
+  border-radius: 24px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.slack-arrival[data-step="3"] .schematic-window,
+.slack-arrival[data-step="4"] .schematic-window {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.slack-arrival .sw-header {
+  height: 80px;
+  flex: 0 0 80px;
+  background: #3f0e40;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0 32px;
+  gap: 14px;
+  font-size: 24px;
+  font-weight: 700;
+}
+.slack-arrival .sw-hash {
+  font-size: 28px;
+  opacity: 0.85;
+}
+
+.slack-arrival .sw-body {
+  flex: 1;
+  padding: 28px 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  background: var(--offwhite);
+  color: #1d1c1d;
+}
+
+.slack-arrival .sw-msg {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.slack-arrival .sw-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: #d6d3cf;
+  flex-shrink: 0;
+}
+.slack-arrival .sw-bubble { flex: 1; }
+.slack-arrival .sw-line {
+  height: 12px;
+  border-radius: 6px;
+  background: #d6d3cf;
+  margin-top: 6px;
+}
+.slack-arrival .sw-line:first-child { margin-top: 0; }
+.slack-arrival .sw-line.short { width: 35%; }
+.slack-arrival .sw-line.mid { width: 60%; }
+
+.slack-arrival .new-msg {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s;
+}
+.slack-arrival[data-step="4"] .new-msg {
+  opacity: 1;
+  transform: translateY(0);
+}
+.slack-arrival .new-msg .sw-avatar {
+  background: var(--orange);
+}
+.slack-arrival .new-msg .sw-name {
+  font-weight: 700;
+  font-size: 17px;
+  color: #1d1c1d;
+  margin-bottom: 4px;
+}
+.slack-arrival .new-msg .sw-text {
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #1d1c1d;
+}
+.slack-arrival .new-msg .sw-text .emoji { font-size: 26px; }

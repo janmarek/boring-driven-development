@@ -6,6 +6,9 @@
 **Navigate:** `→` / `↓` / `Space` = forward · `←` / `↑` = back · `Home` / `End` = first / last
 **Click:** right half of screen = next, left half = previous
 
+Each scene may have multiple internal **steps**. Forward arrow walks through
+the steps inside a scene; once at the last step it jumps to the next scene.
+
 ---
 
 ## Talk abstract
@@ -29,140 +32,106 @@ what bores you.
 
 ## Scene list
 
-| # | id            | One-line description |
-|---|---------------|----------------------|
-| 1 | `title`       | Title card. Pacman chomping dots, presenter line, Mews wordmark. |
-| 2 | `abstract`    | The hook: frustration as a creative signal. |
-| 3 | `map`         | The feature lifecycle drawn as a Pac-Man maze; the apps are ghosts. |
-| 4 | `slack`       | Stage 1 — the request lands in `#product-feedback`. |
-| 5 | `jira-list`   | Stage 2a — the new ticket inside an ocean of backlog. |
-| 6 | `jira-create` | Stage 2b — writing the ticket. Boring form-fill. |
-| 7 | `claude`      | Stage 3 — Claude CLI does the implementation. |
-| 8 | `github`      | Stage 4 — the PR, opened and announced automatically. |
-| 9 | `outro`       | Takeaway: pay attention to what bores you. |
+| # | id              | steps | What happens |
+|---|-----------------|-------|--------------|
+| 1 | `title`         | 1     | Title card. |
+| 2 | `slack-arrival` | 5     | Pacman travels the map and lands on Slack → bug report appears. |
+| 3 | `abstract`      | 1     | (legacy) frustration-as-signal hook. |
+| 4 | `map`           | 1     | (legacy) lifecycle as a Pac-Man maze. |
+| 5 | `slack`         | 1     | (legacy) full Slack UI. To be replaced. |
+| 6 | `jira-list`     | 1     | (legacy) Jira backlog. To be replaced. |
+| 7 | `jira-create`   | 1     | (legacy) Jira create-issue form. To be replaced. |
+| 8 | `claude`        | 1     | (legacy) Claude CLI. To be replaced. |
+| 9 | `github`        | 1     | (legacy) GitHub PR. To be replaced. |
+| 10 | `outro`        | 1     | (legacy) takeaway. |
+
+Legacy scenes are kept in the array so Jan can revisit them when redesigning
+their replacements.
 
 ---
 
 ## Scenes — detail
 
-### 1. `title`
+### 1. `title` — 1 step
 
 Opening card.
 
-- Eyebrow line: "A talk by Jan Marek"
-- Big yellow-and-white title: **BORING DRIVEN DEVELOPMENT**
-- Tagline: "Let your laziness and frustration guide your creativity in AI workflows."
-- Pacman chomping a row of pellets in the top-right.
-- Footer: speaker name (left), Mews wordmark (right).
+- Big yellow-and-white title: **BORING DRIVEN DEVELOPMENT** (top-left, very large).
+- Tagline below: "Let your laziness and frustration guide your creativity in AI workflows."
+- Pacman + 4 pellets in the upper-right corner.
+- Footer: "Jan Marek" (left), Mews wordmark (right, large).
 
-### 2. `abstract`
+### 2. `slack-arrival` — 5 steps
 
-The hook. Sets up the rest of the talk.
+Map-traversal transition from title into the start of the lifecycle.
+Every beat is advanced by `→`.
 
-- Kicker: "The idea"
-- Headline: "Creativity in engineering doesn't always start with inspiration. Sometimes it starts with *frustration.*"
-- Body: "What you don't feel like doing is your best signal for where to improve."
-- Decoration: two ghosts being chased by Pacman in the bottom-right.
+- **Step 0** — Pacman starts at the left, travels right along a row of pellets,
+  eating them in sequence. The Slack icon scales in at the center as Pacman
+  arrives next to it.
+- **Step 1** — A red notification badge ("1") pops onto the Slack icon.
+- **Step 2** — Pacman moves the last short distance into the icon and "eats"
+  the badge — the badge disappears just as Pacman arrives.
+- **Step 3** — Slack icon expands into a schematic Slack window
+  (`#product-feedback` header, simplified message placeholders).
+- **Step 4** — A new message appears in the window: **Petr · PM** — _"hey,
+  found a bug 🐛 — the tax field disappears on second submit."_
 
-### 3. `map`
+Each step is reversible with `←`.
 
-The metaphor in one image. The full lifecycle as a Pac-Man maze.
+### 3. `abstract` — _(legacy, 1 step)_
 
-- Title: "The lifecycle of a feature"
-- Maze drawn in Mews pink, with off-white dots and yellow power pellets.
-- Pacman (you) starts top-left.
-- Four ghosts mid-maze, each labelled with a stage: **Slack → Jira → Claude → GitHub**.
-- Subtitles above each ghost: thread → ticket → code → PR.
+The hook. Frustration as a creative signal. Kept from v1 for reuse.
 
-### 4. `slack`
+### 4. `map` — _(legacy, 1 step)_
 
-The request lands in Slack. We see the trigger — somebody asking for a feature.
+Full lifecycle as a Pac-Man maze with the apps drawn as ghosts. Kept from v1
+for reuse.
 
-- Window chrome with traffic-light buttons.
-- Sidebar with channels, `#product-feedback` highlighted.
-- Thread:
-  - **Petr (PM):** "Guests keep asking for a way to split a bill across multiple cards…"
-  - **Mara (Design):** "+1, third time this month. I have rough flows already."
-  - **Jirka (Eng):** "Sounds like a ticket. @jan can you write it up?"
-  - **Jan (me):** "…ugh, fine."
-- Empty message box at the bottom.
+### 5. `slack` — _(legacy, 1 step, to be replaced)_
 
-This is the "I don't want to do this" moment.
+Full Slack UI mock with a thread. To be reworked into a schematic version
+in step with the new `slack-arrival` aesthetic.
 
-### 5. `jira-list`
+### 6. `jira-list` · 7. `jira-create` · 8. `claude` · 9. `github` — _(legacy)_
 
-We open Jira and see why no one wants to write tickets — there are 247 of them.
+Detailed app mocks from v1. Each will be replaced by a schematic counterpart
+that follows the same transition flow Jan is building scene-by-scene.
 
-- Jira top bar with logo and breadcrumb (`Projects / Growth / Backlog`).
-- Backlog list with 8 sample issues.
-- The new one (GRW-1405 — "Split bill across multiple cards") is highlighted in blue
-  with an orange marker — that's *our* ticket.
+### 10. `outro` — _(legacy, 1 step)_
 
-### 6. `jira-create`
-
-The actual ticket-creation form. The slow part.
-
-- Standard Jira modal: Project, Issue type, Summary, Description, Budget, R&D team.
-- The Summary and Description show typed-in content with a blinking caret.
-- All the boilerplate fields a Mews ticket needs.
-
-### 7. `claude`
-
-Implementation, by Claude.
-
-- Terminal window, claude-orange octopus mark, "claude code · v1.0" status bar.
-- Lines of tool calls: `Read`, `Grep`, `Edit`, `Edit` — Claude navigating the codebase.
-- Success line: ✓ Implemented multi-card split. Tests added. Branch ready.
-- A new prompt being typed: `open a draft PR and tag the payments team`.
-
-### 8. `github`
-
-PR opened, reviewers tagged, announcement back in Slack — all automatically.
-
-- GitHub topbar (black, Octocat mark, search).
-- Repo header: `mews / mews-pms`, Pull requests tab active.
-- PR title: **feat(payments): split bill across multiple cards #4821**
-- "Open" badge in green.
-- A short diff of `src/Payments/SplitPaymentBuilder.cs`.
-- A `claude-bot` comment: linked the Jira ticket, generated the PR description,
-  posted a summary to `#product-feedback`, tagged `@payments-team`.
-
-### 9. `outro`
-
-The single sentence to take home.
-
-- Tag: "The takeaway"
-- Headline: **Pay attention to what bores you.**
-- Subtitle: "That's where the next workflow is hiding."
-- Footer: little Pacman + "Jan Marek · Mews · @janmarek"
+Takeaway slide. Will be revisited at the end.
 
 ---
 
-## Notes for adding scenes
+## How a scene is defined
 
-Each scene lives in `script.js` as one object in the `scenes` array:
+Each scene is an object in the `scenes` array inside `script.js`:
 
 ```js
 {
   id: "kebab-case-id",         // appears in URL hash + slide counter
   notes: "one-liner for me",   // optional, ignored at runtime
-  render: () => `<div class="scene">…</div>`,
+  steps: 5,                    // optional, defaults to 1
+  render: () => `<div class="scene …">…</div>`,
+  // optional: onStep(rootEl, stepIndex, prevStepIndex) → run JS per beat
 }
 ```
 
-- Always return a root element with `class="scene"` so it fills the stage.
-- The runtime catches render errors and shows a fallback — navigation never breaks.
-- Use the helpers at the top of `script.js`: `pacman()`, `ghost()`, `mazeSVG`,
-  `claudeOctopus`.
-- App-window scenes follow the same pattern:
-  ```html
-  <div class="app-window">
-    <div class="app-titlebar">…</div>
-    <div class="app-body …">…content…</div>
-  </div>
+- The root element must have `class="scene"`. Anything else is up to the scene.
+- The runtime writes `data-step="N"` on the root. CSS keys off that:
+  ```css
+  .my-scene[data-step="2"] .thing { transform: …; }
   ```
-- Brand palette is in CSS custom properties: `--pink --orange --yellow --ecru --blue
-  --mauve --offwhite --black`.
+- On initial mount of a scene, `data-step` is applied on the next animation
+  frame so CSS transitions interpolate from a clean "before" state into
+  step 0. Define the "before" state as the bare element rules and the
+  "step 0" state in the `[data-step="0"]` selector.
+- Use `transition` (not `animation`) on properties that should move forward
+  AND back as the user navigates with arrow keys. Reserve `@keyframes` for
+  one-shot effects (like a pellet being eaten) that don't need to rewind.
+- Shared helpers in `script.js`: `pacman(dir, size)`, `ghost(color, label, size)`,
+  `mazeSVG`, `claudeOctopus`, `slackMarkSVG`.
 
 ---
 
@@ -170,10 +139,11 @@ Each scene lives in `script.js` as one object in the `scenes` array:
 
 - `MEWS_WORDMARK_WHITE.png` — Mews logo, used in the title slide footer.
 - `fonts/Söhne-*.otf` — primary typeface, mapped to weights 400–800 in `styles.css`.
+- `Screenshot 2026-05-19 at 21.18.13.png` — Mews brand palette reference.
 
-## Things we might need later
+## Things we might want later
 
-- A screenshot of the real Claude CLI splash (currently faked in CSS/SVG).
-- A real Slack-style emoji/reaction set if we want to add reactions.
-- Actual screenshots of Jira / GitHub if we want pixel-accurate frames instead of
-  the simplified versions.
+- Real screenshots of Jira / GitHub if pixel-accurate frames are needed
+  instead of schematic versions.
+- A proper Slack-style emoji/reaction set.
+- A Claude CLI splash captured from the real terminal.

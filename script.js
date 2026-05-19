@@ -40,6 +40,22 @@ const ghost = (color, label = "", size = 70) => `
   </div>
 `;
 
+const slackMarkSVG = `
+  <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <g>
+      <rect x="20" y="6"  width="6" height="22" rx="3" fill="#e01e5a"/>
+      <rect x="32" y="32" width="6" height="22" rx="3" fill="#e01e5a"/>
+      <rect x="32" y="20" width="22" height="6" rx="3" fill="#ecb22e"/>
+      <rect x="6"  y="32" width="22" height="6" rx="3" fill="#ecb22e"/>
+      <rect x="32" y="20" width="6" height="6"  rx="3" fill="#2eb67d"/>
+      <rect x="6"  y="20" width="6" height="6"  rx="3" fill="#36c5f0"/>
+      <rect x="20" y="6"  width="6" height="6"  rx="3" fill="#ecb22e"/>
+      <rect x="20" y="48" width="6" height="6"  rx="3" fill="#2eb67d"/>
+      <rect x="48" y="20" width="6" height="6"  rx="3" fill="#36c5f0"/>
+    </g>
+  </svg>
+`;
+
 const claudeOctopus = `
   <svg class="claude-logo-svg" viewBox="0 0 64 64" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <path d="M32 6c-9.4 0-17 7.2-17 16.1v9.5c0 .9-.4 1.7-1.1 2.3l-3.2 2.6c-.9.7-.5 2.1.6 2.3l3.5.6c.9.2 1.5.9 1.6 1.8.6 5.2 5 9.3 10.4 9.3 1.2 0 2.4-.2 3.4-.6.6-.2 1.2-.2 1.7 0 1.1.4 2.2.6 3.4.6 5.4 0 9.8-4.1 10.4-9.3.1-.9.7-1.6 1.6-1.8l3.5-.6c1.1-.2 1.5-1.6.6-2.3l-3.2-2.6c-.7-.6-1.1-1.4-1.1-2.3v-9.5C49 13.2 41.4 6 32 6z"/>
@@ -116,7 +132,6 @@ const scenes = [
     notes: "Title card. Set the tone.",
     render: () => `
       <div class="scene title-scene">
-        <div class="title-eyebrow"><span class="dot"></span> A talk by Jan Marek</div>
         <h1 class="title-h1">
           Boring<br/>Driven<br/>
           <span class="accent">Development</span>
@@ -133,10 +148,7 @@ const scenes = [
           <div class="pellet"></div>
         </div>
         <div class="title-footer">
-          <div class="title-author">
-            <span class="small">Speaker</span>
-            Jan Marek
-          </div>
+          <div class="title-author">Jan Marek</div>
           <div class="title-mews">
             <img src="MEWS_WORDMARK_WHITE.png" alt="Mews"/>
           </div>
@@ -145,7 +157,73 @@ const scenes = [
     `,
   },
 
-  // 2 — Abstract / hook
+  // 2 — Transition: pacman travels on the map and arrives at Slack
+  {
+    id: "slack-arrival",
+    notes:
+      "Map-traversal transition. 5 controllable beats: travel → notification → eat → window opens → bug message.",
+    steps: 5,
+    render: () => `
+      <div class="scene slack-arrival">
+        <div class="map-grid"></div>
+
+        <!-- Trail of pellets pacman will eat -->
+        <div class="trail-dot"></div>
+        <div class="trail-dot"></div>
+        <div class="trail-dot"></div>
+        <div class="trail-dot"></div>
+        <div class="trail-dot"></div>
+        <div class="trail-dot"></div>
+        <div class="trail-dot"></div>
+
+        <!-- Slack icon target -->
+        <div class="slack-icon">
+          <div class="slack-mark">${slackMarkSVG}</div>
+          <div class="slack-label">slack</div>
+        </div>
+
+        <!-- Notification that pops out of the Slack icon -->
+        <div class="notif-pellet">1</div>
+
+        <!-- Schematic window that opens at step 3 -->
+        <div class="schematic-window">
+          <div class="sw-header">
+            <span class="sw-hash">#</span>
+            <span>product-feedback</span>
+          </div>
+          <div class="sw-body">
+            <div class="sw-msg">
+              <div class="sw-avatar"></div>
+              <div class="sw-bubble">
+                <div class="sw-line"></div>
+                <div class="sw-line mid"></div>
+              </div>
+            </div>
+            <div class="sw-msg">
+              <div class="sw-avatar"></div>
+              <div class="sw-bubble">
+                <div class="sw-line short"></div>
+              </div>
+            </div>
+            <div class="sw-msg new-msg">
+              <div class="sw-avatar"></div>
+              <div class="sw-bubble">
+                <div class="sw-name">Petr · PM</div>
+                <div class="sw-text">
+                  hey, found a bug <span class="emoji">🐛</span> — the tax field disappears on second submit.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pacman traveler -->
+        <div class="traveler">${pacman("right", 72)}</div>
+      </div>
+    `,
+  },
+
+  // 3 — Abstract / hook
   {
     id: "abstract",
     notes: "The core idea. Frustration as a signal.",
@@ -544,18 +622,41 @@ const scenes = [
 ];
 
 // ---------------------- Runtime ----------------------
+//
+// Navigation model: (sceneIndex, stepIndex).
+// → advances step within scene; at last step, jumps to next scene step 0.
+// ← reverse.
+//
+// CSS hooks: the scene root carries `data-step="N"`. To let scenes animate
+// from a clean "before" state into step 0 on first mount, data-step is set
+// in the next animation frame after the HTML is inserted (so transitions
+// have a starting style to interpolate from).
 
 const stage = document.getElementById("stage");
 const counterEl = document.getElementById("counter");
-let index = 0;
 
-function clamp(n) {
-  return Math.max(0, Math.min(scenes.length - 1, n));
+let sceneIndex = 0;
+let stepIndex = 0;
+
+function clamp(n, min, max) {
+  return Math.max(min, Math.min(max, n));
 }
 
-function renderScene(i) {
-  index = clamp(i);
-  const scene = scenes[index];
+function stepsOf(scene) {
+  return Math.max(1, scene.steps || 1);
+}
+
+function updateHud(scene) {
+  const total = stepsOf(scene);
+  const stepSuffix = total > 1 ? ` · step ${stepIndex + 1}/${total}` : "";
+  counterEl.textContent = `${sceneIndex + 1} / ${scenes.length} · ${scene.id}${stepSuffix}`;
+}
+
+function mountScene(i, step = 0) {
+  sceneIndex = clamp(i, 0, scenes.length - 1);
+  const scene = scenes[sceneIndex];
+  stepIndex = clamp(step, 0, stepsOf(scene) - 1);
+
   let html = "";
   try {
     html = scene.render();
@@ -564,14 +665,51 @@ function renderScene(i) {
     html = `<div class="scene"><div class="scene-fallback">Scene "${scene && scene.id}" failed to render — press → to continue.</div></div>`;
   }
   stage.innerHTML = html;
-  counterEl.textContent = `${index + 1} / ${scenes.length} · ${scene.id}`;
-  try {
-    history.replaceState(null, "", `#${scene.id}`);
-  } catch (_) {}
+  const root = stage.firstElementChild;
+
+  // Apply data-step on next frame so transitions interpolate from the
+  // pre-step default state into the step-0 state.
+  requestAnimationFrame(() => {
+    if (!root || !root.isConnected) return;
+    root.dataset.step = String(stepIndex);
+    if (typeof scene.onStep === "function") {
+      try { scene.onStep(root, stepIndex, -1); } catch (e) { console.error(e); }
+    }
+  });
+
+  updateHud(scene);
+  try { history.replaceState(null, "", `#${scene.id}`); } catch (_) {}
 }
 
-function next() { renderScene(index + 1); }
-function prev() { renderScene(index - 1); }
+function applyStep(step) {
+  const scene = scenes[sceneIndex];
+  const prev = stepIndex;
+  stepIndex = clamp(step, 0, stepsOf(scene) - 1);
+  const root = stage.firstElementChild;
+  if (root) root.dataset.step = String(stepIndex);
+  if (typeof scene.onStep === "function") {
+    try { scene.onStep(root, stepIndex, prev); } catch (e) { console.error(e); }
+  }
+  updateHud(scene);
+}
+
+function next() {
+  const scene = scenes[sceneIndex];
+  if (stepIndex < stepsOf(scene) - 1) {
+    applyStep(stepIndex + 1);
+  } else if (sceneIndex < scenes.length - 1) {
+    mountScene(sceneIndex + 1, 0);
+  }
+}
+
+function prev() {
+  if (stepIndex > 0) {
+    applyStep(stepIndex - 1);
+  } else if (sceneIndex > 0) {
+    const target = scenes[sceneIndex - 1];
+    mountScene(sceneIndex - 1, stepsOf(target) - 1);
+  }
+}
 
 document.addEventListener("keydown", (e) => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
@@ -591,16 +729,15 @@ document.addEventListener("keydown", (e) => {
       break;
     case "Home":
       e.preventDefault();
-      renderScene(0);
+      mountScene(0, 0);
       break;
     case "End":
       e.preventDefault();
-      renderScene(scenes.length - 1);
+      mountScene(scenes.length - 1, stepsOf(scenes[scenes.length - 1]) - 1);
       break;
   }
 });
 
-// Click forward / right side, back / left side — works on touch too
 document.addEventListener("click", (e) => {
   if (e.target.closest("a,button,input,textarea")) return;
   const x = e.clientX / window.innerWidth;
@@ -608,7 +745,6 @@ document.addEventListener("click", (e) => {
   else prev();
 });
 
-// Responsive scaling
 function fit() {
   const pad = 40;
   const sw = (window.innerWidth - pad) / STAGE_W;
@@ -619,7 +755,14 @@ function fit() {
 window.addEventListener("resize", fit);
 fit();
 
-// Initial render — honour hash if present
-const initialId = location.hash.slice(1);
+// Initial mount — honour hash if present (`#scene-id` or `#scene-id/step`)
+const hash = location.hash.slice(1);
+let initialId = hash;
+let initialStep = 0;
+if (hash.includes("/")) {
+  const [id, st] = hash.split("/");
+  initialId = id;
+  initialStep = parseInt(st, 10) || 0;
+}
 const initialIndex = scenes.findIndex((s) => s.id === initialId);
-renderScene(initialIndex >= 0 ? initialIndex : 0);
+mountScene(initialIndex >= 0 ? initialIndex : 0, initialStep);

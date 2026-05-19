@@ -34,21 +34,38 @@ Scenes are objects in the `scenes` array in `script.js`:
 {
   id: "kebab-case-id",         // used for hash + slide counter
   notes: "one-liner",          // optional, runtime ignores it
+  steps: 5,                    // optional, defaults to 1
   render: () => `<div class="scene">…</div>`,
+  onStep: (root, step, prev) => { … } // optional, called on each step change
 }
 ```
 
 Rules:
-- The returned root must have `class="scene"` (it's positioned absolute, fills the stage).
-- Use the shared helpers near the top of `script.js`: `pacman(dir, size)`, `ghost(color, label, size)`, `mazeSVG`, `claudeOctopus`. Don't reinvent them.
-- App-window scenes (Slack/Jira/Claude/GitHub) follow this pattern:
+- The returned root must have `class="scene"` (positioned absolute, fills the stage).
+- A scene can have multiple **steps**. The runtime navigates step-by-step within
+  a scene before advancing to the next scene. The current step is exposed via a
+  `data-step="N"` attribute on the scene root. Drive in-scene animation with CSS:
+  ```css
+  .my-scene[data-step="2"] .thing { transform: scale(1); }
+  ```
+- On first mount of a scene, `data-step` is set on the next animation frame so
+  CSS `transition`s interpolate from the bare element rules ("before" state) into
+  the step-0 state. Define the bare rules as your initial state.
+- Prefer `transition` over `@keyframes` for things that should reverse cleanly when
+  the user navigates backward. Use `@keyframes` only for one-shot effects (e.g. a
+  pellet being eaten) that don't need to rewind.
+- Shared helpers near the top of `script.js`: `pacman(dir, size)`, `ghost(color, label, size)`,
+  `mazeSVG`, `claudeOctopus`, `slackMarkSVG`. Reuse them.
+- Legacy app-window scenes (Slack/Jira/Claude/GitHub from v1) use this pattern:
   ```html
   <div class="app-window">
     <div class="app-titlebar">…</div>
     <div class="app-body …">…</div>
   </div>
   ```
-- Whenever you add, remove, or rename a scene, update `presentation.md` to match. The two are intended to stay in sync — `presentation.md` is the human-readable spec, `script.js` is its implementation.
+- Whenever you add, remove, rename, or restructure a scene, update `presentation.md`
+  to match. `presentation.md` is the human-readable spec, `script.js` is its
+  implementation — they must stay in sync.
 
 ### Brand system
 
@@ -72,5 +89,5 @@ Screenshot ….png    reference: Mews brand palette
 
 - **Stage is 1600×900, not responsive.** Don't introduce media queries for breakpoint-style layouts inside scenes. The whole stage is scaled uniformly by JS.
 - **No frameworks.** Don't add React/Vue/build tooling. The "no build, just open in browser" property is a feature.
-- **Interactive sub-steps inside a scene** are not yet implemented. If a scene needs multiple progression steps (e.g. type → submit → response), discuss the model with the user before adding — it changes the navigation contract.
+- **Each beat the user controls is a step.** When a scene has internal animation that should be paced by the speaker (pacman moving, an icon appearing, a message arriving), each beat becomes a `step`. Don't auto-chain beats — the talk's whole feel depends on the speaker pressing → when they're ready.
 - The parent `/Users/janmarek/projects/CLAUDE.md` applies to a multi-repo workspace and is not relevant inside this directory.
