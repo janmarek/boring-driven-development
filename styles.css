@@ -116,6 +116,189 @@ body {
   font-size: 24px;
 }
 
+/* =====================================================================
+ * Reusable .window pattern
+ *
+ * Every "app window" in the deck (slack, jira, claude code, vscode, …)
+ * shares the same recipe: two flush stacked elements (a header plate
+ * and a body plate) with one drop-shadow on the wrapper. The split is
+ * technical only — visually they form one continuous rounded window.
+ * Splitting avoids the WebKit antialiasing fringe that appears when an
+ * overflow:hidden + border-radius container clips two different-
+ * coloured children.
+ *
+ * Two header styles (apply to .window-header):
+ *   .window-header--bold   big colored bar (slack channel, jira nav)
+ *   .window-header--frame  small mac-style titlebar with traffic lights
+ *
+ * Color themes (apply to .window parent — sets header + body palette):
+ *   .window-theme--violet    slack purple header / offwhite body
+ *   .window-theme--jira      atlassian blue header / offwhite body
+ *   .window-theme--terminal  dark gray body (claude code)
+ *   .window-theme--editor    vscode dark body
+ *
+ * Use the appWindow() helper in script.js to render the shell so the
+ * HTML stays consistent across scenes. Per-scene CSS drives entrance/
+ * exit transforms via [data-step] selectors (see the title and jira
+ * scenes for canonical usage).
+ * ===================================================================== */
+
+.window {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.55));
+  /* Per-scene CSS overrides the transition list for entrance/exit. */
+  transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1),
+              opacity 0.4s ease-out,
+              filter 0.4s ease-out;
+}
+
+.window-header {
+  flex: 0 0 auto;
+  border-radius: 24px 24px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.window-body {
+  flex: 1;
+  border-radius: 0 0 24px 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* --- Header variants --- */
+.window-header--bold {
+  height: 76px;
+  padding: 0 28px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.window-header--frame {
+  height: 40px;
+  padding: 0 16px;
+  background: #2a2a2e;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  gap: 10px;
+}
+.window-traffic {
+  display: flex;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.window-traffic span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  background: #555;
+}
+.window-traffic span:nth-child(1) { background: #ff5f57; }
+.window-traffic span:nth-child(2) { background: #febc2e; }
+.window-traffic span:nth-child(3) { background: #28c840; }
+.window-title {
+  flex: 1;
+  text-align: center;
+}
+
+/* --- Color themes --- */
+.window-theme--violet   > .window-header { background: #3f0e40; color: #fff; }
+.window-theme--violet   > .window-body   { background: var(--offwhite); color: #1d1c1d; }
+
+.window-theme--jira     > .window-header { background: #0747a6; color: #fff; }
+.window-theme--jira     > .window-body   { background: var(--offwhite); color: #172b4d; }
+
+.window-theme--terminal > .window-body   { background: #0a0a0a; color: #e6e6e6; font-family: "SF Mono", "JetBrains Mono", Menlo, monospace; }
+
+.window-theme--editor   > .window-body   { background: #1e1e1e; color: #d4d4d4; font-family: "SF Mono", "JetBrains Mono", Menlo, monospace; }
+
+/* =====================================================================
+ * Reusable .typewriter pattern
+ *
+ * Wrap text in .typewriter and the parent will reveal it one character
+ * at a time when the per-scene CSS drives its max-width via steps().
+ * Pair it with a .cursor sibling to get the blinking caret. The cursor
+ * is just inline-block, so it naturally follows the right edge of the
+ * .typewriter wrapper as the wrapper's max-width grows.
+ *
+ *   <span class="typewriter"><span>please create a ticket</span></span><span class="cursor"></span>
+ *
+ * Per-scene CSS to drive the reveal:
+ *   .my-scene[data-step="N"] .typewriter {
+ *     max-width: 32ch;
+ *     transition: max-width 1.8s steps(31, end);
+ *   }
+ *   .my-scene[data-step="N+1"] .typewriter { max-width: 0; } // reverse = delete
+ *
+ * Reverse-nav is clean: pressing ← from N+1 to N un-deletes the text;
+ * from N to N-1 un-types it. Both run as transitions in reverse.
+ * ===================================================================== */
+
+.typewriter {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: 0;
+  vertical-align: middle;
+  transition: max-width 0.3s steps(20, end);
+}
+.cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background: currentColor;
+  vertical-align: middle;
+  margin-left: 2px;
+  opacity: 0;
+  animation: blink 0.9s steps(1) infinite;
+  transition: opacity 0.2s ease-out;
+}
+.cursor.is-on { opacity: 1; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* =====================================================================
+ * Reusable .stagger-fill pattern
+ *
+ * Reveals direct children in sequence with per-:nth-child transition-
+ * delays — the "look at all this" beat from the jira create modal.
+ *
+ *   <div class="stagger-fill">
+ *     <div class="stagger-item">…</div>
+ *     <div class="stagger-item">…</div>
+ *     …
+ *   </div>
+ *
+ * Each .stagger-item starts hidden. The scene's per-step CSS activates
+ * the reveal by setting opacity/transform on the active step:
+ *
+ *   .my-scene[data-step="3"] .stagger-fill > .stagger-item {
+ *     opacity: 1; transform: translateY(0);
+ *   }
+ *
+ * Delays cap at 8 items; for more, override via inline style:
+ *   <div class="stagger-item" style="transition-delay: 2.5s">…</div>
+ * ===================================================================== */
+
+.stagger-item {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+.stagger-item:nth-child(1) { transition-delay: 0.10s; }
+.stagger-item:nth-child(2) { transition-delay: 0.40s; }
+.stagger-item:nth-child(3) { transition-delay: 0.70s; }
+.stagger-item:nth-child(4) { transition-delay: 1.00s; }
+.stagger-item:nth-child(5) { transition-delay: 1.30s; }
+.stagger-item:nth-child(6) { transition-delay: 1.60s; }
+.stagger-item:nth-child(7) { transition-delay: 1.90s; }
+.stagger-item:nth-child(8) { transition-delay: 2.20s; }
+
 /* --- Title scene --- */
 .title-scene {
   flex-direction: column;
@@ -1830,8 +2013,9 @@ body {
 
 .intro .intro-window .sw-send {
   flex: 0 0 60px;
-  width: 60px;
-  height: 60px;
+  /* No explicit height — align-items: stretch on .sw-composer makes
+     the button match the input's actual rendered height, which depends
+     on the input's font-size + padding + border (currently ~65px). */
   border: none;
   border-radius: 10px;
   background: #007a5a;
@@ -1941,46 +2125,84 @@ body {
   border-radius: 24px 24px 0 0;
   display: flex;
   align-items: center;
-  padding: 0 28px;
+  padding: 0 24px;
   gap: 20px;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 16px;
+  font-weight: 500;
 }
-.jira .jw-logo {
-  font-weight: 800;
-  font-size: 22px;
-  letter-spacing: -0.01em;
-  color: #fff;
+
+/* --- Left: Mews wordmark plate.
+   The wordmark PNG has wide transparent padding around the actual mark,
+   so a ~64px tall image only shows ~22px of visible logo. We size the
+   img in pixels directly because the PNG's natural dimensions are
+   large enough to ignore percentage-based constraints in some
+   contexts. */
+.jira .jw-mews {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
-  gap: 10px;
 }
-.jira .jw-logo svg {
-  width: 28px;
-  height: 28px;
+.jira .jw-mews img {
+  height: 64px;
+  width: auto;
   display: block;
-  color: #fff;
 }
-.jira .jw-crumbs {
+
+/* --- Centered fake search input --- */
+.jira .jw-search {
   flex: 1;
-  font-weight: 500;
-  color: rgba(255, 255, 255, 0.78);
-  font-size: 18px;
+  max-width: 480px;
+  margin: 0 auto;
+  height: 40px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
 }
+.jira .jw-search svg {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* --- Bigger, more prominent Create button --- */
 .jira .jw-create {
   background: #1d7afc;
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 15px;
-  font-weight: 600;
+  padding: 12px 22px;
+  font-size: 16px;
+  font-weight: 700;
   cursor: pointer;
+  transition: box-shadow 0.25s ease-out, transform 0.25s ease-out;
 }
 .jira[data-step="1"] .jw-create,
 .jira[data-step="2"] .jw-create,
 .jira[data-step="3"] .jw-create {
-  box-shadow: 0 0 0 4px rgba(29, 122, 252, 0.35);
+  box-shadow: 0 0 0 5px rgba(29, 122, 252, 0.4);
+}
+
+/* --- Right: fake circular profile avatar --- */
+.jira .jw-profile {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--orange);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.35);
 }
 
 .jira .jw-body {
@@ -1992,44 +2214,93 @@ body {
   overflow: hidden;
 }
 
-.jira .jw-list {
+.jira .jw-list-head {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 18px;
+  color: #172b4d;
 }
-.jira .jw-row {
-  display: grid;
-  grid-template-columns: 140px 1fr 130px;
-  gap: 24px;
-  align-items: center;
-  padding: 14px 18px;
+.jira .jw-list-head h2 {
+  font-size: 26px;
+  font-weight: 700;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+.jira .jw-meta {
+  color: #5e6c84;
+  font-size: 14px;
+}
+.jira .jw-table {
   background: #fff;
-  border: 1px solid #e3e1dc;
-  border-radius: 10px;
-  font-size: 16px;
+  border: 1px solid #dfe1e6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.jira .jw-trow {
+  display: grid;
+  grid-template-columns: 130px 1fr 130px 150px 110px;
+  gap: 18px;
+  padding: 14px 22px;
+  align-items: center;
+  font-size: 15px;
+  border-bottom: 1px solid #f0f1f4;
+  color: #172b4d;
+}
+.jira .jw-trow:last-child { border-bottom: none; }
+.jira .jw-thead {
+  background: #fafbfc;
+  color: #5e6c84;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.jira .jw-trow.is-highlight {
+  background: #e6f6ff;
+  position: relative;
+}
+.jira .jw-trow.is-highlight::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--orange);
 }
 .jira .jw-key {
   font-weight: 700;
   color: #0747a6;
   letter-spacing: -0.01em;
 }
-.jira .jw-summary {
-  height: 12px;
-  border-radius: 6px;
-  background: #d6d3cf;
+.jira .jw-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
 }
+.jira .jw-type-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+}
+.jira .jw-type-bug   { background: #e34935; border-radius: 50%; }
+.jira .jw-type-task  { background: #4bade8; border-radius: 3px; }
 .jira .jw-status {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 999px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   text-align: center;
   color: #fff;
 }
-.jira .jw-status.todo { background: #5e6c84; }
+.jira .jw-status.todo { background: #dfe1e6; color: #42526e; }
 .jira .jw-status.progress { background: #0052cc; }
 .jira .jw-status.review { background: #ff8b00; }
 .jira .jw-status.done { background: #36b37e; }

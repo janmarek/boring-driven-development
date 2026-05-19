@@ -243,30 +243,48 @@ const scenes = [
       <div class="scene jira">
         <div class="jira-window">
           <div class="jw-header">
-            <span class="jw-logo">${jiraMarkSVG}<span>Jira</span></span>
-            <span class="jw-crumbs">Growth · Backlog</span>
+            <div class="jw-mews">
+              <img src="MEWS_WORDMARK_WHITE.png" alt="Mews"/>
+            </div>
+            <div class="jw-search">
+              <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.6" fill="none"/>
+                <line x1="11" y1="11" x2="14" y2="14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <span>Search</span>
+            </div>
             <button class="jw-create">+ Create</button>
+            <div class="jw-profile">JM</div>
           </div>
           <div class="jw-body">
-            <div class="jw-list">
+            <div class="jw-list-head">
+              <h2>Backlog · 247 issues</h2>
+              <span class="jw-meta">Showing 8 of 247</span>
+            </div>
+            <div class="jw-table">
+              <div class="jw-trow jw-thead">
+                <div>Key</div><div>Summary</div><div>Type</div><div>Status</div><div>Assignee</div>
+              </div>
               ${[
-                ["GRW-1408", "todo", 70],
-                ["GRW-1407", "progress", 55],
-                ["GRW-1406", "review", 80],
-                ["GRW-1405", "todo", 45],
-                ["GRW-1404", "progress", 65],
-                ["GRW-1403", "todo", 50],
-                ["GRW-1402", "done", 75],
-                ["GRW-1401", "todo", 35],
+                ["GRW-1408", "Add CSV export for revenue report", "task", "todo", "—"],
+                ["GRW-1407", "Tax field disappears on second submit", "bug", "progress", "Karel"],
+                ["GRW-1406", "Welcome email link broken (German)", "bug", "review", "Mara"],
+                ["GRW-1405", "Split bill across multiple cards", "task", "todo", "Jan", true],
+                ["GRW-1404", "Refactor reservation hooks", "task", "progress", "Tom"],
+                ["GRW-1403", "Investigate timeout in checkout", "bug", "todo", "—"],
+                ["GRW-1402", "Translate onboarding screens", "task", "done", "Mara"],
+                ["GRW-1401", "Dark mode for Commander", "task", "todo", "—"],
               ]
                 .map(
-                  ([key, status, summaryWidth]) => `
-                    <div class="jw-row">
-                      <span class="jw-key">${key}</span>
-                      <span class="jw-summary" style="width:${summaryWidth}%"></span>
-                      <span class="jw-status ${status}">${
+                  ([key, sum, type, status, ass, highlight]) => `
+                    <div class="jw-trow ${highlight ? "is-highlight" : ""}">
+                      <div class="jw-key">${key}</div>
+                      <div>${sum}</div>
+                      <div class="jw-type"><span class="jw-type-icon jw-type-${type}"></span>${type === "bug" ? "Bug" : "Task"}</div>
+                      <div><span class="jw-status ${status}">${
                         { todo: "To Do", progress: "In Progress", review: "In Review", done: "Done" }[status]
-                      }</span>
+                      }</span></div>
+                      <div>${ass}</div>
                     </div>`
                 )
                 .join("")}
