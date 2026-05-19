@@ -15,8 +15,8 @@ The presentation MUST stay safe to drive forward live. Keep this in mind for eve
 - `→` / `↓` / `Space` / `PageDown` → next step (or next scene if at last step)
 - `←` / `↑` / `PageUp` → previous step (or previous scene)
 - `Home` / `End` → first / last
-- URL hash mirrors current scene id (e.g. `#title`) for deep-linking
-- **Keyboard only.** Click-to-advance was removed (iter 11) — Jan doesn't want stray clicks during the talk to skip a beat. Don't add a click handler back.
+- **Keyboard only.** Click-to-advance was removed in iter 11 — Jan doesn't want stray clicks during the talk to skip a beat. Don't add a click handler back.
+- **No URL hash sync** (also removed in iter 11). The deck always starts at scene 0, step 0 on refresh. Don't add hash deep-linking back unless explicitly asked.
 - Scene render is wrapped in try/catch — if a scene throws, a visible fallback is shown but navigation keeps working. Never bypass this safety net.
 
 ## Architecture

@@ -681,7 +681,6 @@ function mountScene(i, step = 0) {
   });
 
   updateHud(scene);
-  try { history.replaceState(null, "", `#${scene.id}`); } catch (_) {}
 }
 
 function applyStep(step) {
@@ -751,14 +750,5 @@ function fit() {
 window.addEventListener("resize", fit);
 fit();
 
-// Initial mount — honour hash if present (`#scene-id` or `#scene-id/step`)
-const hash = location.hash.slice(1);
-let initialId = hash;
-let initialStep = 0;
-if (hash.includes("/")) {
-  const [id, st] = hash.split("/");
-  initialId = id;
-  initialStep = parseInt(st, 10) || 0;
-}
-const initialIndex = scenes.findIndex((s) => s.id === initialId);
-mountScene(initialIndex >= 0 ? initialIndex : 0, initialStep);
+// Initial mount — always start at scene 0, step 0. No URL hash sync.
+mountScene(0, 0);
