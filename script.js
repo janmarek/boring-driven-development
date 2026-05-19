@@ -404,7 +404,163 @@ const scenes = [
     `,
   },
 
-  // 4 — Abstract / hook
+  // 4 — Claude at work in the terminal. Same window as claude-arrival.
+  //   0 — idle terminal with pixel-octopus mark + empty prompt
+  //   1 — MCP connection lines (/mcp atlassian connect → ✓ Connected)
+  //   2 — user prompt typewriter: "create a jira ticket for the tax
+  //       bug Petr reported in #product-feedback"
+  //   3 — claude works: Read slack thread → Call Atlassian.createJiraIssue
+  //       → ✗ Error: missing required fields (labels, team, …)
+  //   4 — user prompt typewriter: "create a skill from how you
+  //       learned creating jiras"
+  //   5 — ✓ Saved .claude/skills/jira-grw.md confirmation
+  {
+    id: "claude-work",
+    notes:
+      "Terminal flow: MCP → create-issue → error about missing required fields → ask for a skill → skill saved.",
+    steps: 6,
+    render: () => `
+      <div class="scene cw">
+        ${appWindow({
+          variant: "frame",
+          theme: "terminal",
+          title: "claude code",
+          width: 1280,
+          height: 760,
+          body: `
+            <div class="cw-screen">
+              <div class="cw-splash">
+                <img class="cw-mark" src="icons/pixel-octopus.svg" alt=""/>
+                <span class="cw-brand">claude</span>
+                <span class="cw-tip">tip: press <kbd>/</kbd> for commands</span>
+              </div>
+              <div class="cw-transcript">
+                <div class="cw-line cw-line-mcp1">› /mcp atlassian connect</div>
+                <div class="cw-line cw-line-mcp2"><span class="cw-ok">✓</span> Connected to atlassian-mcp — 7 tools available</div>
+
+                <div class="cw-line cw-line-p1">
+                  <span class="cw-arrow">›</span>
+                  <span class="typewriter cw-tw-1"><span>create a jira ticket for the tax bug Petr reported in #product-feedback</span></span>
+                </div>
+
+                <div class="cw-line cw-line-w1"><span class="tool">Read</span><span class="cw-muted">slack thread #product-feedback — Petr's bug message</span></div>
+                <div class="cw-line cw-line-w2"><span class="tool">Call</span><span class="cw-muted">Atlassian.createJiraIssue { project: "GRW", summary: "Tax field disappears…", type: "Bug" }</span></div>
+                <div class="cw-line cw-line-w3"><span class="cw-err">✗</span> <span class="cw-err-text">Error from atlassian-mcp · missing required fields:</span></div>
+                <div class="cw-line cw-line-w4 cw-indent"><span class="cw-err-text">labels · R&amp;D team · story points · description sections (What &amp; Why / Implementation / Acceptance)</span></div>
+
+                <div class="cw-line cw-line-p2">
+                  <span class="cw-arrow">›</span>
+                  <span class="typewriter cw-tw-2"><span>create a skill from how you learned creating jiras</span></span>
+                </div>
+
+                <div class="cw-line cw-line-s1"><span class="cw-ok">✓</span> Saved <code>.claude/skills/jira-grw.md</code></div>
+                <div class="cw-line cw-line-s2 cw-indent cw-muted">Use it next time — it'll fill the required fields and structure for you.</div>
+              </div>
+              <div class="cw-input">
+                <span class="cw-arrow">›</span>
+                <span class="cw-placeholder">Type a message…</span>
+                <span class="cursor is-on"></span>
+              </div>
+            </div>
+          `,
+        })}
+      </div>
+    `,
+  },
+
+  // 5 — Skill markdown opened in a VS Code-ish editor. The saved
+  //   .claude/skills/jira-grw.md the previous scene confirmed exists.
+  //   One step for now — speaker walks the audience through it.
+  {
+    id: "skill",
+    notes:
+      "VS Code editor showing the saved jira-grw skill: frontmatter (tools used, saved ids), When to use, required fields, description template.",
+    steps: 1,
+    render: () => `
+      <div class="scene skill">
+        ${appWindow({
+          variant: "frame",
+          theme: "editor",
+          title: "jira-grw.md — claude code",
+          width: 1300,
+          height: 780,
+          body: `
+            <div class="sk-editor">
+              <div class="sk-sidebar">
+                <div class="sk-side-header">Explorer</div>
+                <div class="sk-tree">
+                  <div class="sk-tree-folder">▾ .claude</div>
+                  <div class="sk-tree-folder sk-indent">▾ skills</div>
+                  <div class="sk-tree-file sk-indent-2 sk-active">jira-grw.md</div>
+                  <div class="sk-tree-folder">▸ src</div>
+                  <div class="sk-tree-folder">▸ tests</div>
+                  <div class="sk-tree-file">README.md</div>
+                  <div class="sk-tree-file">package.json</div>
+                </div>
+              </div>
+              <div class="sk-tabs">
+                <div class="sk-tab sk-active">jira-grw.md <span class="sk-x">×</span></div>
+              </div>
+              <div class="sk-code">
+                <div class="sk-gutter">
+                  ${Array.from({ length: 38 }, (_, i) => `<div>${i + 1}</div>`).join("")}
+                </div>
+                <div class="sk-content">
+                  <div class="sk-line"><span class="sk-meta">---</span></div>
+                  <div class="sk-line"><span class="sk-key">name</span>: jira-grw</div>
+                  <div class="sk-line"><span class="sk-key">description</span>: Create well-structured Jira issues in the <span class="sk-str">GRW</span> project with the required fields and Ecosystem Experience team practices.</div>
+                  <div class="sk-line"><span class="sk-key">allowed-tools</span>:</div>
+                  <div class="sk-line">  - Atlassian.createJiraIssue</div>
+                  <div class="sk-line">  - Atlassian.lookupJiraAccountId</div>
+                  <div class="sk-line">  - Atlassian.searchJiraIssuesUsingJql</div>
+                  <div class="sk-line"><span class="sk-key">references</span>:</div>
+                  <div class="sk-line">  <span class="sk-key">project_key</span>: <span class="sk-str">GRW</span></div>
+                  <div class="sk-line">  <span class="sk-key">default_team</span>: <span class="sk-str">Ecosystem Experience</span></div>
+                  <div class="sk-line">  <span class="sk-key">budget_options</span>: [<span class="sk-str">KTLO</span>, <span class="sk-str">Scale</span>, <span class="sk-str">Strategy</span>]</div>
+                  <div class="sk-line">  <span class="sk-key">jan_account_id</span>: <span class="sk-str">712020:e2c4f1bb…</span></div>
+                  <div class="sk-line"><span class="sk-meta">---</span></div>
+                  <div class="sk-line"></div>
+                  <div class="sk-line"><span class="sk-h1"># Jira GRW</span></div>
+                  <div class="sk-line"></div>
+                  <div class="sk-line"><span class="sk-h2">## When to use</span></div>
+                  <div class="sk-line">When the user asks to create a GRW ticket — "new GRW issue",</div>
+                  <div class="sk-line">"jira grw", "create a ticket for &lt;bug&gt;", etc.</div>
+                  <div class="sk-line"></div>
+                  <div class="sk-line"><span class="sk-h2">## Required fields</span></div>
+                  <div class="sk-line">- <span class="sk-em">Summary</span> — concise, imperative</div>
+                  <div class="sk-line">- <span class="sk-em">Issue type</span> — Bug | Task | Story</div>
+                  <div class="sk-line">- <span class="sk-em">R&amp;D team</span> — defaults to "Ecosystem Experience"</div>
+                  <div class="sk-line">- <span class="sk-em">Story points</span> — 1, 2, 3, 5, 8</div>
+                  <div class="sk-line">- <span class="sk-em">Labels</span> — at least one (e.g. payments, tax, bug-bash)</div>
+                  <div class="sk-line"></div>
+                  <div class="sk-line"><span class="sk-h2">## Description template</span></div>
+                  <div class="sk-line"><span class="sk-bold">**What &amp; Why**</span></div>
+                  <div class="sk-line">&lt;one-paragraph problem statement&gt;</div>
+                  <div class="sk-line"></div>
+                  <div class="sk-line"><span class="sk-bold">**Implementation suggestions**</span></div>
+                  <div class="sk-line">&lt;one-paragraph approach&gt;</div>
+                  <div class="sk-line"></div>
+                  <div class="sk-line"><span class="sk-bold">**Acceptance criteria**</span></div>
+                  <div class="sk-line">- …</div>
+                  <div class="sk-line">- …</div>
+                </div>
+              </div>
+              <div class="sk-statusbar">
+                <span>● main</span>
+                <span>UTF-8</span>
+                <span>LF</span>
+                <span>Markdown</span>
+                <span class="sk-spacer"></span>
+                <span>Ln 1, Col 1</span>
+              </div>
+            </div>
+          `,
+        })}
+      </div>
+    `,
+  },
+
+  // 6 — Abstract / hook
   {
     id: "abstract",
     notes: "The core idea. Frustration as a signal.",

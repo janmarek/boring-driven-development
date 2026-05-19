@@ -86,6 +86,9 @@ for (let i = 0; i < scenes.length; i++) {
     else if (s.id === "jira" && step === 2) wait = 1800;      // summary typewriter
     else if (s.id === "jira" && step === 3) wait = 4400;      // staggered field fills (last delay 3.80s + 0.3s anim)
     else if (s.id === "jira" && step === 4) wait = 1100;      // jira flies left
+    else if (s.id === "claude-work" && step === 2) wait = 2300;  // prompt 1 typewriter
+    else if (s.id === "claude-work" && step === 3) wait = 2000;  // tool calls + error stagger
+    else if (s.id === "claude-work" && step === 4) wait = 2000;  // prompt 2 typewriter
     await page.waitForTimeout(wait);
     const filename = `${String(i + 1).padStart(2, "0")}-${s.id}-step${step}.png`;
     await page.locator("#stage").screenshot({ path: join(shotDir, filename) });

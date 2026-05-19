@@ -32,18 +32,21 @@ what bores you.
 
 ## Scene list
 
-| #  | id            | steps | What happens |
-|----|---------------|-------|--------------|
-| 1  | `title`       | 13    | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window (two-card schematic) → bug report → composer+typing "please create a ticket in jira" → delete → claude appears → pacman eats claude → slack window flies left. One continuous scene. |
-| 2  | `jira`        | 5     | Schematic Jira backlog flies in → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, budget, labels, structured description) → window flies left. |
-| 3  | `abstract`    | 1     | (legacy) frustration-as-signal hook. |
-| 4  | `map`         | 1     | (legacy) lifecycle as a Pac-Man maze. |
-| 5  | `slack`       | 1     | (legacy) full Slack UI. To be replaced. |
-| 6  | `jira-list`   | 1     | (legacy) Jira backlog. To be replaced. |
-| 7  | `jira-create` | 1     | (legacy) Jira create-issue form. To be replaced. |
-| 8  | `claude`      | 1     | (legacy) Claude CLI. To be replaced. |
-| 9  | `github`      | 1     | (legacy) GitHub PR. To be replaced. |
-| 10 | `outro`       | 1     | (legacy) takeaway. |
+| #  | id              | steps | What happens |
+|----|-----------------|-------|--------------|
+| 1  | `title`         | 13    | Title → fade+center → Slack icon fades in → pacman eats dots → notification → eat → Slack window (two-card schematic) → bug report → composer+typing "please create a ticket in jira" → delete → claude appears → pacman eats claude → slack window flies left. |
+| 2  | `jira`          | 5     | Schematic Mews Jira: detailed backlog flies in (Mews toolbar + table) → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, label chips one-by-one, structured description) → window flies left. |
+| 3  | `claude-arrival`| 4     | Pacman center-top, rotates to face down, descends, eats Claude AI icon → Claude code window scales in (mac frame + terminal theme) with the pixel-octopus mascot and "claude" branding. |
+| 4  | `claude-work`   | 6     | Terminal flow: MCP connect → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
+| 5  | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-grw.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
+| 6  | `abstract`      | 1     | (legacy) frustration-as-signal hook. |
+| 7  | `map`           | 1     | (legacy) lifecycle as a Pac-Man maze. |
+| 8  | `slack`         | 1     | (legacy) full Slack UI. To be replaced. |
+| 9  | `jira-list`     | 1     | (legacy) Jira backlog. To be replaced. |
+| 10 | `jira-create`   | 1     | (legacy) Jira create-issue form. To be replaced. |
+| 11 | `claude`        | 1     | (legacy) Claude CLI. To be replaced. |
+| 12 | `github`        | 1     | (legacy) GitHub PR. To be replaced. |
+| 13 | `outro`         | 1     | (legacy) takeaway. |
 
 Legacy scenes are kept in the array so Jan can revisit them when redesigning
 their replacements.
@@ -113,26 +116,70 @@ Same two-card aesthetic (dark-navy header plate + offwhite body plate).
 - **Step 4** — Jira window flies left and disappears, same way the
   slack window leaves at title-step 12.
 
-### 3. `abstract` — _(legacy, 1 step)_
+### 3. `claude-arrival` — 4 steps
+
+Bridge scene from the jira backlog flying off to the Claude code splash.
+
+- **Step 0** — Pacman appears center-top of the stage, facing right.
+- **Step 1** — Pacman rotates 90° to face down. At the same time, a
+  Claude AI 4-petal burst icon scales in below center with a soft
+  orange glow.
+- **Step 2** — Pacman descends to the icon's position. The icon scales
+  out with a delayed transition timed to pacman's arrival — eaten.
+- **Step 3** — Claude code window scales in: mac titlebar with traffic
+  lights and "claude code" title, dark body, pixel-octopus mascot
+  prominent in the middle with the "claude · tip: press / for
+  commands" splash below.
+
+### 4. `claude-work` — 6 steps
+
+Same Claude code window, but now we drive it through the MCP flow that
+motivates the next beat.
+
+- **Step 0** — Idle terminal: pixel-octopus mark + "claude" brand on
+  one row at the top, empty prompt input at the bottom.
+- **Step 1** — `› /mcp atlassian connect` → ✓ Connected to atlassian-mcp.
+- **Step 2** — User prompt typewriter: _"create a jira ticket for the
+  tax bug Petr reported in #product-feedback"_.
+- **Step 3** — Claude works: `Read slack thread` → `Call
+  Atlassian.createJiraIssue { project: "GRW", … }` → ✗ Error: missing
+  required fields (labels / R&D team / story points / description
+  sections).
+- **Step 4** — User prompt typewriter: _"create a skill from how you
+  learned creating jiras"_.
+- **Step 5** — ✓ Saved `.claude/skills/jira-grw.md` · _"Use it next
+  time — it'll fill the required fields and structure for you."_
+
+### 5. `skill` — 1 step
+
+VS Code-ish editor showing the saved skill file. Frontmatter (`name`,
+`description`, `allowed-tools` including the Atlassian MCP calls used
+in the previous scene, and `references` with saved ids like the GRW
+project key, default R&D team, budget options, and Jan's Atlassian
+account id), then body sections: When to use / Required fields /
+Description template (the same What & Why / Implementation /
+Acceptance criteria structure the jira modal demanded).
+
+### 6. `abstract` — _(legacy, 1 step)_
 
 The hook. Frustration as a creative signal. Kept from v1 for reuse.
 
-### 4. `map` — _(legacy, 1 step)_
+### 7. `map` — _(legacy, 1 step)_
 
 Full lifecycle as a Pac-Man maze with the apps drawn as ghosts. Kept from v1
 for reuse.
 
-### 5. `slack` — _(legacy, 1 step, to be replaced)_
+### 8. `slack` — _(legacy, 1 step, to be replaced)_
 
 Full Slack UI mock with a thread. To be reworked into a schematic version
 matching the new title aesthetic.
 
-### 6. `jira-list` · 7. `jira-create` · 8. `claude` · 9. `github` — _(legacy)_
+### 9. `jira-list` · 10. `jira-create` · 11. `claude` · 12. `github` — _(legacy)_
 
 Detailed app mocks from v1. Each will be replaced by a schematic counterpart
 that follows the same transition flow Jan is building scene-by-scene.
 
-### 10. `outro` — _(legacy, 1 step)_
+### 13. `outro` — _(legacy, 1 step)_
 
 Takeaway slide. Will be revisited at the end.
 

@@ -2631,3 +2631,293 @@ body {
   font-family: inherit;
   font-size: 14px;
 }
+
+/* =====================================================================
+ * Scene: claude-work (6 steps)
+ *
+ *   0 — splash + empty prompt
+ *   1 — MCP connect lines appear
+ *   2 — user prompt typewriter (create jira ticket)
+ *   3 — tool-call lines + error
+ *   4 — user prompt typewriter (create skill)
+ *   5 — skill saved confirmation
+ *
+ * Lines default to opacity 0 / translateY(4px); per-step rules toggle
+ * them visible. Long-running typewriter prompts use the reusable
+ * .typewriter class — driven here by .cw-tw-1 / .cw-tw-2 step rules.
+ * ===================================================================== */
+
+.cw {
+  display: block;
+  overflow: hidden;
+  background: var(--black);
+}
+
+.cw .window {
+  /* match claude-arrival window position so the boundary cut is invisible */
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.cw .cw-screen {
+  height: 100%;
+  padding: 28px 36px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 15px;
+  line-height: 1.55;
+  color: #e6e6e6;
+}
+
+/* Compact splash header — small mark + brand + tip on one row */
+.cw .cw-splash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.cw .cw-mark {
+  width: 36px;
+  height: 30px;
+  display: block;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 6px rgba(201, 123, 90, 0.4));
+}
+.cw .cw-brand {
+  font-family: "Söhne", sans-serif;
+  font-weight: 800;
+  font-size: 22px;
+  color: var(--offwhite);
+  letter-spacing: -0.01em;
+}
+.cw .cw-tip { color: rgba(255, 255, 255, 0.4); font-size: 13px; }
+.cw .cw-tip kbd {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* Transcript flows down the middle */
+.cw .cw-transcript {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: hidden;
+}
+.cw .cw-line {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+.cw .cw-line.cw-indent { padding-left: 24px; }
+.cw .cw-muted { color: rgba(255, 255, 255, 0.5); }
+.cw .cw-ok   { color: #4cd97c; font-weight: 700; }
+.cw .cw-err  { color: #ff6f6f; font-weight: 700; }
+.cw .cw-err-text { color: #ffb1b1; }
+.cw .cw-arrow { color: var(--orange); font-weight: 700; margin-right: 8px; }
+.cw .tool {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: rgba(236, 90, 32, 0.18);
+  color: var(--orange);
+  font-size: 13px;
+  margin-right: 10px;
+}
+.cw code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--ecru);
+}
+
+/* Step gating — show lines as their step arrives */
+.cw[data-step="1"] .cw-line-mcp1, .cw[data-step="2"] .cw-line-mcp1,
+.cw[data-step="3"] .cw-line-mcp1, .cw[data-step="4"] .cw-line-mcp1,
+.cw[data-step="5"] .cw-line-mcp1 { opacity: 1; transform: translateY(0); }
+
+.cw[data-step="1"] .cw-line-mcp2, .cw[data-step="2"] .cw-line-mcp2,
+.cw[data-step="3"] .cw-line-mcp2, .cw[data-step="4"] .cw-line-mcp2,
+.cw[data-step="5"] .cw-line-mcp2 { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+
+.cw[data-step="2"] .cw-line-p1, .cw[data-step="3"] .cw-line-p1,
+.cw[data-step="4"] .cw-line-p1, .cw[data-step="5"] .cw-line-p1 { opacity: 1; transform: translateY(0); }
+
+.cw[data-step="3"] .cw-line-w1, .cw[data-step="4"] .cw-line-w1, .cw[data-step="5"] .cw-line-w1 { opacity: 1; transform: translateY(0); }
+.cw[data-step="3"] .cw-line-w2, .cw[data-step="4"] .cw-line-w2, .cw[data-step="5"] .cw-line-w2 { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+.cw[data-step="3"] .cw-line-w3, .cw[data-step="4"] .cw-line-w3, .cw[data-step="5"] .cw-line-w3 { opacity: 1; transform: translateY(0); transition-delay: 1.0s; }
+.cw[data-step="3"] .cw-line-w4, .cw[data-step="4"] .cw-line-w4, .cw[data-step="5"] .cw-line-w4 { opacity: 1; transform: translateY(0); transition-delay: 1.3s; }
+
+.cw[data-step="4"] .cw-line-p2, .cw[data-step="5"] .cw-line-p2 { opacity: 1; transform: translateY(0); }
+
+.cw[data-step="5"] .cw-line-s1 { opacity: 1; transform: translateY(0); }
+.cw[data-step="5"] .cw-line-s2 { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+
+/* Typewriter prompts */
+.cw .cw-tw-1, .cw .cw-tw-2 { vertical-align: baseline; }
+.cw[data-step="2"] .cw-tw-1, .cw[data-step="3"] .cw-tw-1,
+.cw[data-step="4"] .cw-tw-1, .cw[data-step="5"] .cw-tw-1 {
+  max-width: 100ch;
+  transition: max-width 2.0s steps(72, end);
+}
+.cw[data-step="4"] .cw-tw-2, .cw[data-step="5"] .cw-tw-2 {
+  max-width: 60ch;
+  transition: max-width 1.6s steps(52, end);
+}
+
+/* Prompt input at the bottom */
+.cw .cw-input {
+  margin-top: auto;
+  padding: 14px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.45);
+}
+.cw .cw-placeholder { font-style: italic; }
+
+/* =====================================================================
+ * Scene: skill (1 step)
+ *
+ * VS Code-ish editor showing the saved jira-grw.md skill. Grid layout:
+ *   sidebar | tabs | code area
+ *           | statusbar at bottom
+ * ===================================================================== */
+
+.skill {
+  display: block;
+  overflow: hidden;
+  background: var(--black);
+}
+.skill .window {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
+}
+.skill[data-step="0"] .window {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+
+.skill .sk-editor {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: 36px 1fr 24px;
+  grid-template-areas:
+    "side tabs"
+    "side code"
+    "side status";
+  height: 100%;
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 14px;
+  color: #d4d4d4;
+}
+
+.skill .sk-sidebar {
+  grid-area: side;
+  background: #252526;
+  border-right: 1px solid #1f1f1f;
+  padding: 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.skill .sk-side-header {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.55);
+  padding: 0 16px;
+  text-transform: uppercase;
+}
+.skill .sk-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 8px;
+}
+.skill .sk-tree-folder,
+.skill .sk-tree-file {
+  padding: 4px 16px;
+  font-size: 13px;
+  cursor: default;
+  color: #cccccc;
+}
+.skill .sk-indent { padding-left: 28px; }
+.skill .sk-indent-2 { padding-left: 40px; }
+.skill .sk-active { background: #094771; color: #fff; }
+
+.skill .sk-tabs {
+  grid-area: tabs;
+  background: #2d2d30;
+  display: flex;
+  border-bottom: 1px solid #1f1f1f;
+}
+.skill .sk-tab {
+  padding: 9px 14px;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.6);
+  border-right: 1px solid #1f1f1f;
+}
+.skill .sk-tab.sk-active {
+  background: #1e1e1e;
+  color: #fff;
+  border-top: 2px solid var(--orange);
+  margin-top: -1px;
+  padding-top: 8px;
+}
+.skill .sk-x { color: rgba(255, 255, 255, 0.4); }
+
+.skill .sk-code {
+  grid-area: code;
+  display: flex;
+  background: #1e1e1e;
+  overflow: hidden;
+  padding: 12px 0 12px;
+}
+.skill .sk-gutter {
+  flex: 0 0 56px;
+  text-align: right;
+  padding-right: 14px;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.skill .sk-content {
+  flex: 1;
+  padding: 0 18px;
+  line-height: 1.65;
+  font-size: 14px;
+  overflow: hidden;
+}
+.skill .sk-line { min-height: 1.65em; }
+
+/* Syntax-ish coloring */
+.skill .sk-meta { color: #6a9955; }     /* yaml --- delimiter, like comments */
+.skill .sk-key  { color: #569cd6; }     /* frontmatter keys, like keywords */
+.skill .sk-str  { color: #ce9178; }     /* strings */
+.skill .sk-h1   { color: #4ec9b0; font-weight: 700; }
+.skill .sk-h2   { color: #4ec9b0; font-weight: 600; }
+.skill .sk-em   { color: #dcdcaa; }     /* bold/em emphasis */
+.skill .sk-bold { color: #dcdcaa; font-weight: 700; }
+
+.skill .sk-statusbar {
+  grid-area: status;
+  background: #007acc;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 14px;
+  font-size: 12px;
+}
+.skill .sk-spacer { flex: 1; }
