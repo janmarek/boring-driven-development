@@ -40,8 +40,8 @@ what bores you.
 | 3 | `claude-arrival`| 3     | Pacman center-top, rotates to face down, descends along a 3-dot trail, eats Claude AI icon (with `CLAUDE` label). No window — claude-work's window does the scale-in entrance next with real terminal content. |
 | 4 | `claude-work`   | 6     | Terminal flow: MCP connect (slack + atlassian) → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
 | 5 | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-grw.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
-| 6 | `github`        | 1     | (legacy) GitHub PR mock. Will be redone as a schematic scene later. |
-| 7 | `abstract`      | 1     | (legacy slide) frustration-as-signal closing — pink ghost above the heading, "inspiration." in pink, "frustration." in yellow. |
+| 6 | `github`        | 1     | GitHub **Open a pull request** screen — mac-frame window, GitHub navbar + repo bar, two-column body (title + description form, sidebar with reviewers / assignees / labels / linked issue). Last app window: fade-only exit. |
+| 7 | `abstract`      | 1     | (closing slide) frustration-as-signal — pink ghost above the heading, "inspiration." in pink, "frustration." in yellow. Single pacman in the corner, no ghost trailing it. |
 
 Legacy scenes removed in iter 11 (map, slack, jira-list, jira-create, claude
 CLI) — the new scenes 2–5 cover the same ground.
@@ -164,20 +164,27 @@ account id), then body sections: When to use / Required fields /
 Description template (the same What & Why / Implementation /
 Acceptance criteria structure the jira modal demanded).
 
-### 6. `github` — _(legacy, 1 step)_
+### 6. `github` — (1 step + fade exit)
 
-GitHub PR mock from v1. Detailed (mac frame + repo bar + diff +
-comment) — still in the deck so we can show the "ship it" beat
-before the closing slide. Will eventually be re-done as a schematic
-scene following the same aesthetic as the new ones.
+GitHub **Open a pull request** screen — the ship-it beat. Mac frame
+window with the GitHub navbar (logo + search + nav) at the top, the
+mews/mews-pms repo bar with the Pull-requests tab active, then the
+page header "Open a pull request" with the compare-branches strip
+(`main ← grw-1405-split-bill`). The body is a two-column layout: PR
+title + structured description on the left (Summary / Test plan), and
+a sidebar on the right with Reviewers (@payments-team), Assignees
+(jan-marek), Labels, and the linked issue (GRW-1405). The big green
+"Create pull request" button anchors the bottom.
+
+Last app window in the deck — uses `window-exit-fade` (no slide,
+just opacity).
 
 ### 7. `abstract` — _(closing slide, 1 step)_
 
 The closing hook. Pink ghost above the heading, two-line statement
 with "inspiration." in pink and "frustration." in yellow. No body
-paragraph — the heading is the whole message. Pacman + a single
-orange ghost in the bottom-right corner (the pink ghost that used to
-trail pacman was removed).
+paragraph — the heading is the whole message. Just pacman in the
+bottom-right corner (orange ghost removed).
 
 ---
 

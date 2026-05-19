@@ -218,6 +218,59 @@ body {
 
 .window-theme--editor   > .window-body   { background: #1e1e1e; color: #d4d4d4; font-family: "SF Mono", "JetBrains Mono", Menlo, monospace; }
 
+.window-theme--github   > .window-body   { background: #ffffff; color: #1f2328; font-family: "Söhne", -apple-system, "Segoe UI", sans-serif; }
+
+/* =====================================================================
+ * Reusable app-window animations
+ *
+ * Standard entrance + exit patterns for any "app window" in the deck.
+ * Apply these classes to the wrapping element (the .window root from
+ * appWindow(), or scene-custom wrappers like .intro-window /
+ * .jira-window). Drive the visible state per-scene with a
+ * [data-step="N"] selector. Drive the exit by setting `exitDuration`
+ * on the scene — the runtime adds `.is-exiting` and waits.
+ *
+ *   .window-enter-scale       bouncy scale-from-zero (used by slack as
+ *                             the first app window the audience sees)
+ *   .window-enter-from-right  slide in from the right edge (used by
+ *                             every subsequent app window in the deck)
+ *   .is-exiting + .window-exit-to-left   slide off to the left + fade
+ *                             (default mid-deck exit — leaves room for
+ *                             the next window flying in from the right)
+ *   .is-exiting + .window-exit-fade      fade out only, no slide
+ *                             (last app window — no destination)
+ *
+ * Per-scene CSS must set the "visible" state for the entrance class at
+ * the appropriate step, e.g.:
+ *
+ *   .my-scene[data-step="0"] .window-enter-from-right {
+ *     transform: translate(-50%, -50%); opacity: 1;
+ *   }
+ * ===================================================================== */
+
+.window-enter-from-right {
+  transform: translate(60%, -50%);
+  opacity: 0;
+  transition: transform 0.65s cubic-bezier(.34, 1.2, .64, 1),
+              opacity 0.45s ease-out;
+}
+.window-enter-scale {
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1),
+              opacity 0.55s ease-out;
+}
+.is-exiting .window-exit-to-left {
+  transform: translate(-180%, -50%);
+  opacity: 0;
+  transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2),
+              opacity 0.55s ease-in 0.2s;
+}
+.is-exiting .window-exit-fade {
+  opacity: 0;
+  transition: opacity 0.5s ease-in;
+}
+
 /* =====================================================================
  * Reusable .typewriter pattern
  *
@@ -487,218 +540,294 @@ body {
   white-space: nowrap;
 }
 
-/* --- App window frame --- */
-.app-window {
-  width: 1280px;
-  height: 720px;
-  background: #1a1a1d;
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
-  display: flex;
-  flex-direction: column;
-}
-.app-titlebar {
-  height: 38px;
-  flex: 0 0 38px;
-  background: #2a2a2e;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  gap: 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.app-titlebar .traffic {
-  display: flex;
-  gap: 8px;
-}
-.app-titlebar .traffic span {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #555;
-}
-.app-titlebar .traffic span:nth-child(1) { background: #ff5f57; }
-.app-titlebar .traffic span:nth-child(2) { background: #febc2e; }
-.app-titlebar .traffic span:nth-child(3) { background: #28c840; }
-.app-titlebar .title {
-  flex: 1;
-  text-align: center;
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
-  letter-spacing: 0.08em;
-}
-.app-body {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-  background: #fff;
-  color: #222;
+/* =====================================================================
+ * Scene: github — Open a pull request
+ *
+ * Schematic GitHub "create pull request" form. Mac frame from
+ * appWindow() outside; inside, a GitHub-style topbar + repo-bar + a
+ * two-column body (main form + sidebar). Last app window in the deck
+ * — uses .window-exit-fade (fade-only exit, no slide).
+ * ===================================================================== */
+.gh-scene { display: block; overflow: hidden; background: var(--black); }
+
+/* Visible state for the window's entrance — the bare state is supplied
+   by .window-enter-from-right (off-stage right + opacity 0). */
+.gh-scene[data-step="0"] .window {
+  transform: translate(-50%, -50%);
+  opacity: 1;
 }
 
-/* --- GitHub PR --- */
-.github {
-  width: 100%;
+.gh {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
   background: #fff;
   color: #1f2328;
-  display: flex;
-  flex-direction: column;
   font-size: 14px;
+  line-height: 1.5;
 }
-.github-topbar {
-  height: 56px;
+
+/* GitHub navbar (the dark gray strip with the mark + search + nav). */
+.gh-topbar {
+  height: 52px;
+  flex: 0 0 52px;
   background: #24292f;
+  color: #fff;
   display: flex;
   align-items: center;
-  padding: 0 24px;
-  gap: 16px;
-  color: #fff;
+  padding: 0 22px;
+  gap: 18px;
 }
-.github-mark {
-  width: 30px;
-  height: 30px;
+.gh-mark {
+  width: 28px;
+  height: 28px;
   background: #fff;
   -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z'/></svg>") center / contain no-repeat;
-  mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z'/></svg>") center / contain no-repeat;
+          mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0016 8c0-4.42-3.58-8-8-8z'/></svg>") center / contain no-repeat;
 }
-.github-search {
+.gh-search {
+  flex: 0 1 320px;
   height: 30px;
-  flex: 0 1 280px;
-  background: #ffffff10;
-  border: 1px solid #ffffff20;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 6px;
-  padding: 0 10px;
-  color: rgba(255, 255, 255, 0.55);
+  padding: 0 12px;
   font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
   display: flex;
   align-items: center;
+  background: rgba(255, 255, 255, 0.05);
 }
-.github-body {
-  flex: 1;
+.gh-search kbd {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 6px;
+  border-radius: 3px;
+  margin-left: 4px;
+}
+.gh-nav {
+  margin-left: auto;
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  gap: 18px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
 }
-.github-repo-bar {
-  padding: 16px 24px 0;
+
+/* Repo bar (org/repo name + tabs). */
+.gh-repo-bar {
+  padding: 16px 28px 0;
+  background: #f6f8fa;
   border-bottom: 1px solid #d0d7de;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
-.github-repo-name {
-  font-size: 18px;
+.gh-repo-name {
+  font-size: 20px;
   font-weight: 400;
 }
-.github-repo-name strong { font-weight: 700; }
-.github-repo-name .slash { color: #59636e; padding: 0 4px; }
-.github-tabs {
+.gh-repo-name strong { font-weight: 700; }
+.gh-repo-name .gh-slash { color: #59636e; padding: 0 4px; }
+.gh-tabs {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   font-size: 14px;
+  margin-top: 4px;
 }
-.github-tab {
-  padding: 8px 10px;
+.gh-tab {
+  padding: 10px 6px;
   color: #1f2328;
   border-bottom: 2px solid transparent;
+  cursor: default;
 }
-.github-tab.active {
+.gh-tab-active {
   border-bottom-color: #fd8c73;
   font-weight: 600;
 }
-.github-pr {
-  padding: 22px 24px;
+.gh-tab-badge {
+  background: #ddf4ff;
+  color: #0969da;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  margin-left: 4px;
+  font-weight: 500;
+}
+
+/* Page header (the "Open a pull request" + compare branches). */
+.gh-page {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  flex: 1;
   overflow: hidden;
 }
-.github-pr-title {
+.gh-page-head {
+  padding: 22px 28px 16px;
+  border-bottom: 1px solid #d0d7de;
+}
+.gh-page-head h2 {
   font-size: 28px;
   font-weight: 400;
+  margin: 0 0 12px;
+  color: #1f2328;
 }
-.github-pr-title .num { color: #59636e; font-weight: 400; }
-.github-pr-meta {
+.gh-compare {
   display: flex;
-  gap: 10px;
   align-items: center;
+  gap: 10px;
   font-size: 14px;
   color: #59636e;
 }
-.github-state {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 12px;
+.gh-compare-label { color: #59636e; }
+.gh-branch {
+  background: #ddf4ff;
+  color: #0969da;
+  padding: 3px 10px;
   border-radius: 999px;
-  background: #1a7f37;
-  color: white;
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 12px;
+  font-weight: 500;
+}
+.gh-branch-feature {
+  background: #dafbe1;
+  color: #1a7f37;
+}
+.gh-arrow { color: #59636e; font-size: 16px; }
+
+/* Main body: form on the left, sidebar on the right. */
+.gh-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 28px;
+  padding: 22px 28px;
+  overflow: hidden;
+}
+.gh-main { display: flex; flex-direction: column; gap: 16px; }
+.gh-field { display: flex; flex-direction: column; gap: 6px; }
+.gh-field label {
   font-weight: 600;
   font-size: 13px;
+  color: #1f2328;
 }
-.github-state::before {
-  content: "";
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: white;
-}
-.github-files {
+.gh-input {
   border: 1px solid #d0d7de;
   border-radius: 6px;
-  overflow: hidden;
-  font-family: "SF Mono", "JetBrains Mono", "Menlo", monospace;
+  padding: 9px 12px;
+  font-size: 14px;
+  color: #1f2328;
+  background: #fff;
+}
+.gh-textarea {
+  border: 1px solid #d0d7de;
+  border-radius: 6px;
+  padding: 12px 14px;
+  background: #fff;
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 13px;
+  color: #1f2328;
+  line-height: 1.55;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.gh-md-h {
+  font-weight: 700;
+  color: #1f2328;
+  margin-top: 6px;
+}
+.gh-md-h:first-child { margin-top: 0; }
+.gh-md-line { color: #1f2328; }
+.gh-md-line code {
+  background: #eaeef2;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+.gh-md-link {
+  color: #0969da;
+  text-decoration: underline;
+}
+
+.gh-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: auto;
+  justify-content: flex-end;
+}
+.gh-btn {
+  border: 1px solid #d0d7de;
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2328;
+  cursor: default;
+}
+.gh-btn-primary {
+  background: #1f883d;
+  border-color: #1a7f37;
+  color: #fff;
+}
+
+/* Sidebar (Reviewers / Assignees / Labels / Linked issue). */
+.gh-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
   font-size: 13px;
 }
-.github-file-header {
-  padding: 8px 14px;
-  background: #f6f8fa;
+.gh-side-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 14px;
   border-bottom: 1px solid #d0d7de;
+}
+.gh-side-section:last-child { border-bottom: none; }
+.gh-side-label {
+  font-weight: 600;
+  color: #59636e;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+.gh-side-value {
   display: flex;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
   align-items: center;
-  font-family: "Söhne", sans-serif;
 }
-.github-file-name { font-weight: 600; }
-.github-diff {
-  padding: 4px 0;
+.gh-side-link {
+  color: #0969da;
+  text-decoration: underline;
 }
-.github-line {
-  padding: 0 14px;
-  white-space: pre;
-  line-height: 1.5;
+.gh-pill {
+  background: #eaeef2;
+  color: #1f2328;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
 }
-.github-line.add { background: #e6ffec; }
-.github-line.add::before { content: "+ "; color: #1a7f37; }
-.github-line.del { background: #ffebe9; }
-.github-line.del::before { content: "− "; color: #cf222e; }
-.github-line.ctx::before { content: "  "; color: #6e7781; }
-
-.github-comment {
-  display: flex;
-  gap: 12px;
-  padding: 14px;
-  border: 1px solid #d0d7de;
-  border-radius: 6px;
-  background: #f6f8fa;
-}
-.github-comment .avatar {
-  width: 30px;
-  height: 30px;
+.gh-avatar {
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: var(--yellow);
-  font-weight: 700;
-  display: grid;
-  place-items: center;
   color: #1f2328;
-  font-size: 14px;
-  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  margin-right: 4px;
 }
-.github-comment.bot .avatar { background: var(--orange); color: white; }
-.github-comment-body { flex: 1; font-size: 14px; line-height: 1.5; }
-.github-comment .name { font-weight: 600; color: #1f2328; }
-.github-comment .when { color: #59636e; font-size: 12px; margin-left: 6px; }
+.gh-label {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.gh-label-payments { background: #cfe8ff; color: #0a3069; }
+.gh-label-tax      { background: #ffd8b5; color: #6f3500; }
 
 /* --- Helpers --- */
 .row { display: flex; align-items: center; gap: 10px; }
@@ -821,7 +950,8 @@ body {
   transition-duration: 1.5s, 1.5s, 0.4s;
 }
 .intro[data-step="5"] .intro-pacman {
-  left: 1000px; top: 380px;
+  /* Moves up-right to eat the notification badge at (1100, 370). */
+  left: 1070px; top: 380px;
   transition-duration: 0.6s, 0.6s, 0.4s;
 }
 .intro[data-step="6"] .intro-pacman,
@@ -937,7 +1067,10 @@ body {
 /* --- Slack icon (fades in step 2, shrinks step 6) --- */
 .intro .intro-slack {
   position: absolute;
-  left: 950px;
+  /* 950 → 1020 to push the icon (and notification) further from pacman's
+     end-of-trail position at left 780. Gives ~70 extra px of breathing
+     room before pacman moves up-right to eat the badge. */
+  left: 1020px;
   top: 450px;
   width: 160px;
   height: 160px;
@@ -982,8 +1115,8 @@ body {
 /* --- Notification badge (top-right corner of slack icon) --- */
 .intro .intro-badge {
   position: absolute;
-  /* Slack icon center (950, 450), size 160 → top-right corner at (1030, 370) */
-  left: 1030px;
+  /* Slack icon center (1020, 450), size 160 → top-right corner at (1100, 370) */
+  left: 1100px;
   top: 370px;
   width: 56px;
   height: 56px;
@@ -1021,14 +1154,13 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%) scale(0);
   width: 920px;
   height: 600px;
-  opacity: 0;
   display: flex;
   flex-direction: column;
   filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.55));
-  transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out, left 0.7s ease-in, filter 0.4s ease-out;
+  /* transform / opacity / transition come from .window-enter-scale and
+     the .is-exiting .window-exit-to-left rules. */
 }
 .intro[data-step="6"] .intro-window,
 .intro[data-step="7"] .intro-window,
@@ -1230,9 +1362,6 @@ body {
   position: absolute;
   left: 50%;
   top: 50%;
-  /* Default = "before scene" state: off-screen right, ready to slide in */
-  transform: translate(60%, -50%) scale(1);
-  opacity: 0;
   width: 1100px;
   height: 720px;
   display: flex;
@@ -1240,25 +1369,29 @@ body {
   /* Same technical-split-with-single-shadow approach as the slack window:
      header + body are two flush elements; the wrapper casts one shadow. */
   filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.55));
-  transition: transform 0.65s cubic-bezier(.34, 1.2, .64, 1), opacity 0.45s ease-out;
+  /* transform / opacity / transition come from .window-enter-from-right
+     and the .is-exiting .window-exit-to-left rules. */
 }
 .jira[data-step="0"] .jira-window,
 .jira[data-step="1"] .jira-window,
 .jira[data-step="2"] .jira-window,
 .jira[data-step="3"] .jira-window {
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%);
   opacity: 1;
 }
-/* Exit animation — runtime adds .is-exiting on the press that advances
-   past the last step, then waits `exitDuration` ms before the DOM swap
-   so the disappear plays out. The same press triggers claude-arrival's
-   pacman entrance, so jira fading down and the next scene starting
-   read as a single beat. */
-.jira.is-exiting .jira-window {
-  transform: translate(-50%, -50%) scale(0.82);
+/* Modal closes first on exit — adds a beat between "the dialog goes
+   away" and "the app itself slides off" so the audience reads the
+   "I gave up on this form" moment. The jira-window itself rides the
+   shared .window-exit-to-left rule from the framework; we just push
+   its transition-delay so it starts AFTER the modal close + a pause. */
+.jira.is-exiting .jw-modal {
+  transform: translate(-50%, -50%) scale(0.92);
   opacity: 0;
-  transition: transform 0.5s cubic-bezier(.7, 0, .84, 0.2),
-              opacity 0.45s ease-in;
+  transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+}
+.jira.is-exiting .window-exit-to-left {
+  transition: transform 0.6s cubic-bezier(.7, 0, .84, 0.2) 0.5s,
+              opacity 0.5s ease-in 0.55s;
 }
 
 .jira .jw-header {
@@ -1676,12 +1809,18 @@ body {
 }
 .claude-arrival[data-step="2"] .ca-pacman { top: 620px; }
 
-/* Rotate the pacman SVG itself from step 1+. The .half elements inside
-   keep their own chomp animation transforms — those are on children,
-   not on .pacman. */
+/* Rotate the pacman SVG to face down automatically once the scene
+   mounts. The bare element (no [data-step] selector) is unrotated; at
+   step 0 the rule below applies rotate(90deg) with a 0.5s transition
+   delay, so the rAF-deferred data-step apply gives the audience a
+   half-second of "pacman faces right" before it pivots downward —
+   without the speaker pressing →.
+   .half elements inside keep their own chomp animation transforms —
+   those are on children, not on .pacman. */
 .claude-arrival .ca-pacman .pacman {
-  transition: transform 0.5s ease-in-out;
+  transition: transform 0.5s ease-in-out 0.5s;
 }
+.claude-arrival[data-step="0"] .ca-pacman .pacman,
 .claude-arrival[data-step="1"] .ca-pacman .pacman,
 .claude-arrival[data-step="2"] .ca-pacman .pacman {
   transform: rotate(90deg);
@@ -1790,23 +1929,16 @@ body {
   background: var(--black);
 }
 
-/* Window scale-in entrance. Bare state is hidden (scale 0, opacity 0);
-   step 0+ snaps to the open state. The rAF-deferred data-step apply in
-   the runtime guarantees the browser sees the bare state first, so the
-   transition interpolates into step 0. */
-.cw .window {
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1),
-              opacity 0.4s ease-out;
-}
+/* Window enters via .window-enter-from-right (shared framework class),
+   exits via .window-exit-to-left. Per-scene rules below set the visible
+   state at step 0+. */
 .cw[data-step="0"] .window,
 .cw[data-step="1"] .window,
 .cw[data-step="2"] .window,
 .cw[data-step="3"] .window,
 .cw[data-step="4"] .window,
 .cw[data-step="5"] .window {
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%);
   opacity: 1;
 }
 
@@ -1955,13 +2087,10 @@ body {
   overflow: hidden;
   background: var(--black);
 }
-.skill .window {
-  transform: translate(-50%, -50%) scale(0);
-  opacity: 0;
-  transition: transform 0.55s cubic-bezier(.34, 1.4, .64, 1), opacity 0.4s ease-out;
-}
+/* Window enters via .window-enter-from-right, exits via
+   .window-exit-to-left (shared framework classes). */
 .skill[data-step="0"] .window {
-  transform: translate(-50%, -50%) scale(1);
+  transform: translate(-50%, -50%);
   opacity: 1;
 }
 

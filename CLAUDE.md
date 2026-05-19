@@ -45,6 +45,26 @@ Four files do all the work:
 
 The returned root must have `class="scene"`. The runtime writes `data-step="N"` on it. Drive in-scene animation with CSS keyed off `data-step`.
 
+### App window animations (shared classes)
+
+Every "app window" in the deck (slack, jira, claude code, vscode, github) uses the same entrance/exit primitives so transitions read consistently to the audience. Apply these classes to the window wrapper element (the `.window` root from `appWindow()`, or scene-custom wrappers like `.intro-window` / `.jira-window`). Drive the visible state per-scene with `[data-step="N"]`. Drive the exit by setting `exitDuration` on the scene (see below).
+
+- **`.window-enter-scale`** — bouncy scale-from-zero. Used for the **first** app window the audience sees (slack in the title scene). It's the cinematic "this app just appeared" beat.
+- **`.window-enter-from-right`** — slides in from the right edge. Used for every **subsequent** app window in the deck so the audience reads it as "we navigated to a new app".
+- **`.window-exit-to-left`** (paired with `.is-exiting`) — slides off to the left while fading. Default mid-deck exit. Leaves room for the next window to fly in from the right on the same press.
+- **`.window-exit-fade`** (paired with `.is-exiting`) — fade out only, no slide. Use for the **last** app window in the deck (no destination to slide toward — the next scene isn't another app).
+
+Per-scene CSS sets the visible state at the right step, e.g.:
+
+```css
+.my-scene[data-step="0"] .window-enter-from-right {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+```
+
+When in doubt, look at how the existing scenes opt in via `appWindow({ className: "window-enter-from-right window-exit-to-left" })`.
+
 ### Exit animations
 
 When a scene needs a visible disappear before the next scene mounts (e.g. the jira window scaling down on the press that advances to claude-arrival), declare `exitDuration` in ms. On `next()` past the last step, the runtime adds `.is-exiting` to the scene root, waits `exitDuration`, then swaps the DOM. Input is ignored during the wait so a rapid-fire press can't double-mount.

@@ -14,8 +14,9 @@ const scenes = [
   {
     id: "title",
     notes:
-      "Title → slack flow in one scene. 10 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug → composer+typing → delete. After the last step the deck cuts to the jira scene; slack vanishes on the same press as jira flies in from the right.",
+      "Title → slack flow in one scene. 10 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug → composer+typing → delete. Advancing past step 9 fires the slack window's slide-left-fade exit (window-exit-to-left) while jira flies in from the right.",
     steps: 10,
+    exitDuration: 700,
     render: () => `
       <div class="scene intro">
         <!-- Title text overlay (fades out from step 1+) -->
@@ -45,8 +46,10 @@ const scenes = [
         <!-- Notification badge on the top-right corner of the slack icon -->
         <div class="intro-badge">1</div>
 
-        <!-- Schematic Slack window (scales in at step 5) -->
-        <div class="intro-window">
+        <!-- Schematic Slack window — first app window in the deck, so it
+             uses the bouncy scale-in (window-enter-scale). Slide-left-fade
+             exit (window-exit-to-left) when title advances to jira. -->
+        <div class="intro-window window-enter-scale window-exit-to-left">
           <div class="sw-header">
             <span class="sw-hash">#</span>
             <span>product-feedback</span>
@@ -110,12 +113,12 @@ const scenes = [
   {
     id: "jira",
     notes:
-      "Schematic Jira: backlog → create modal → struggle filling fields. Disappear animation runs on advance via exitDuration + .is-exiting.",
+      "Schematic Jira: backlog → create modal → struggle filling fields. Two-phase disappear on advance: modal closes first (0.3s), pause, then the window slides left (0.6s, delayed 0.5s) — total exitDuration 1100ms.",
     steps: 4,
-    exitDuration: 500,
+    exitDuration: 1100,
     render: () => `
       <div class="scene jira">
-        <div class="jira-window">
+        <div class="jira-window window-enter-from-right window-exit-to-left">
           <div class="jw-header">
             <div class="jw-mews">
               <img src="MEWS_WORDMARK_WHITE.png" alt="Mews"/>
@@ -252,8 +255,9 @@ const scenes = [
   {
     id: "claude-work",
     notes:
-      "Terminal flow: MCP → create-issue → error about missing required fields → ask for a skill → skill saved.",
+      "Terminal flow: MCP → create-issue → error about missing required fields → ask for a skill → skill saved. Slide-from-right entrance, slide-left-fade exit (shared framework classes).",
     steps: 6,
+    exitDuration: 700,
     render: () => `
       <div class="scene cw">
         ${appWindow({
@@ -262,6 +266,7 @@ const scenes = [
           title: "claude code",
           width: 1280,
           height: 760,
+          className: "window-enter-from-right window-exit-to-left",
           body: `
             <div class="cw-screen">
               <div class="cw-splash">
@@ -306,8 +311,9 @@ const scenes = [
   {
     id: "skill",
     notes:
-      "VS Code editor showing the saved jira-grw skill: frontmatter (tools used, saved ids), When to use, required fields, description template.",
+      "VS Code editor showing the saved jira-grw skill: frontmatter (tools used, saved ids), When to use, required fields, description template. Slide-from-right entrance, slide-left-fade exit.",
     steps: 1,
+    exitDuration: 700,
     render: () => `
       <div class="scene skill">
         ${appWindow({
@@ -316,6 +322,7 @@ const scenes = [
           title: "jira-grw.md — claude code",
           width: 1300,
           height: 780,
+          className: "window-enter-from-right window-exit-to-left",
           body: `
             <div class="sk-editor">
               <div class="sk-sidebar">
@@ -392,76 +399,105 @@ const scenes = [
     `,
   },
 
-  // 6 — GitHub PR (legacy)
+  // 6 — GitHub "Open a pull request" screen — the ship-it beat.
+  // Last app window before the closing slide, so it uses the shared
+  // window-enter-from-right entrance but a fade-only exit (no slide).
   {
     id: "github",
-    notes: "Stage 4: ship it.",
+    notes:
+      "GitHub Open-a-PR screen: title pre-filled, structured description, claude-bot in reviewers. Last app window — fade-only exit.",
+    exitDuration: 500,
     render: () => `
-      <div class="scene">
-        <div class="app-window">
-          <div class="app-titlebar">
-            <div class="traffic"><span></span><span></span><span></span></div>
-            <div class="title">GitHub — mews-pms/pulls/4821</div>
-          </div>
-          <div class="app-body">
-            <div class="github">
-              <div class="github-topbar">
-                <div class="github-mark"></div>
-                <div class="github-search">Type / to search</div>
-                <div style="flex:1"></div>
-                <div style="color:rgba(255,255,255,.7); font-size:13px;">Pull requests · Issues · Marketplace</div>
+      <div class="scene gh-scene">
+        ${appWindow({
+          variant: "frame",
+          theme: "github",
+          title: "github.com — mews/mews-pms",
+          width: 1380,
+          height: 800,
+          className: "window-enter-from-right window-exit-fade",
+          body: `
+            <div class="gh">
+              <div class="gh-topbar">
+                <div class="gh-mark"></div>
+                <div class="gh-search">Type <kbd>/</kbd> to search</div>
+                <div class="gh-nav">
+                  <span>Pull requests</span>
+                  <span>Issues</span>
+                  <span>Marketplace</span>
+                  <span>Explore</span>
+                </div>
               </div>
-              <div class="github-body">
-                <div class="github-repo-bar">
-                  <div class="github-repo-name">mews <span class="slash">/</span> <strong>mews-pms</strong></div>
-                  <div class="github-tabs">
-                    <div class="github-tab">Code</div>
-                    <div class="github-tab">Issues</div>
-                    <div class="github-tab active">Pull requests <span style="background:#ddf4ff;color:#0969da;padding:0 6px;border-radius:10px;font-size:11px;margin-left:4px">12</span></div>
-                    <div class="github-tab">Actions</div>
-                    <div class="github-tab">Projects</div>
+              <div class="gh-repo-bar">
+                <div class="gh-repo-name">mews <span class="gh-slash">/</span> <strong>mews-pms</strong></div>
+                <div class="gh-tabs">
+                  <span class="gh-tab">Code</span>
+                  <span class="gh-tab">Issues</span>
+                  <span class="gh-tab gh-tab-active">Pull requests <span class="gh-tab-badge">12</span></span>
+                  <span class="gh-tab">Actions</span>
+                  <span class="gh-tab">Projects</span>
+                </div>
+              </div>
+              <div class="gh-page">
+                <div class="gh-page-head">
+                  <h2>Open a pull request</h2>
+                  <div class="gh-compare">
+                    <span class="gh-compare-label">base:</span>
+                    <span class="gh-branch">main</span>
+                    <span class="gh-arrow">←</span>
+                    <span class="gh-compare-label">compare:</span>
+                    <span class="gh-branch gh-branch-feature">grw-1405-split-bill</span>
                   </div>
                 </div>
-                <div class="github-pr">
-                  <div class="github-pr-title">
-                    feat(payments): split bill across multiple cards
-                    <span class="num">#4821</span>
-                  </div>
-                  <div class="github-pr-meta">
-                    <span class="github-state">Open</span>
-                    <strong>jan-marek</strong> wants to merge 3 commits into <code style="background:#f6f8fa;padding:2px 6px;border-radius:4px;">main</code> from <code style="background:#f6f8fa;padding:2px 6px;border-radius:4px;">grw-1405-split-bill</code>
-                  </div>
-                  <div class="github-files">
-                    <div class="github-file-header">
-                      <span class="github-file-name">src/Payments/SplitPaymentBuilder.cs</span>
-                      <span style="color:#1a7f37">+86</span>
+                <div class="gh-body">
+                  <div class="gh-main">
+                    <div class="gh-field">
+                      <label>Title</label>
+                      <div class="gh-input">feat(payments): split bill across multiple cards</div>
                     </div>
-                    <div class="github-diff">
-                      <div class="github-line add">public sealed class SplitPaymentBuilder</div>
-                      <div class="github-line ctx">{</div>
-                      <div class="github-line add">    private readonly List&lt;CardAllocation&gt; allocations = new();</div>
-                      <div class="github-line add">    public SplitPaymentBuilder Add(Card card, Money amount) {</div>
-                      <div class="github-line add">        allocations.Add(new(card, amount));</div>
-                      <div class="github-line add">        return this;</div>
-                      <div class="github-line add">    }</div>
-                      <div class="github-line ctx">}</div>
-                    </div>
-                  </div>
-                  <div class="github-comment bot">
-                    <div class="avatar">C</div>
-                    <div class="github-comment-body">
-                      <div><span class="name">claude-bot</span><span class="when">just now</span></div>
-                      <div>
-                        Linked GRW-1405 · Generated PR description from commits · Posted summary to <code>#product-feedback</code>.
-                        Reviewers: <strong>@payments-team</strong>.
+                    <div class="gh-field">
+                      <label>Description</label>
+                      <div class="gh-textarea">
+                        <div class="gh-md-h">## Summary</div>
+                        <div class="gh-md-line">- Add <code>SplitPaymentBuilder</code> with per-card allocations</div>
+                        <div class="gh-md-line">- Update checkout flow to accept multiple cards</div>
+                        <div class="gh-md-line">- Closes <a class="gh-md-link">GRW-1405</a></div>
+                        <div class="gh-md-h">## Test plan</div>
+                        <div class="gh-md-line">- [x] Unit tests for builder validation</div>
+                        <div class="gh-md-line">- [x] Manual test in staging with 2-card split</div>
                       </div>
                     </div>
+                    <div class="gh-actions">
+                      <button class="gh-btn">Cancel</button>
+                      <button class="gh-btn gh-btn-primary">Create pull request</button>
+                    </div>
                   </div>
+                  <aside class="gh-sidebar">
+                    <div class="gh-side-section">
+                      <div class="gh-side-label">Reviewers</div>
+                      <div class="gh-side-value"><span class="gh-pill">@payments-team</span></div>
+                    </div>
+                    <div class="gh-side-section">
+                      <div class="gh-side-label">Assignees</div>
+                      <div class="gh-side-value"><span class="gh-avatar">JM</span> jan-marek</div>
+                    </div>
+                    <div class="gh-side-section">
+                      <div class="gh-side-label">Labels</div>
+                      <div class="gh-side-value">
+                        <span class="gh-label gh-label-payments">payments</span>
+                        <span class="gh-label gh-label-tax">tax</span>
+                      </div>
+                    </div>
+                    <div class="gh-side-section">
+                      <div class="gh-side-label">Linked issue</div>
+                      <div class="gh-side-value gh-side-link">GRW-1405</div>
+                    </div>
+                  </aside>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
+          `,
+        })}
       </div>
     `,
   },
@@ -478,8 +514,7 @@ const scenes = [
           Creativity in engineering doesn't always start with <span class="pink">inspiration.</span><br/>
           Sometimes it starts with <em>frustration.</em>
         </h2>
-        <div style="position:absolute; right:120px; bottom:120px; display:flex; gap:30px; align-items:center;">
-          ${ghost("var(--orange)", "")}
+        <div style="position:absolute; right:120px; bottom:120px;">
           ${pacman("right", 90)}
         </div>
       </div>

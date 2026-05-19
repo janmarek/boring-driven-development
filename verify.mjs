@@ -57,7 +57,11 @@ await page.waitForFunction(() => document.querySelector(".scene") !== null);
 const scenes = await page.evaluate(() =>
   // Pull the scenes manifest from the page
   // eslint-disable-next-line no-undef
-  scenes.map((s) => ({ id: s.id, steps: Math.max(1, s.steps || 1) }))
+  scenes.map((s) => ({
+    id: s.id,
+    steps: Math.max(1, s.steps || 1),
+    exitDuration: s.exitDuration || 0,
+  }))
 );
 console.log(`found ${scenes.length} scenes`);
 
@@ -79,16 +83,21 @@ for (let i = 0; i < scenes.length; i++) {
     //  - title step 8: typewriter animation reveals message (~1.8s)
     //  - title step 11: pacman returns from offstage and eats claude (~1.6s)
     let wait = 900;
-    if (s.id === "slack-arrival" && step === 0) wait = 2800;
-    else if (s.id === "title" && (step === 3 || step === 8 || step === 11)) wait = 2200;
+    if (s.id === "title" && (step === 2 || step === 8)) wait = 2200;  // dot-eat stagger, typewriter
     else if (s.id === "title" && step === 9) wait = 1100;     // reverse typewriter
-    else if (s.id === "title" && step === 12) wait = 1100;    // slack flies left
     else if (s.id === "jira" && step === 2) wait = 1800;      // summary typewriter
     else if (s.id === "jira" && step === 3) wait = 4400;      // staggered field fills (last delay 3.80s + 0.3s anim)
-    else if (s.id === "jira" && step === 4) wait = 1100;      // jira flies left
+    else if (s.id === "claude-arrival" && step === 0) wait = 1400;  // auto-rotate after delay
     else if (s.id === "claude-work" && step === 2) wait = 2300;  // prompt 1 typewriter
     else if (s.id === "claude-work" && step === 3) wait = 2000;  // tool calls + error stagger
     else if (s.id === "claude-work" && step === 4) wait = 2000;  // prompt 2 typewriter
+    // On the first step of any scene whose predecessor has an
+    // exitDuration, add that exit time + entrance buffer to the wait so
+    // we don't screenshot mid-transition between scenes.
+    if (step === 0 && i > 0) {
+      const prevExitMs = scenes[i - 1].exitDuration || 0;
+      if (prevExitMs > 0) wait = Math.max(wait, prevExitMs + 900);
+    }
     await page.waitForTimeout(wait);
     const filename = `${String(i + 1).padStart(2, "0")}-${s.id}-step${step}.png`;
     await page.locator("#stage").screenshot({ path: join(shotDir, filename) });
