@@ -340,6 +340,8 @@ Slack icon top-right corner = `(icon_center_x + 80, icon_center_y - 80)`. The no
 
 - **Multiple elements at the same logical position need separate CSS rules.** Pacman, the slack icon, and the notification all sit at roughly (950, 450) during step 4, but each has its own CSS rule and its own transition. Don't try to use a wrapper to position them as a group — they animate independently.
 
+- **`--` (double-hyphen) inside an SVG XML comment is forbidden by the XML spec.** If you reference a CSS custom property like `--blue` inside a `<!-- … -->` comment in an SVG file, strict parsers (WebKit included) reject the whole document — the icon/wallpaper loads as a transparent void. Same for any string with consecutive `--`. Write "brand blue" instead, or break the dashes apart.
+
 ## Verification with Playwright
 
 `verify.mjs` boots a local HTTP server, drives the deck via real keyboard arrow presses, and dumps a PNG of `#stage` per scene/step into `verify-shots/` (gitignored).
