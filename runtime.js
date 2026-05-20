@@ -122,6 +122,7 @@ const appWindow = (opts = {}) => {
 // have a starting style to interpolate from).
 
 const stage = document.getElementById("stage");
+const app = document.getElementById("app");
 const counterEl = document.getElementById("counter");
 
 let sceneIndex = 0;
@@ -151,6 +152,12 @@ function mountScene(i, step = 0) {
   sceneIndex = clamp(i, 0, scenes.length - 1);
   const scene = scenes[sceneIndex];
   stepIndex = clamp(step, 0, stepsOf(scene) - 1);
+
+  // Per-scene background tint on #app. Empty string clears the inline
+  // value and reverts to the CSS default (--black). The transition lives
+  // on #app in CSS, so swapping between scenes with different background
+  // values fades smoothly.
+  app.style.backgroundColor = scene.background || "";
 
   let html = "";
   try {

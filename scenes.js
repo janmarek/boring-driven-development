@@ -255,9 +255,10 @@ const scenes = [
   {
     id: "claude-work",
     notes:
-      "Terminal flow: MCP → create-issue → error about missing required fields → ask for a skill → skill saved. Slide-from-right entrance, slide-left-fade exit (shared framework classes).",
+      "Terminal flow: MCP → create-issue → error about missing required fields → ask for a skill → skill saved. Bouncy scale-in entrance (it's the first window in the claude-arrival → claude-work 'row'), slide-left-fade exit. Background tints to mauve on mount.",
     steps: 6,
     exitDuration: 700,
+    background: "var(--mauve)",
     render: () => `
       <div class="scene cw">
         ${appWindow({
@@ -266,7 +267,7 @@ const scenes = [
           title: "claude code",
           width: 1280,
           height: 760,
-          className: "window-enter-from-right window-exit-to-left",
+          className: "window-enter-scale window-exit-to-left",
           body: `
             <div class="cw-screen">
               <div class="cw-splash">
@@ -311,9 +312,10 @@ const scenes = [
   {
     id: "skill",
     notes:
-      "VS Code editor showing the saved jira-grw skill: frontmatter (tools used, saved ids), When to use, required fields, description template. Slide-from-right entrance, slide-left-fade exit.",
+      "VS Code editor showing the saved jira-grw skill: frontmatter (tools used, saved ids), When to use, required fields, description template. Slide-from-right entrance, slide-left-fade exit. Background stays mauve (inherited from claude-work).",
     steps: 1,
     exitDuration: 700,
+    background: "var(--mauve)",
     render: () => `
       <div class="scene skill">
         ${appWindow({
@@ -405,8 +407,9 @@ const scenes = [
   {
     id: "github",
     notes:
-      "GitHub Open-a-PR screen: title pre-filled, structured description, claude-bot in reviewers. Last app window — fade-only exit.",
+      "GitHub Open-a-PR screen: title pre-filled, structured description, claude-bot in reviewers. Last app window — fade-only exit. Background stays mauve; the closing slide returns to black.",
     exitDuration: 500,
+    background: "var(--mauve)",
     render: () => `
       <div class="scene gh-scene">
         ${appWindow({

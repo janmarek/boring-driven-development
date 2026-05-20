@@ -71,6 +71,11 @@ body {
   display: grid;
   place-items: center;
   background: var(--black);
+  /* Per-scene background tint — runtime sets `#app.style.backgroundColor`
+     from `scene.background` on mount. Transition lets the colour fade
+     between scenes (e.g. black → mauve when claude-work appears, mauve
+     → black on the closing slide). */
+  transition: background-color 0.8s ease-in-out;
 }
 
 #stage {
@@ -78,8 +83,10 @@ body {
   height: calc(var(--stage-h) * 1px);
   position: relative;
   transform-origin: center center;
-  background: var(--black);
   overflow: hidden;
+  /* No background — lets the animated #app background show through.
+     Scene roots also avoid setting a background so the colour change
+     is continuous across the whole viewport. */
 }
 
 #hud {
@@ -553,7 +560,7 @@ body {
  * two-column body (main form + sidebar). Last app window in the deck
  * — uses .window-exit-fade (fade-only exit, no slide).
  * ===================================================================== */
-.gh-scene { display: block; overflow: hidden; background: var(--black); }
+.gh-scene { display: block; overflow: hidden; }
 
 /* Visible state for the window's entrance — the bare state is supplied
    by .window-enter-from-right (off-stage right + opacity 0). */
@@ -857,7 +864,6 @@ body {
 .intro {
   display: block;
   overflow: hidden;
-  background: var(--black);
 }
 
 /* --- Title text overlay (fades out from step 1+) --- */
@@ -1360,7 +1366,6 @@ body {
 .jira {
   display: block;
   overflow: hidden;
-  background: var(--black);
 }
 
 .jira .jira-window {
@@ -1805,7 +1810,6 @@ body {
 .claude-arrival {
   display: block;
   overflow: hidden;
-  background: var(--black);
 }
 
 /* --- Pacman descender. Margin-based centring leaves transform free for
@@ -1940,19 +1944,20 @@ body {
 .cw {
   display: block;
   overflow: hidden;
-  background: var(--black);
 }
 
-/* Window enters via .window-enter-from-right (shared framework class),
-   exits via .window-exit-to-left. Per-scene rules below set the visible
-   state at step 0+. */
+/* Window enters via .window-enter-scale (same bouncy scale-in slack
+   uses — claude-work is the first app window in its "row" of the
+   deck, since claude-arrival has no window). Exits via
+   .window-exit-to-left. The visible state below needs `scale(1)` to
+   match the entrance class's bare `scale(0)` state. */
 .cw[data-step="0"] .window,
 .cw[data-step="1"] .window,
 .cw[data-step="2"] .window,
 .cw[data-step="3"] .window,
 .cw[data-step="4"] .window,
 .cw[data-step="5"] .window {
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
 
@@ -2099,7 +2104,6 @@ body {
 .skill {
   display: block;
   overflow: hidden;
-  background: var(--black);
 }
 /* Window enters via .window-enter-from-right, exits via
    .window-exit-to-left (shared framework classes). */

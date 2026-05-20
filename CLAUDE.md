@@ -38,6 +38,7 @@ Four files do all the work:
   notes: "one-liner",          // optional, runtime ignores
   steps: 8,                    // optional, defaults to 1
   exitDuration: 500,           // optional ms — see "Exit animations" below
+  background: "var(--mauve)",  // optional — see "Background tint" below
   render: () => `<div class="scene my-scene">…</div>`,
   onStep: (root, step, prev) => {…} // optional, called on each step change
 }
@@ -64,6 +65,12 @@ Per-scene CSS sets the visible state at the right step, e.g.:
 ```
 
 When in doubt, look at how the existing scenes opt in via `appWindow({ className: "window-enter-from-right window-exit-to-left" })`.
+
+### Background tint
+
+The `#app` element (the full-screen container behind the stage) has `transition: background-color 0.8s ease-in-out`. The runtime sets `#app.style.backgroundColor = scene.background || ""` on every mount — so any scene that sets `background: "var(--mauve)"` (or any colour) gets a smooth fade from the previous scene's tint. Scenes that omit `background` revert to the CSS default (`var(--black)`), which also transitions.
+
+Use this for an arc-level tint (e.g. claude-work / skill / github all set `background: "var(--mauve)"`, so the deck stays mauve through that stretch and fades back to black for the closing slide). Per-scene roots should NOT set their own `background` — that would cover the tinted `#app` and break continuity.
 
 ### Exit animations
 
