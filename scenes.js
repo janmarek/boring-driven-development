@@ -14,8 +14,8 @@ const scenes = [
   {
     id: "title",
     notes:
-      "Title → slack flow in one scene. 10 beats: title → fade+center → slack appears → eat dots → notify → eat notif → window → bug → composer+typing → delete. Advancing past step 9 fires the slack window's slide-left-fade exit (window-exit-to-left) while jira flies in from the right.",
-    steps: 10,
+      "Title → slack flow in one scene. 8 beats: title → fade+center → eat dots → slack icon (badge auto-pops with 1s delay) → eat notif → window (bug message auto-slides in with 1s delay) → composer+typing → delete. The badge and the bug-message reveals are CSS-delayed rather than separate steps so the speaker doesn't have to time them. Advancing past step 7 fires the slack window's slide-left-fade exit (window-exit-to-left) while jira flies in from the right.",
+    steps: 8,
     exitDuration: 700,
     render: () => `
       <div class="scene intro">
@@ -222,8 +222,8 @@ const scenes = [
   {
     id: "claude-arrival",
     notes:
-      "Pacman descends along a 3-dot trail, eats the Claude AI icon. No window — claude-work's window does the entrance with real content.",
-    steps: 3,
+      "Pacman descends along a 3-dot trail, eats the Claude AI icon. No window — claude-work's window does the entrance with real content. The icon + trail-dots auto-appear with a delay after the scene mounts, so step 0 sets the table (pacman top + rotation + icon + dots) and step 1 plays the descent + eat.",
+    steps: 2,
     render: () => `
       <div class="scene claude-arrival">
         <div class="ca-pacman">${pacman("right", 84)}</div>
@@ -707,14 +707,14 @@ const scenes = [
         </div>
         <div class="bg-grid">
           ${[
-            ["#e34935",       "coding standards",  280, 500],
-            ["var(--orange)", "architecture",      620, 500],
-            ["#06b6d4",       "unit tests",        960, 500],
-            ["var(--pink)",   "integration tests", 1300, 500],
-            ["#16a34a",       "observability",     280, 760],
-            ["#a855f7",       "documentation",     620, 760],
-            ["#fbbf24",       "code review",       960, 760],
-            ["#6366f1",       "feature flags",     1300, 760],
+            ["#e34935",       "coding standards",  280, 440],
+            ["var(--orange)", "architecture",      620, 440],
+            ["#06b6d4",       "unit tests",        960, 440],
+            ["var(--pink)",   "integration tests", 1300, 440],
+            ["#16a34a",       "observability",     280, 680],
+            ["#a855f7",       "documentation",     620, 680],
+            ["#fbbf24",       "localization",      960, 680],
+            ["#6366f1",       "feature flags",     1300, 680],
           ]
             .map(([color, label, x, y], i) => `
               <div class="bg-cell" data-cell="${i}" style="left:${x}px; top:${y}px;">
@@ -726,30 +726,69 @@ const scenes = [
     `,
   },
 
-  // 10 — Claude.md scene. After enumerating the obstacles, the payoff:
-  // CLAUDE.md already has a section for each one. Reuses the .skill
-  // scene's editor styling (same VS Code-ish chrome) — added as a
-  // second class on the root so all `.skill .sk-*` rules apply
-  // unchanged while the scene id stays distinct for the HUD.
+  // 10 — Merged "incident" scene. Used to be two scenes (claude-md +
+  // claude-incident) but the slack alerts that pile on the editor
+  // belong with the incident response, so they live in one continuous
+  // scene now. The wallpaper crossfades sunset → blue-hour mid-scene
+  // (via onStep + window.setWallpaper) at the editor→terminal beat —
+  // sunset for the wrapping-up CLAUDE.md payoff, blue-hour for the
+  // twilight incident response.
+  //
+  //   0 — editor visible (CLAUDE.md, sunset wallpaper)
+  //   1 — 4 slack incident alerts pile in over the editor (top-right)
+  //   2 — editor slides off left, terminal slides in from right; alerts
+  //       still visible during the handoff; wallpaper crossfades to
+  //       blue-hour
+  //   3 — alerts fade out; user prompt typewriter: "checkout is broken
+  //       — what's going on?"
+  //   4 — claude calls atlas:coralogix; logs/trace/diff appear with a
+  //       deliberate "claude is searching" delay before they land
+  //   5 — diagnosis + fix
+  //   6 — user prompt typewriter: announce on #engineering
+  //   7 — slack-announce drafts the message (review beat)
+  //   8 — ✓ posted to #engineering
+  //   9 — 4 colleague thank-yous pile in top-right
+  //
+  // Background stays black throughout so the wallpaper crossfade
+  // doesn't expose any bg-colour shift through the partial-opacity
+  // layers. Coming from boring-grid (black, no wallpaper) the
+  // entrance fades the sunset wallpaper in on a constant black bg —
+  // smooth. Going to takeaways (black, no wallpaper) at the end is
+  // the symmetric fade-out.
   {
-    id: "claude-md",
+    id: "claude-incident",
     notes:
-      "VS Code editor showing CLAUDE.md — every obstacle from the previous grid has its own documented section. Reuses .skill scope via the extra `skill` class on the root. Step 1 fires 4 slack-style incident notifications top-right (white cards, Coralogix / PagerDuty / Sentry / incident.io bots) — the setup for the next claude-incident scene. Slide-from-right entrance, slide-left exit (next scene is another app window). Sunset wallpaper.",
-    steps: 2,
-    exitDuration: 700,
-    background: "var(--offwhite)",
+      "Editor (CLAUDE.md payoff) + slack alerts → terminal investigation → ✓ resolved → thank-yous. One scene, two windows, two notification stacks; the wallpaper switches sunset→blue-hour at step 2 via onStep + window.setWallpaper.",
+    steps: 10,
+    exitDuration: 500,
+    background: "var(--black)",
     xpBackground: "icons/xp-bliss-bg-sunset.svg",
+    onStep: (root, step, prev) => {
+      // Crossfade wallpaper at the editor→terminal beat. Both sides
+      // of the scene share the same black background, so the wallpaper
+      // crossfade doesn't leak bg-colour change through the layers.
+      if (step >= 2 && (prev < 2 || prev === -1) && window.setWallpaper) {
+        window.setWallpaper("icons/xp-bliss-bg-blue-hour.svg");
+      } else if (step < 2 && prev >= 2 && window.setWallpaper) {
+        window.setWallpaper("icons/xp-bliss-bg-sunset.svg");
+      }
+    },
     render: () => `
-      <div class="scene claude-md skill">
+      <div class="scene ci">
+        <!-- Editor window: CLAUDE.md payoff. Visible at steps 0-1,
+             slides off left at step 2. The skill-class wrapper around
+             .sk-editor reuses all the .skill .sk-* rules without
+             putting the skill class on the scene root (which would
+             also match the terminal .window via .skill .window). -->
         ${appWindow({
           variant: "frame",
           theme: "editor",
           title: "CLAUDE.md",
           width: 1300,
           height: 780,
-          className: "window-enter-from-right window-exit-to-left",
+          className: "ci-editor window-enter-from-right",
           body: `
-            <div class="sk-editor">
+            <div class="skill"><div class="sk-editor">
               <div class="sk-sidebar">
                 <div class="sk-side-header">Explorer</div>
                 <div class="sk-tree">
@@ -814,19 +853,20 @@ const scenes = [
                 <span class="sk-spacer"></span>
                 <span>Ln 1, Col 1</span>
               </div>
-            </div>
+            </div></div>
           `,
         })}
 
-        <!-- Slack-style incident notifications stack — appears top-right
-             at step 1. Sets up the next claude-incident scene by piling
-             on automated alerts the moment we finish reading the doc. -->
-        <div class="cm-notif-stack">
+        <!-- Slack-style incident alerts. Pile in over the editor at
+             step 1, persist visually through the editor→terminal
+             handoff at step 2, fade out at step 3 as claude starts
+             working. -->
+        <div class="ci-alert-stack">
           ${[
             ["Coralogix bot", "#alerts",   "P2: <code>/checkout</code> error rate &gt; 1% (last 5m)", "1m"],
             ["PagerDuty bot", "#oncall",   "page Jan — <code>mews-pms</code> p99 latency &gt; 2s", "1m"],
             ["Sentry bot",    "#mews-pms", "NullReferenceException · <code>TaxField.cs:42</code>", "2m"],
-            ["incident.io bot", "#status", "Incident MEWS-2025-04 declared (P2)", "2m"],
+            ["incident.io bot", "#engineering", "Incident MEWS-2025-04 declared (P2)", "2m"],
           ]
             .map(([who, channel, msg, when]) => `
               <div class="slack-notif">
@@ -839,42 +879,17 @@ const scenes = [
               </div>`)
             .join("")}
         </div>
-      </div>
-    `,
-  },
 
-  // 11 — Claude incident response. Picks up from claude-md (where the
-  // alerts piled on): user asks claude to investigate via the atlas
-  // coralogix skill, claude diagnoses + fixes, then announces on Slack
-  // through a slack-announce skill with a deliberate review step
-  // before posting. Four colleague thank-you notifications pop in at
-  // the end (international names, both genders).
-  //
-  //   0 — empty terminal (window just flew in)
-  //   1 — user prompt typewriter: investigate /checkout incident
-  //   2 — claude calls coralogix skill, queries + traces + diff
-  //   3 — diagnosis + fix applied
-  //   4 — user prompt typewriter: announce on #status
-  //   5 — claude drafts the slack message (review step — speaker pauses)
-  //   6 — ✓ posted to #status
-  //   7 — 4 colleague thank-you slack notifications pop in (top-right)
-  {
-    id: "claude-incident",
-    notes:
-      "Coralogix skill → diagnosis → fix → slack-announce skill with review step → ✓ posted → colleague thank-yous pop in. Slide-from-right entrance, fade-only exit (last app window before the closing slide). Blue-hour wallpaper — the deck's twilight beat as the engineer wraps up.",
-    steps: 8,
-    exitDuration: 500,
-    background: "var(--offwhite)",
-    xpBackground: "icons/xp-bliss-bg-blue-hour.svg",
-    render: () => `
-      <div class="scene ci">
+        <!-- Terminal window: enters from the right at step 2.
+             Investigation, fix, announce, posted — all rendered at
+             once, gated by per-step from-N classes inside. -->
         ${appWindow({
           variant: "frame",
           theme: "terminal",
           title: "claude code",
           width: 1280,
           height: 760,
-          className: "window-enter-from-right window-exit-fade",
+          className: "ci-terminal window-enter-from-right",
           body: `
             <div class="ci-screen">
               <div class="ci-splash">
@@ -884,60 +899,64 @@ const scenes = [
               </div>
               <div class="ci-transcript">
                 <div class="ci-scroll">
-                  <!-- Step 1: investigate prompt -->
+                  <!-- Step 3: investigate prompt -->
                   <div class="ci-line ci-line-p1">
                     <span class="ci-arrow">›</span>
-                    <span class="typewriter ci-tw-1"><span>investigate /checkout 500 spike — what changed, p99 last 30m</span></span>
+                    <span class="typewriter ci-tw-1"><span>checkout is broken — what's going on?</span></span>
                   </div>
-                  <div class="ci-line ci-spacer ci-from-2"></div>
-
-                  <!-- Step 2: claude calls coralogix skill, runs queries -->
-                  <div class="ci-line ci-from-2">Skill: <code>atlas:coralogix</code></div>
-                  <div class="ci-line ci-from-2 ci-indent"><span class="tool">Query</span><span class="ci-muted">Dataprime · service=mews-pms /checkout → 1,247 errors past 30m (baseline ~0)</span></div>
-                  <div class="ci-line ci-from-2 ci-indent"><span class="tool">Trace</span><span class="ci-muted">get_traces_v1 · NPE pattern across 89% of failed traces</span></div>
-                  <div class="ci-line ci-from-2 ci-indent"><span class="tool">Diff</span><span class="ci-muted">src/checkout/TaxField.cs · last touched by PR #1287 at 14:30</span></div>
-                  <div class="ci-line ci-spacer ci-from-3"></div>
-
-                  <!-- Step 3: diagnosis + fix -->
-                  <div class="ci-line ci-from-3"><span class="ci-err">✗</span> Root cause: <code>TaxField.cs:42</code> dereferences <code>taxConfig</code> without a null guard.</div>
-                  <div class="ci-line ci-from-3 ci-indent ci-muted">p99 latency: 4.8s (baseline 280ms)</div>
-                  <div class="ci-line ci-from-3"><span class="tool">Edit</span><span class="ci-muted">src/checkout/TaxField.cs · added null guard for taxConfig</span></div>
-                  <div class="ci-line ci-from-3 ci-indent"><span class="ci-ok">✓</span> Fixed. Hotfix queued — ETA 5m.</div>
                   <div class="ci-line ci-spacer ci-from-4"></div>
 
-                  <!-- Step 4: announce prompt -->
-                  <div class="ci-line ci-line-p2">
-                    <span class="ci-arrow">›</span>
-                    <span class="typewriter ci-tw-2"><span>announce on #status that it's resolved</span></span>
-                  </div>
+                  <!-- Step 4: claude calls coralogix skill. Logs/trace/
+                       diff sub-lines get longer staggered delays so the
+                       audience reads "claude is searching" before they
+                       land. -->
+                  <div class="ci-line ci-from-4">Skill: <code>atlas:coralogix</code></div>
+                  <div class="ci-line ci-from-4 ci-indent"><span class="tool">Logs</span><span class="ci-muted">checkout is throwing a lot of errors</span></div>
+                  <div class="ci-line ci-from-4 ci-indent"><span class="tool">Trace</span><span class="ci-muted">same error pattern across every failed request</span></div>
+                  <div class="ci-line ci-from-4 ci-indent"><span class="tool">Diff</span><span class="ci-muted">PR #1287 touched the tax code right before things broke</span></div>
                   <div class="ci-line ci-spacer ci-from-5"></div>
 
-                  <!-- Step 5: claude drafts message + review prompt -->
-                  <div class="ci-line ci-from-5">Skill: <code>slack-announce</code></div>
-                  <div class="ci-line ci-from-5">Draft for <code>#status</code>:</div>
-                  <div class="ci-draft ci-from-5">
-                    <div>🟢 RESOLVED · /checkout 500 spike (14:32 → 14:47)</div>
-                    <div>Root cause: NPE in TaxField.cs (PR #1287 regression)</div>
-                    <div>Hotfix: a3b9d2c · rolled out 14:46 · no customer impact</div>
-                  </div>
-                  <div class="ci-line ci-from-5 ci-indent ci-muted">[Review draft — press → to send]</div>
+                  <!-- Step 5: diagnosis + fix (plain English) -->
+                  <div class="ci-line ci-from-5"><span class="ci-err">✗</span> Looks like the tax code crashes when the config is missing.</div>
+                  <div class="ci-line ci-from-5 ci-indent ci-muted">checkout's also been slow because of the retries.</div>
+                  <div class="ci-line ci-from-5"><span class="tool">Edit</span><span class="ci-muted">handle the missing-config case</span></div>
+                  <div class="ci-line ci-from-5 ci-indent"><span class="ci-ok">✓</span> Fixed. Hotfix going out now.</div>
                   <div class="ci-line ci-spacer ci-from-6"></div>
 
-                  <!-- Step 6: posted -->
-                  <div class="ci-line ci-from-6"><span class="ci-ok">✓</span> Posted to <code>#status</code>.</div>
+                  <!-- Step 6: announce prompt -->
+                  <div class="ci-line ci-line-p2">
+                    <span class="ci-arrow">›</span>
+                    <span class="typewriter ci-tw-2"><span>announce on #engineering that it's resolved</span></span>
+                  </div>
+                  <div class="ci-line ci-spacer ci-from-7"></div>
+
+                  <!-- Step 7: claude drafts message + review prompt -->
+                  <div class="ci-line ci-from-7">Skill: <code>slack-announce</code></div>
+                  <div class="ci-line ci-from-7">Draft for <span class="ci-channel">#engineering:</span></div>
+                  <div class="ci-draft ci-from-7">
+                    <div>🟢 Resolved — checkout is back to normal.</div>
+                    <div>Cause: a missing config in the tax code from this morning's release.</div>
+                    <div>Hotfix is out. No customer impact.</div>
+                  </div>
+                  <div class="ci-line ci-from-7 ci-indent ci-muted">[Review draft — press → to send]</div>
+                  <div class="ci-line ci-spacer ci-from-8"></div>
+
+                  <!-- Step 8: posted -->
+                  <div class="ci-line ci-from-8"><span class="ci-ok">✓</span> Posted to <span class="ci-channel">#engineering.</span></div>
                 </div>
               </div>
             </div>
           `,
         })}
 
-        <!-- Step 7: colleague thank-you slack notifications pop in. -->
-        <div class="ci-notif-stack">
+        <!-- Step 9: colleague thank-yous pile in top-right over the
+             terminal. Same .slack-notif card chrome as the alerts. -->
+        <div class="ci-thanks-stack">
           ${[
-            ["Marie Dubois", "#status", "merci! you saved us 🙏", "now"],
-            ["Tomás García", "#status", "gracias amigo 🚀 super fast", "now"],
-            ["Yuki Tanaka", "#status", "amazing fix 🔥 thank you", "1m"],
-            ["Karl Müller", "#status", "🎉 danke schön!", "1m"],
+            ["Sarah", "#engineering", "you're a lifesaver 🙏", "now"],
+            ["Michael", "#engineering", "thanks, that was fast 🚀", "now"],
+            ["Emma", "#engineering", "amazing work 🔥", "1m"],
+            ["James", "#engineering", "🎉 thank you!", "1m"],
           ]
             .map(([who, channel, msg, when]) => `
               <div class="slack-notif">
@@ -969,14 +988,12 @@ const scenes = [
     steps: 4,
     render: () => `
       <div class="scene takeaways">
-        <h2 class="tk-title">What to take away</h2>
-
         <div class="tk-pacman">${pacman("down", 96)}</div>
 
         ${[
-          ["🍰", "Observe. Automate what you don't like."],
-          ["🍩", "Automate what you just did and will happen again."],
-          ["🍫", "Chain small skills and automations — create magic."],
+          ["🍰", `<span class="tk-hi tk-hi-yellow">Observe.</span> Automate what you don't like.`],
+          ["🍩", `Automate what you <span class="tk-hi tk-hi-pink">just did</span> and will happen <span class="tk-hi tk-hi-pink">again</span>.`],
+          ["🍫", `<span class="tk-hi tk-hi-orange">Chain</span> small skills and automations. Create magic.`],
         ]
           .map(([reward, text], i) => `
             <div class="tk-row" data-row="${i}">
@@ -988,17 +1005,21 @@ const scenes = [
     `,
   },
 
-  // 13 — Abstract / hook (legacy slide kept for reuse)
+  // 13 — Abstract / closing slide. The second sentence fades in
+  // automatically after a medium-length pause (~1.2s transition-delay
+  // + 0.5s fade = ~1.7s after the scene mounts). One step so the
+  // speaker can move on with a single → press when the line has
+  // landed; the pause is the deck's job, not the speaker's.
   {
     id: "abstract",
     notes:
-      "The core idea. Inspiration vs frustration — pink ghost above, two-line heading, pacman + ghosts in the bottom-right corner.",
+      "Two-line closer with an automatic pause between sentences. Pink ghost above. Pacman in the bottom-right corner. Second sentence ('Frustration is enough.') fades in with a 1.2s delay after the scene mounts — no manual step required.",
     render: () => `
       <div class="scene abstract-scene">
         <div class="abstract-ghost">${ghost("var(--pink)", "")}</div>
         <h2 class="abstract-h2">
-          Creativity in engineering doesn't always start with <span class="pink">inspiration.</span><br/>
-          Sometimes it starts with <em>frustration.</em>
+          You don't need <span class="pink">creativity.</span><br/>
+          <span class="abstract-second">Frustration is <em>enough.</em></span>
         </h2>
         <div style="position:absolute; right:120px; bottom:120px;">
           ${pacman("right", 90)}

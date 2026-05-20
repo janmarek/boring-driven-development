@@ -468,10 +468,11 @@ body {
 /* --- Abstract scene --- */
 .abstract-scene {
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   padding: 80px 120px;
-  gap: 36px;
+  gap: 56px;
+  text-align: center;
 }
 
 /* Pink ghost above the heading (replaces the old "The idea" kicker).
@@ -488,14 +489,20 @@ body {
   top: 50%;
 }
 
+/* The two-line punchline. line-height set high enough that the two
+   sentences breathe — the previous 1.02 packed them on top of each
+   other and the slide felt unbalanced against the ghost (top) +
+   pacman (bottom-right) corners. Centred horizontally to balance
+   against those corner anchors instead of hugging the left margin. */
 .abstract-h2 {
   font-size: 76px;
   font-weight: 700;
-  line-height: 1.02;
+  line-height: 1.35;
   margin: 0;
   max-width: 1350px;
   letter-spacing: -0.02em;
   color: var(--offwhite);
+  text-align: center;
 }
 .abstract-h2 em {
   font-style: normal;
@@ -503,6 +510,24 @@ body {
 }
 .abstract-h2 .pink {
   color: var(--pink);
+}
+
+/* Second sentence ("Frustration is enough.") starts hidden and fades
+   in automatically with a deliberate beat after the scene mounts.
+   The 1.2s transition-delay is the pause itself — the runtime sets
+   data-step="0" on the next frame after mounting, which kicks off
+   the delayed fade. The speaker doesn't have to time the press; the
+   deck handles the comedic-timing pause for them. */
+.abstract-scene .abstract-second {
+  opacity: 0;
+  display: inline-block;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+.abstract-scene[data-step="0"] .abstract-second {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 1.2s;
 }
 
 /* --- Pacman character --- */
@@ -701,7 +726,6 @@ body {
 }
 .gh-page-head {
   padding: 22px 28px 16px;
-  border-bottom: 1px solid #d0d7de;
 }
 .gh-page-head h2 {
   font-size: 28px;
@@ -914,9 +938,7 @@ body {
 .intro[data-step="4"] .intro-titles,
 .intro[data-step="5"] .intro-titles,
 .intro[data-step="6"] .intro-titles,
-.intro[data-step="7"] .intro-titles,
-.intro[data-step="8"] .intro-titles,
-.intro[data-step="9"] .intro-titles {
+.intro[data-step="7"] .intro-titles {
   opacity: 0;
 }
 
@@ -984,22 +1006,21 @@ body {
 /* Step 2: pacman travels right along the trail, eating the dots.
    2.5s travel (slower than the iter-12 1.5s) so each chomp registers
    visually before the next dot disappears. Stagger delays below match
-   this duration. */
+   this duration. At step 3 pacman holds the same position while the
+   slack icon appears and then the badge auto-pops on top of it. */
 .intro[data-step="2"] .intro-pacman,
-.intro[data-step="3"] .intro-pacman,
-.intro[data-step="4"] .intro-pacman {
+.intro[data-step="3"] .intro-pacman {
   left: 780px; top: 450px;
   transition-duration: 2.5s, 2.5s, 0.4s;
 }
-.intro[data-step="5"] .intro-pacman {
+.intro[data-step="4"] .intro-pacman {
   /* Moves up-right to eat the notification badge at (1100, 370). */
   left: 1070px; top: 380px;
   transition-duration: 0.6s, 0.6s, 0.4s;
 }
+.intro[data-step="5"] .intro-pacman,
 .intro[data-step="6"] .intro-pacman,
-.intro[data-step="7"] .intro-pacman,
-.intro[data-step="8"] .intro-pacman,
-.intro[data-step="9"] .intro-pacman {
+.intro[data-step="7"] .intro-pacman {
   left: 1700px; top: 380px;
   opacity: 0;
   transition-duration: 0.7s, 0.7s, 0.4s;
@@ -1036,9 +1057,7 @@ body {
 .intro[data-step="4"] .intro-dots .dot,
 .intro[data-step="5"] .intro-dots .dot,
 .intro[data-step="6"] .intro-dots .dot,
-.intro[data-step="7"] .intro-dots .dot,
-.intro[data-step="8"] .intro-dots .dot,
-.intro[data-step="9"] .intro-dots .dot { top: 450px; }
+.intro[data-step="7"] .intro-dots .dot { top: 450px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(1),
 .intro[data-step="2"] .intro-dots .dot:nth-child(1),
@@ -1046,9 +1065,7 @@ body {
 .intro[data-step="4"] .intro-dots .dot:nth-child(1),
 .intro[data-step="5"] .intro-dots .dot:nth-child(1),
 .intro[data-step="6"] .intro-dots .dot:nth-child(1),
-.intro[data-step="7"] .intro-dots .dot:nth-child(1),
-.intro[data-step="8"] .intro-dots .dot:nth-child(1),
-.intro[data-step="9"] .intro-dots .dot:nth-child(1) { left: 470px; }
+.intro[data-step="7"] .intro-dots .dot:nth-child(1) { left: 470px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(2),
 .intro[data-step="2"] .intro-dots .dot:nth-child(2),
@@ -1056,9 +1073,7 @@ body {
 .intro[data-step="4"] .intro-dots .dot:nth-child(2),
 .intro[data-step="5"] .intro-dots .dot:nth-child(2),
 .intro[data-step="6"] .intro-dots .dot:nth-child(2),
-.intro[data-step="7"] .intro-dots .dot:nth-child(2),
-.intro[data-step="8"] .intro-dots .dot:nth-child(2),
-.intro[data-step="9"] .intro-dots .dot:nth-child(2) { left: 570px; }
+.intro[data-step="7"] .intro-dots .dot:nth-child(2) { left: 570px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(3),
 .intro[data-step="2"] .intro-dots .dot:nth-child(3),
@@ -1066,9 +1081,7 @@ body {
 .intro[data-step="4"] .intro-dots .dot:nth-child(3),
 .intro[data-step="5"] .intro-dots .dot:nth-child(3),
 .intro[data-step="6"] .intro-dots .dot:nth-child(3),
-.intro[data-step="7"] .intro-dots .dot:nth-child(3),
-.intro[data-step="8"] .intro-dots .dot:nth-child(3),
-.intro[data-step="9"] .intro-dots .dot:nth-child(3) { left: 670px; }
+.intro[data-step="7"] .intro-dots .dot:nth-child(3) { left: 670px; }
 
 .intro[data-step="1"] .intro-dots .dot:nth-child(4),
 .intro[data-step="2"] .intro-dots .dot:nth-child(4),
@@ -1076,9 +1089,7 @@ body {
 .intro[data-step="4"] .intro-dots .dot:nth-child(4),
 .intro[data-step="5"] .intro-dots .dot:nth-child(4),
 .intro[data-step="6"] .intro-dots .dot:nth-child(4),
-.intro[data-step="7"] .intro-dots .dot:nth-child(4),
-.intro[data-step="8"] .intro-dots .dot:nth-child(4),
-.intro[data-step="9"] .intro-dots .dot:nth-child(4) { left: 770px; }
+.intro[data-step="7"] .intro-dots .dot:nth-child(4) { left: 770px; }
 
 /* Step 2+: dots get eaten — opacity 0, scale 0 */
 .intro[data-step="2"] .intro-dots .dot,
@@ -1086,9 +1097,7 @@ body {
 .intro[data-step="4"] .intro-dots .dot,
 .intro[data-step="5"] .intro-dots .dot,
 .intro[data-step="6"] .intro-dots .dot,
-.intro[data-step="7"] .intro-dots .dot,
-.intro[data-step="8"] .intro-dots .dot,
-.intro[data-step="9"] .intro-dots .dot {
+.intro[data-step="7"] .intro-dots .dot {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
@@ -1122,11 +1131,10 @@ body {
   transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1), opacity 0.55s ease-out;
 }
 /* Slack icon appears at step 3 — right after pacman finishes eating
-   the dot trail. Stays visible through step 5 (when it shrinks as the
-   slack window scales in at step 6). */
+   the dot trail. Stays visible through step 4 (when pacman eats the
+   notification badge); shrinks at step 5 as the slack window scales in. */
 .intro[data-step="3"] .intro-slack,
-.intro[data-step="4"] .intro-slack,
-.intro[data-step="5"] .intro-slack {
+.intro[data-step="4"] .intro-slack {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
@@ -1174,10 +1182,15 @@ body {
   box-shadow: 0 0 24px rgba(236, 90, 32, 0.7), 0 0 0 5px var(--black);
   transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1);
 }
-.intro[data-step="4"] .intro-badge {
+/* Auto-pops on top of the slack icon ~1s after step 3 lands, so the
+   speaker doesn't need a separate press for it. The 1s transition-delay
+   gives the slack icon enough time to scale-in (~0.6s) before the
+   badge demands attention. Step 4 eats it. */
+.intro[data-step="3"] .intro-badge {
   transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1) 1.0s;
 }
-.intro[data-step="5"] .intro-badge {
+.intro[data-step="4"] .intro-badge {
   transform: translate(-50%, -50%) scale(0);
   transition: transform 0.22s ease-in 0.4s;
 }
@@ -1205,10 +1218,9 @@ body {
   /* transform / opacity / transition come from .window-enter-scale and
      the .is-exiting .window-exit-to-left rules. */
 }
+.intro[data-step="5"] .intro-window,
 .intro[data-step="6"] .intro-window,
-.intro[data-step="7"] .intro-window,
-.intro[data-step="8"] .intro-window,
-.intro[data-step="9"] .intro-window {
+.intro[data-step="7"] .intro-window {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
@@ -1265,11 +1277,15 @@ body {
   transform: translateY(20px);
   transition: opacity 0.4s ease-out 0.1s, transform 0.4s ease-out 0.1s;
 }
-.intro[data-step="7"] .intro-window .new-msg,
-.intro[data-step="8"] .intro-window .new-msg,
-.intro[data-step="9"] .intro-window .new-msg {
+/* The bug message auto-appears at step 5 — same press that scales the
+   window in — but with a 1.0s delay so the audience sees the empty
+   channel first before Petr's message slides in. */
+.intro[data-step="5"] .intro-window .new-msg,
+.intro[data-step="6"] .intro-window .new-msg,
+.intro[data-step="7"] .intro-window .new-msg {
   opacity: 1;
   transform: translateY(0);
+  transition: opacity 0.4s ease-out 1.0s, transform 0.4s ease-out 1.0s;
 }
 .intro .intro-window .new-msg .sw-avatar { background: var(--orange); }
 .intro .intro-window .new-msg .sw-name {
@@ -1302,8 +1318,8 @@ body {
   transition: opacity 0.4s ease-out, transform 0.4s ease-out;
   pointer-events: none;
 }
-.intro[data-step="8"] .intro-window .sw-composer,
-.intro[data-step="9"] .intro-window .sw-composer {
+.intro[data-step="6"] .intro-window .sw-composer,
+.intro[data-step="7"] .intro-window .sw-composer {
   opacity: 1;
   transform: translateY(0);
 }
@@ -1338,11 +1354,11 @@ body {
   vertical-align: middle;
   transition: max-width 0.4s steps(31, end);
 }
-.intro[data-step="8"] .intro-window .sw-typing {
+.intro[data-step="6"] .intro-window .sw-typing {
   max-width: 32ch;
   transition: max-width 1.8s steps(31, end);
 }
-.intro[data-step="9"] .intro-window .sw-typing {
+.intro[data-step="7"] .intro-window .sw-typing {
   max-width: 0;
   transition: max-width 0.7s steps(31, end);
 }
@@ -1357,8 +1373,8 @@ body {
   opacity: 0;
   transition: opacity 0.2s ease-out;
 }
-.intro[data-step="8"] .intro-window .sw-cursor,
-.intro[data-step="9"] .intro-window .sw-cursor {
+.intro[data-step="6"] .intro-window .sw-cursor,
+.intro[data-step="7"] .intro-window .sw-cursor {
   opacity: 1;
   animation: blink 0.9s steps(1) infinite;
 }
@@ -1859,7 +1875,7 @@ body {
      reads on its own. Stagger delays on .ca-dot below match this. */
   transition: top 1.4s ease-in-out, opacity 0.4s ease-out;
 }
-.claude-arrival[data-step="2"] .ca-pacman { top: 620px; }
+.claude-arrival[data-step="1"] .ca-pacman { top: 620px; }
 
 /* Rotate the pacman SVG to face down automatically once the scene
    mounts. The bare element (no [data-step] selector) is unrotated; at
@@ -1873,14 +1889,14 @@ body {
   transition: transform 0.5s ease-in-out 0.5s;
 }
 .claude-arrival[data-step="0"] .ca-pacman .pacman,
-.claude-arrival[data-step="1"] .ca-pacman .pacman,
-.claude-arrival[data-step="2"] .ca-pacman .pacman {
+.claude-arrival[data-step="1"] .ca-pacman .pacman {
   transform: rotate(90deg);
 }
 
-/* --- 3 dots between pacman start (top 100) and icon (top 450). Appear
-   with the icon at step 1, eaten in a tight stagger at step 2 timed so
-   the disappearance reads as pacman chomping each one as it descends. */
+/* --- 3 dots between pacman start (top 100) and icon (top 450). Auto-
+   appear at step 0 (with the icon, after a delay), eaten in a tight
+   stagger at step 1 timed so the disappearance reads as pacman chomping
+   each one as it descends. */
 .claude-arrival .ca-dots .ca-dot {
   position: absolute;
   left: 800px;
@@ -1895,29 +1911,34 @@ body {
 .claude-arrival .ca-dots .ca-dot:nth-child(1) { top: 240px; }
 .claude-arrival .ca-dots .ca-dot:nth-child(2) { top: 360px; }
 .claude-arrival .ca-dots .ca-dot:nth-child(3) { top: 480px; }
-.claude-arrival[data-step="1"] .ca-dots .ca-dot {
+.claude-arrival[data-step="0"] .ca-dots .ca-dot {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-}
-.claude-arrival[data-step="2"] .ca-dots .ca-dot {
-  opacity: 0;
-  transform: translate(-50%, -50%) scale(0);
+  /* Auto-appear with a beat after pacman rotates down (rotation has
+     0.5s delay + 0.5s duration). 1.1s delay so the dots cascade in
+     after pacman is facing down — read as "now the path is laid out". */
+  transition: opacity 0.25s ease-out 1.1s, transform 0.25s ease-out 1.1s;
 }
 /* Stagger eats: pacman descends 100→620 over 1.4s (~371 px/s); its
    front-edge (centre + 42, rotated to face down) reaches each dot's
    top y at (y − 142)/371 s — matching the delays below. */
-.claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(1) {
+.claude-arrival[data-step="1"] .ca-dots .ca-dot {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0);
+}
+.claude-arrival[data-step="1"] .ca-dots .ca-dot:nth-child(1) {
   transition: opacity 0.2s ease-out 0.26s, transform 0.2s ease-out 0.26s;
 }
-.claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(2) {
+.claude-arrival[data-step="1"] .ca-dots .ca-dot:nth-child(2) {
   transition: opacity 0.2s ease-out 0.59s, transform 0.2s ease-out 0.59s;
 }
-.claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(3) {
+.claude-arrival[data-step="1"] .ca-dots .ca-dot:nth-child(3) {
   transition: opacity 0.2s ease-out 0.91s, transform 0.2s ease-out 0.91s;
 }
 
-/* --- Claude AI icon. Visible only at step 1; eaten with a delayed
-   shrink at step 2 so the shrink lands as pacman arrives. --- */
+/* --- Claude AI icon. Auto-appears at step 0 (after a delay matching
+   the rotate + dots cascade); eaten with a delayed shrink at step 1 so
+   the shrink lands as pacman arrives. --- */
 .claude-arrival .ca-icon {
   position: absolute;
   left: 800px;
@@ -1931,11 +1952,14 @@ body {
   filter: drop-shadow(0 0 28px rgba(236, 90, 32, 0.55));
   transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1), opacity 0.4s ease-out;
 }
-.claude-arrival[data-step="1"] .ca-icon {
+.claude-arrival[data-step="0"] .ca-icon {
   transform: scale(1);
   opacity: 1;
+  /* Icon scales in last (after rotate + dot cascade). 1.4s delay puts
+     it just behind the dots' arrival. */
+  transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1) 1.4s, opacity 0.4s ease-out 1.4s;
 }
-.claude-arrival[data-step="2"] .ca-icon {
+.claude-arrival[data-step="1"] .ca-icon {
   transform: scale(0);
   opacity: 0;
   /* Delay matches the moment pacman's mouth reaches the icon: descent
@@ -2780,39 +2804,84 @@ body {
 .pf .pf-notif-text { font-size: 17px; color: #ffffff; line-height: 1.35; }
 
 /* =====================================================================
- * Scene: claude-incident (8 steps)
+ * Scene: claude-incident (10 steps) — MERGED editor + incident flow
  *
- * Investigate the /checkout 500 spike with the atlas:coralogix skill →
- * diagnose → fix → announce on Slack via slack-announce → review the
- * draft → ✓ posted → colleague thank-yous pop in.
+ * Combines the CLAUDE.md payoff with the incident response into one
+ * continuous scene so the slack alerts visually persist across the
+ * editor→terminal handoff. The wallpaper crossfades sunset →
+ * blue-hour at the same beat (driven by onStep + window.setWallpaper
+ * in scenes.js). Black bg throughout — the wallpaper crossfade then
+ * sits on a constant bg-colour and partial-opacity layers don't leak
+ * any colour shift.
  *
- *   0 — empty terminal (window just flew in)
- *   1 — user prompt typewriter 1
- *   2 — claude calls coralogix skill, runs queries
- *   3 — diagnosis + fix
- *   4 — user prompt typewriter 2 (announce)
- *   5 — slack-announce skill, drafted message, review prompt
- *   6 — ✓ posted to #status
- *   7 — colleague thank-you notifications pop in top-right
+ *   0 — editor visible (CLAUDE.md, sunset wallpaper)
+ *   1 — 4 slack alerts pile in over the editor (staggered)
+ *   2 — editor slides off left; terminal slides in from right; alerts
+ *       still visible; wallpaper crossfades to blue-hour
+ *   3 — alerts fade out; user prompt 1 typewriter
+ *   4 — atlas:coralogix; logs/trace/diff with deliberate "searching"
+ *       delay before they land
+ *   5 — diagnosis + fix
+ *   6 — user prompt 2 typewriter (announce on #engineering)
+ *   7 — slack-announce draft + review beat
+ *   8 — ✓ posted to #engineering
+ *   9 — 4 colleague thank-yous pile in top-right
  *
- * Structure is the same as claude-pr-flow (.pf) but with its own scope
- * so step-gating numbers don't collide. The transcript inner wrapper
- * (.ci-scroll) translates up at later steps so the latest turn stays
- * within the visible viewport.
+ * The editor reuses the `.skill .sk-*` styles via a `.skill` wrapper
+ * inside its body content — not on the scene root, which would also
+ * match the terminal `.window`.
  * ===================================================================== */
 
 .ci { display: block; overflow: hidden; }
 
-.ci[data-step="0"] .window,
-.ci[data-step="1"] .window,
-.ci[data-step="2"] .window,
-.ci[data-step="3"] .window,
-.ci[data-step="4"] .window,
-.ci[data-step="5"] .window,
-.ci[data-step="6"] .window,
-.ci[data-step="7"] .window {
+/* --- Two windows in the scene, each gated by step. Both use
+   .window-enter-from-right (declared on className), so their default
+   is off-stage right opacity 0. The rules below override that to land
+   them at centre + visible during the steps they're meant to show.
+   The editor's exit-left is in-scene (not via the .is-exiting +
+   .window-exit-to-left framework — that fires only when the scene
+   itself is unmounting). */
+
+/* Editor: visible at steps 0-1. */
+.ci[data-step="0"] .ci-editor,
+.ci[data-step="1"] .ci-editor {
   transform: translate(-50%, -50%);
   opacity: 1;
+}
+/* Editor: slides off-left at step 2+. */
+.ci[data-step="2"] .ci-editor,
+.ci[data-step="3"] .ci-editor,
+.ci[data-step="4"] .ci-editor,
+.ci[data-step="5"] .ci-editor,
+.ci[data-step="6"] .ci-editor,
+.ci[data-step="7"] .ci-editor,
+.ci[data-step="8"] .ci-editor,
+.ci[data-step="9"] .ci-editor {
+  transform: translate(-180%, -50%);
+  opacity: 0;
+  transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2),
+              opacity 0.55s ease-in 0.2s;
+}
+
+/* Terminal: visible at steps 2+. Entrance is delayed ~0.55s after
+   the step-2 press so the editor has time to leave the stage before
+   the terminal arrives — matches the rhythm of cross-scene transitions
+   elsewhere in the deck (old window exits during `exitDuration`, new
+   window mounts after). Without the delay the two windows slide past
+   each other simultaneously, which reads as a single shared pan
+   rather than "previous app gone, new app arriving". */
+.ci[data-step="2"] .ci-terminal,
+.ci[data-step="3"] .ci-terminal,
+.ci[data-step="4"] .ci-terminal,
+.ci[data-step="5"] .ci-terminal,
+.ci[data-step="6"] .ci-terminal,
+.ci[data-step="7"] .ci-terminal,
+.ci[data-step="8"] .ci-terminal,
+.ci[data-step="9"] .ci-terminal {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+  transition: transform 0.65s cubic-bezier(.34, 1.2, .64, 1) 0.55s,
+              opacity 0.45s ease-out 0.55s;
 }
 
 .ci .ci-screen {
@@ -2870,10 +2939,11 @@ body {
   transition: transform 0.6s ease-in-out;
 }
 /* Scroll bumps so the latest turn stays inside the viewport once we're
-   past the diagnosis section. */
-.ci[data-step="5"] .ci-scroll,
-.ci[data-step="6"] .ci-scroll,
-.ci[data-step="7"] .ci-scroll { transform: translateY(-100px); }
+   past the diagnosis section (now at steps 7-9 with the editor beats
+   absorbed into the same scene). */
+.ci[data-step="7"] .ci-scroll,
+.ci[data-step="8"] .ci-scroll,
+.ci[data-step="9"] .ci-scroll { transform: translateY(-100px); }
 
 .ci .ci-line {
   opacity: 0;
@@ -2907,6 +2977,16 @@ body {
   font-size: 0.92em;
 }
 
+/* --- Channel name. Plain styled span (no code-pill padding) so
+   trailing punctuation sits tight against the channel name — the
+   code pill leaves a visible gap before a "." or ":" that lives
+   outside it. Used for "#engineering" in the draft preamble and the
+   posted-to confirmation. */
+.ci .ci-channel {
+  color: var(--ecru);
+  font-weight: 600;
+}
+
 /* --- Draft message preview box — slack-quote-bar look. */
 .ci .ci-draft {
   margin: 4px 0 4px 24px;
@@ -2925,53 +3005,104 @@ body {
   transition: opacity 0.3s ease-out, transform 0.3s ease-out;
 }
 
-/* --- Step gating: same verbose pattern as claude-pr-flow. */
-.ci[data-step="1"] .ci-line-p1, .ci[data-step="2"] .ci-line-p1,
+/* --- Step gating (transcript lines). Steps re-aligned for the merged
+   scene — the terminal beats now start at step 3 (after the editor
+   exits at step 2), so the from-N classes match the step they appear
+   on. */
 .ci[data-step="3"] .ci-line-p1, .ci[data-step="4"] .ci-line-p1,
 .ci[data-step="5"] .ci-line-p1, .ci[data-step="6"] .ci-line-p1,
-.ci[data-step="7"] .ci-line-p1 { opacity: 1; transform: translateY(0); }
-
-.ci[data-step="2"] .ci-from-2, .ci[data-step="3"] .ci-from-2,
-.ci[data-step="4"] .ci-from-2, .ci[data-step="5"] .ci-from-2,
-.ci[data-step="6"] .ci-from-2, .ci[data-step="7"] .ci-from-2 { opacity: 1; transform: translateY(0); }
-
-.ci[data-step="3"] .ci-from-3, .ci[data-step="4"] .ci-from-3,
-.ci[data-step="5"] .ci-from-3, .ci[data-step="6"] .ci-from-3,
-.ci[data-step="7"] .ci-from-3 { opacity: 1; transform: translateY(0); }
+.ci[data-step="7"] .ci-line-p1, .ci[data-step="8"] .ci-line-p1,
+.ci[data-step="9"] .ci-line-p1 { opacity: 1; transform: translateY(0); }
 
 .ci[data-step="4"] .ci-from-4, .ci[data-step="5"] .ci-from-4,
-.ci[data-step="6"] .ci-from-4, .ci[data-step="7"] .ci-from-4 { opacity: 1; transform: translateY(0); }
-.ci[data-step="4"] .ci-line-p2, .ci[data-step="5"] .ci-line-p2,
-.ci[data-step="6"] .ci-line-p2, .ci[data-step="7"] .ci-line-p2 { opacity: 1; transform: translateY(0); }
+.ci[data-step="6"] .ci-from-4, .ci[data-step="7"] .ci-from-4,
+.ci[data-step="8"] .ci-from-4, .ci[data-step="9"] .ci-from-4 { opacity: 1; transform: translateY(0); }
 
 .ci[data-step="5"] .ci-from-5, .ci[data-step="6"] .ci-from-5,
-.ci[data-step="7"] .ci-from-5 { opacity: 1; transform: translateY(0); }
+.ci[data-step="7"] .ci-from-5, .ci[data-step="8"] .ci-from-5,
+.ci[data-step="9"] .ci-from-5 { opacity: 1; transform: translateY(0); }
 
-.ci[data-step="6"] .ci-from-6, .ci[data-step="7"] .ci-from-6 { opacity: 1; transform: translateY(0); }
+.ci[data-step="6"] .ci-from-6, .ci[data-step="7"] .ci-from-6,
+.ci[data-step="8"] .ci-from-6, .ci[data-step="9"] .ci-from-6 { opacity: 1; transform: translateY(0); }
+.ci[data-step="6"] .ci-line-p2, .ci[data-step="7"] .ci-line-p2,
+.ci[data-step="8"] .ci-line-p2, .ci[data-step="9"] .ci-line-p2 { opacity: 1; transform: translateY(0); }
 
-/* Staggered indented query lines on step 2 (give the audience a beat
-   per tool call). */
-.ci[data-step="2"] .ci-from-2.ci-indent:nth-of-type(2) { transition-delay: 0.20s; }
-.ci[data-step="2"] .ci-from-2.ci-indent:nth-of-type(3) { transition-delay: 0.50s; }
-.ci[data-step="2"] .ci-from-2.ci-indent:nth-of-type(4) { transition-delay: 0.80s; }
+.ci[data-step="7"] .ci-from-7, .ci[data-step="8"] .ci-from-7,
+.ci[data-step="9"] .ci-from-7 { opacity: 1; transform: translateY(0); }
+
+.ci[data-step="8"] .ci-from-8, .ci[data-step="9"] .ci-from-8 { opacity: 1; transform: translateY(0); }
+
+/* Staggered, deliberately-slow sub-line reveal at step 4 (logs / trace
+   / diff). Higher delays than before so the audience reads "claude is
+   searching" before the lines land — the user asked for the logs to
+   appear noticeably late, not immediately on press. */
+.ci[data-step="4"] .ci-from-4.ci-indent:nth-of-type(2) { transition-delay: 0.80s; }
+.ci[data-step="4"] .ci-from-4.ci-indent:nth-of-type(3) { transition-delay: 1.50s; }
+.ci[data-step="4"] .ci-from-4.ci-indent:nth-of-type(4) { transition-delay: 2.20s; }
 
 /* Typewriter widths. Chars:
-   p1 = "investigate /checkout 500 spike — what changed, p99 last 30m" (60)
-   p2 = "announce on #status that it's resolved" (38) */
-.ci[data-step="1"] .ci-tw-1, .ci[data-step="2"] .ci-tw-1, .ci[data-step="3"] .ci-tw-1,
-.ci[data-step="4"] .ci-tw-1, .ci[data-step="5"] .ci-tw-1, .ci[data-step="6"] .ci-tw-1,
-.ci[data-step="7"] .ci-tw-1 {
-  max-width: 62ch;
-  transition: max-width 2.0s steps(60, end);
+   p1 = "checkout is broken — what's going on?" (37)
+   p2 = "announce on #engineering that it's resolved" (43) */
+.ci[data-step="3"] .ci-tw-1, .ci[data-step="4"] .ci-tw-1, .ci[data-step="5"] .ci-tw-1,
+.ci[data-step="6"] .ci-tw-1, .ci[data-step="7"] .ci-tw-1, .ci[data-step="8"] .ci-tw-1,
+.ci[data-step="9"] .ci-tw-1 {
+  max-width: 38ch;
+  transition: max-width 1.6s steps(37, end);
 }
-.ci[data-step="4"] .ci-tw-2, .ci[data-step="5"] .ci-tw-2, .ci[data-step="6"] .ci-tw-2,
-.ci[data-step="7"] .ci-tw-2 {
-  max-width: 40ch;
-  transition: max-width 1.5s steps(38, end);
+.ci[data-step="6"] .ci-tw-2, .ci[data-step="7"] .ci-tw-2, .ci[data-step="8"] .ci-tw-2,
+.ci[data-step="9"] .ci-tw-2 {
+  max-width: 45ch;
+  transition: max-width 1.7s steps(43, end);
 }
 
-/* --- Colleague thank-you notification stack (step 7). */
-.ci .ci-notif-stack {
+/* --- Slack incident-alert stack. Pile in over the editor at step 1,
+   persist visually through step 2 (the editor→terminal handoff), fade
+   out at step 3 as claude starts working. Positioned to land on the
+   editor's upper-right (editor is 1300px centered on 1600px → spans
+   x≈150–1450; stack at right=90 width=380 sits at x≈1130–1510, mostly
+   over the editor with a slight hang past the right edge). */
+.ci .ci-alert-stack {
+  position: absolute;
+  top: 100px;
+  right: 90px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 380px;
+  z-index: 10;
+  pointer-events: none;
+}
+.ci[data-step="1"] .ci-alert-stack .slack-notif {
+  transform: translateX(0);
+  opacity: 1;
+}
+.ci[data-step="1"] .ci-alert-stack .slack-notif:nth-child(1) { transition-delay: 0.20s; }
+.ci[data-step="1"] .ci-alert-stack .slack-notif:nth-child(2) { transition-delay: 0.60s; }
+.ci[data-step="1"] .ci-alert-stack .slack-notif:nth-child(3) { transition-delay: 1.00s; }
+.ci[data-step="1"] .ci-alert-stack .slack-notif:nth-child(4) { transition-delay: 1.40s; }
+/* Step 2+: alerts slide back off-screen right + fade, in step with
+   the editor→terminal handoff. Using slide-right (back the way they
+   came) rather than just opacity feels intentional — the alerts get
+   dismissed as the engineer pulls up the terminal. All four leave
+   together; no stagger on the way out. */
+.ci[data-step="2"] .ci-alert-stack .slack-notif,
+.ci[data-step="3"] .ci-alert-stack .slack-notif,
+.ci[data-step="4"] .ci-alert-stack .slack-notif,
+.ci[data-step="5"] .ci-alert-stack .slack-notif,
+.ci[data-step="6"] .ci-alert-stack .slack-notif,
+.ci[data-step="7"] .ci-alert-stack .slack-notif,
+.ci[data-step="8"] .ci-alert-stack .slack-notif,
+.ci[data-step="9"] .ci-alert-stack .slack-notif {
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.45s ease-in, opacity 0.4s ease-in;
+  transition-delay: 0s;
+}
+
+/* --- Colleague thank-you stack (step 9). Same card chrome as the
+   alerts. Sits higher up (top:40) so it doesn't clash with the
+   terminal's own top padding. */
+.ci .ci-thanks-stack {
   position: absolute;
   top: 40px;
   right: 30px;
@@ -2982,22 +3113,22 @@ body {
   z-index: 10;
   pointer-events: none;
 }
-.ci[data-step="7"] .slack-notif {
+.ci[data-step="9"] .ci-thanks-stack .slack-notif {
   transform: translateX(0);
   opacity: 1;
 }
-.ci[data-step="7"] .slack-notif:nth-child(1) { transition-delay: 0.20s; }
-.ci[data-step="7"] .slack-notif:nth-child(2) { transition-delay: 0.60s; }
-.ci[data-step="7"] .slack-notif:nth-child(3) { transition-delay: 1.00s; }
-.ci[data-step="7"] .slack-notif:nth-child(4) { transition-delay: 1.40s; }
+.ci[data-step="9"] .ci-thanks-stack .slack-notif:nth-child(1) { transition-delay: 0.20s; }
+.ci[data-step="9"] .ci-thanks-stack .slack-notif:nth-child(2) { transition-delay: 0.60s; }
+.ci[data-step="9"] .ci-thanks-stack .slack-notif:nth-child(3) { transition-delay: 1.00s; }
+.ci[data-step="9"] .ci-thanks-stack .slack-notif:nth-child(4) { transition-delay: 1.40s; }
 
 /* =====================================================================
  * Reusable slack-style notification card
  *
- * White card with the slack mark on the left, used by both claude-md
- * (incident alerts) and claude-incident (colleague thank-yous). The
+ * White card with the slack mark on the left, used by both alert and
+ * thank-you stacks in the merged claude-incident scene. The
  * stack-container (positioning + per-step visibility gating) is
- * per-scene; only the card chrome is shared here.
+ * per-stack; only the card chrome is shared here.
  *
  *   <div class="<per-scene>-stack">
  *     <div class="slack-notif">
@@ -3077,27 +3208,6 @@ body {
   color: #1f2937;
 }
 
-/* --- Per-scene stack: claude-md incident alerts (top-right, step 1). */
-.claude-md .cm-notif-stack {
-  position: absolute;
-  top: 40px;
-  right: 30px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 360px;
-  z-index: 10;
-  pointer-events: none;
-}
-.claude-md[data-step="1"] .slack-notif {
-  transform: translateX(0);
-  opacity: 1;
-}
-.claude-md[data-step="1"] .slack-notif:nth-child(1) { transition-delay: 0.20s; }
-.claude-md[data-step="1"] .slack-notif:nth-child(2) { transition-delay: 0.60s; }
-.claude-md[data-step="1"] .slack-notif:nth-child(3) { transition-delay: 1.00s; }
-.claude-md[data-step="1"] .slack-notif:nth-child(4) { transition-delay: 1.40s; }
-
 /* =====================================================================
  * Scene: takeaways (4 steps)
  *
@@ -3121,27 +3231,11 @@ body {
   padding: 80px 120px 80px;
 }
 
-.takeaways .tk-title {
-  position: absolute;
-  left: 120px;
-  top: 80px;
-  margin: 0;
-  font-size: 64px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--offwhite);
-}
-.takeaways .tk-title::after {
-  /* Small yellow accent — picks up the title-scene 'BORING DRIVEN
-     DEVELOPMENT' palette so the closing summary visually echoes the
-     opening. */
-  content: ".";
-  color: var(--yellow);
-}
-
 /* --- Reward column on the left + takeaway column on the right.
    Rows positioned absolutely at fixed y so pacman can land on each
-   reward's centre by transitioning between specific top values. */
+   reward's centre by transitioning between specific top values.
+   Shifted up by ~100px from the earlier layout so the whole scene
+   sits closer to the top of the stage (no headline above any more). */
 .takeaways .tk-row {
   position: absolute;
   left: 280px;
@@ -3150,9 +3244,21 @@ body {
   gap: 56px;
   height: 110px;
 }
-.takeaways .tk-row[data-row="0"] { top: 320px; }
-.takeaways .tk-row[data-row="1"] { top: 490px; }
-.takeaways .tk-row[data-row="2"] { top: 660px; }
+.takeaways .tk-row[data-row="0"] { top: 220px; }
+.takeaways .tk-row[data-row="1"] { top: 400px; }
+.takeaways .tk-row[data-row="2"] { top: 580px; }
+
+/* Highlighted words in each takeaway. The brand palette gets one
+   colour per phrase so the four highlights don't read as a single
+   block of yellow: Observe (yellow), just did (orange), again (pink),
+   Chain (blue/mint). Same colours as pacman's ghosts in earlier
+   scenes — gives the closing slide visual continuity with the rest
+   of the deck. */
+.takeaways .tk-hi { font-weight: 700; }
+.takeaways .tk-hi-yellow { color: var(--yellow); }
+.takeaways .tk-hi-orange { color: var(--orange); }
+.takeaways .tk-hi-pink   { color: var(--pink); }
+.takeaways .tk-hi-blue   { color: var(--blue); }
 
 .takeaways .tk-reward {
   width: 110px;
@@ -3177,44 +3283,47 @@ body {
   transition: opacity 0.45s ease-out, transform 0.45s ease-out;
 }
 
-/* --- Pacman descends from y=180 down to each reward's y in turn.
-   Reward y's are 320 / 490 / 660 → row centres are 320+55=375 /
-   490+55=545 / 660+55=715. Pacman wrapper at left:335 (reward centre)
-   with margin-left:-48 to centre the 96px pacman; pacman top values
-   match the row centres exactly. */
+/* --- Pacman descends from y=120 down to each row's centre in turn.
+   Rows are now at top 220 / 400 / 580 → centres at 275 / 455 / 635
+   (row top + 55, half of the 110px row height). Pacman wrapper at
+   left=335 (reward centre x) with margin-left:-48 to centre the 96px
+   pacman; pacman top values match the row centres exactly. */
 .takeaways .tk-pacman {
   position: absolute;
   width: 96px;
   height: 96px;
   left: 335px;
-  top: 180px;
+  top: 120px;
   margin-left: -48px;
   margin-top: -48px;
   transition: top 0.6s ease-in-out;
 }
-.takeaways[data-step="1"] .tk-pacman { top: 375px; }
-.takeaways[data-step="2"] .tk-pacman { top: 545px; }
-.takeaways[data-step="3"] .tk-pacman { top: 715px; }
+.takeaways[data-step="1"] .tk-pacman { top: 275px; }
+.takeaways[data-step="2"] .tk-pacman { top: 455px; }
+.takeaways[data-step="3"] .tk-pacman { top: 635px; }
 
-/* --- Eaten reward: scale → 0, fade out. The takeaway on its right
-   slides in. Timed so the reward shrinks just as pacman arrives. */
+/* --- Eaten reward: scale → 0, fade out. Shrink starts at 0.20s
+   into the 0.6s pacman descent (was 0.45s — felt like the reward
+   vanished after pacman had already passed it). Now pacman's mouth
+   bites into the reward mid-flight and the shrink finishes ~0.50s
+   in, well before pacman comes to rest. */
 .takeaways[data-step="1"] .tk-row[data-row="0"] .tk-reward,
 .takeaways[data-step="2"] .tk-row[data-row="0"] .tk-reward,
 .takeaways[data-step="3"] .tk-row[data-row="0"] .tk-reward {
   transform: scale(0);
   opacity: 0;
-  transition: transform 0.22s ease-in 0.45s, opacity 0.22s ease-in 0.45s;
+  transition: transform 0.28s ease-in 0.20s, opacity 0.28s ease-in 0.20s;
 }
 .takeaways[data-step="2"] .tk-row[data-row="1"] .tk-reward,
 .takeaways[data-step="3"] .tk-row[data-row="1"] .tk-reward {
   transform: scale(0);
   opacity: 0;
-  transition: transform 0.22s ease-in 0.45s, opacity 0.22s ease-in 0.45s;
+  transition: transform 0.28s ease-in 0.20s, opacity 0.28s ease-in 0.20s;
 }
 .takeaways[data-step="3"] .tk-row[data-row="2"] .tk-reward {
   transform: scale(0);
   opacity: 0;
-  transition: transform 0.22s ease-in 0.45s, opacity 0.22s ease-in 0.45s;
+  transition: transform 0.28s ease-in 0.20s, opacity 0.28s ease-in 0.20s;
 }
 
 /* --- Takeaway text fades in shortly after the reward is eaten. */
@@ -3223,18 +3332,18 @@ body {
 .takeaways[data-step="3"] .tk-row[data-row="0"] .tk-takeaway {
   opacity: 1;
   transform: translateX(0);
-  transition-delay: 0.65s;
+  transition-delay: 0.55s;
 }
 .takeaways[data-step="2"] .tk-row[data-row="1"] .tk-takeaway,
 .takeaways[data-step="3"] .tk-row[data-row="1"] .tk-takeaway {
   opacity: 1;
   transform: translateX(0);
-  transition-delay: 0.65s;
+  transition-delay: 0.55s;
 }
 .takeaways[data-step="3"] .tk-row[data-row="2"] .tk-takeaway {
   opacity: 1;
   transform: translateX(0);
-  transition-delay: 0.65s;
+  transition-delay: 0.55s;
 }
 
 /* =====================================================================
@@ -3258,13 +3367,15 @@ body {
 
 /* --- Pacman top-left. Margin-based centring keeps the chomp animation
    intact (the chomp animates child .half elements, not the .pacman
-   root, so a translate transform on the wrapper is fine). */
+   root, so a translate transform on the wrapper is fine). Sits at
+   y=160 so the whole scene (pacman + bubble + 4×2 grid) drifts a bit
+   closer to the top of the stage — feels less bottom-heavy. */
 .boring .bg-pacman {
   position: absolute;
   width: 100px;
   height: 100px;
   left: 220px;
-  top: 220px;
+  top: 160px;
   margin-left: -50px;
   margin-top: -50px;
 }
@@ -3277,7 +3388,7 @@ body {
 .boring .bg-bubble {
   position: absolute;
   left: 540px;
-  top: 220px;
+  top: 160px;
   transform: translate(-50%, -50%) scale(0.85);
   transform-origin: left center;
   opacity: 0;

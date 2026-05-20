@@ -151,6 +151,11 @@ function setWallpaper(file) {
   xpFront = nextKey;
 }
 
+// Exposed so a scene's onStep can crossfade wallpapers mid-scene (the
+// merged claude-incident scene uses this to swap sunset → blue-hour at
+// the editor→terminal beat without splitting into two scenes).
+window.setWallpaper = setWallpaper;
+
 let sceneIndex = 0;
 let stepIndex = 0;
 // True between "user pressed → past the last step" and the next scene

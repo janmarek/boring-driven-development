@@ -1,35 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
   <defs>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0"    stop-color="#3b1f5e"/>
-      <stop offset="0.32" stop-color="#a64570"/>
-      <stop offset="0.62" stop-color="#ef7a48"/>
-      <stop offset="0.85" stop-color="#ffb978"/>
-      <stop offset="1"    stop-color="#ffd9a2"/>
+      <stop offset="0"    stop-color="#1d0a3a"/>
+      <stop offset="0.25" stop-color="#43155b"/>
+      <stop offset="0.5"  stop-color="#8c2a52"/>
+      <stop offset="0.78" stop-color="#d8533a"/>
+      <stop offset="1"    stop-color="#b83a2a"/>
     </linearGradient>
     <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0"    stop-color="#fff0c4" stop-opacity="0.95"/>
-      <stop offset="0.35" stop-color="#ff9758" stop-opacity="0.6"/>
-      <stop offset="1"    stop-color="#ff6a3a" stop-opacity="0"/>
+      <stop offset="0"    stop-color="#ffd078" stop-opacity="0.7"/>
+      <stop offset="0.5"  stop-color="#ff8848" stop-opacity="0.35"/>
+      <stop offset="1"    stop-color="#ff5a30" stop-opacity="0"/>
     </radialGradient>
     <radialGradient id="cloud" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0"    stop-color="#ffd0a8" stop-opacity="0.92"/>
-      <stop offset="0.55" stop-color="#ff9a72" stop-opacity="0.32"/>
-      <stop offset="1"    stop-color="#ff9a72" stop-opacity="0"/>
+      <stop offset="0"    stop-color="#f7a87a" stop-opacity="0.65"/>
+      <stop offset="0.55" stop-color="#c8624a" stop-opacity="0.25"/>
+      <stop offset="1"    stop-color="#c8624a" stop-opacity="0"/>
     </radialGradient>
     <linearGradient id="hillBg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#6a3958"/>
-      <stop offset="1" stop-color="#311e30"/>
+      <stop offset="0" stop-color="#54293f"/>
+      <stop offset="1" stop-color="#231425"/>
     </linearGradient>
     <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#3c1f37"/>
-      <stop offset="1" stop-color="#0f0814"/>
+      <stop offset="0" stop-color="#2b132a"/>
+      <stop offset="1" stop-color="#0a050f"/>
     </linearGradient>
   </defs>
 
   <rect width="1600" height="900" fill="url(#sky)"/>
 
-  <ellipse cx="900" cy="540" rx="640" ry="340" fill="url(#sun)"/>
+  <ellipse cx="900" cy="600" rx="560" ry="300" fill="url(#sun)"/>
 
   <g>
     <ellipse cx="240"  cy="180" rx="240" ry="34" fill="url(#cloud)"/>

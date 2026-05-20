@@ -84,12 +84,14 @@ for (let i = 0; i < scenes.length; i++) {
     //  - title step 11: pacman returns from offstage and eats claude (~1.6s)
     let wait = 900;
     if (s.id === "title" && step === 2) wait = 3000;          // dot-eat stagger (2.5s pacman + 0.2s anim end)
-    else if (s.id === "title" && step === 8) wait = 2200;     // typewriter
-    else if (s.id === "title" && step === 9) wait = 1100;     // reverse typewriter
+    else if (s.id === "title" && step === 3) wait = 2200;     // slack icon scale-in + 1s-delayed badge pop
+    else if (s.id === "title" && step === 5) wait = 2200;     // window scale-in + 1s-delayed bug message slide
+    else if (s.id === "title" && step === 6) wait = 2200;     // typewriter
+    else if (s.id === "title" && step === 7) wait = 1100;     // reverse typewriter
     else if (s.id === "jira" && step === 2) wait = 1800;      // summary typewriter
     else if (s.id === "jira" && step === 3) wait = 4400;      // staggered field fills (last delay 3.80s + 0.3s anim)
-    else if (s.id === "claude-arrival" && step === 0) wait = 1400;  // auto-rotate after delay
-    else if (s.id === "claude-arrival" && step === 2) wait = 2000;  // 1.4s descent + icon shrink
+    else if (s.id === "claude-arrival" && step === 0) wait = 2200;  // auto-rotate (1.0s) + dot cascade (1.1s delay) + icon (1.4s delay)
+    else if (s.id === "claude-arrival" && step === 1) wait = 2000;  // 1.4s descent + icon shrink
     else if (s.id === "claude-work" && step === 2) wait = 2300;  // prompt 1 typewriter
     else if (s.id === "claude-work" && step === 3) wait = 2000;  // tool calls + error stagger
     else if (s.id === "claude-work" && step === 4) wait = 2000;  // prompt 2 typewriter
@@ -104,6 +106,13 @@ for (let i = 0; i < scenes.length; i++) {
     else if (s.id === "claude-pr-flow" && step === 9) wait = 2400;  // tw-4 (2.0s)
     else if (s.id === "boring-grid" && step === 1) wait = 1300;  // top-row ghost stagger (last delay 0.65 + 0.5)
     else if (s.id === "boring-grid" && step === 2) wait = 1300;  // bottom-row ghost stagger
+    // Merged claude-incident — editor + alerts beats, then terminal:
+    else if (s.id === "claude-incident" && step === 1) wait = 2200;  // 4 alerts stagger (last delay 1.40 + 0.45s)
+    else if (s.id === "claude-incident" && step === 2) wait = 1600;  // editor exit + terminal enter + wallpaper crossfade
+    else if (s.id === "claude-incident" && step === 3) wait = 2300;  // tw-1 (1.6s) + alerts fade
+    else if (s.id === "claude-incident" && step === 4) wait = 2800;  // logs/trace/diff stagger (last delay 2.20s + 0.3s)
+    else if (s.id === "claude-incident" && step === 6) wait = 2300;  // tw-2 (1.7s)
+    else if (s.id === "claude-incident" && step === 9) wait = 2200;  // 4 thanks stagger
     // On the first step of any scene whose predecessor has an
     // exitDuration, add that exit time + entrance buffer to the wait so
     // we don't screenshot mid-transition between scenes.
