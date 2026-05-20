@@ -38,7 +38,8 @@ Four files do all the work:
   notes: "one-liner",          // optional, runtime ignores
   steps: 8,                    // optional, defaults to 1
   exitDuration: 500,           // optional ms — see "Exit animations" below
-  background: "var(--mauve)",  // optional — see "Background tint" below
+  background: "var(--offwhite)", // optional — see "Background tint" below
+  xpBackground: true,          // optional — opts into the XP-bliss wallpaper layer
   render: () => `<div class="scene my-scene">…</div>`,
   onStep: (root, step, prev) => {…} // optional, called on each step change
 }
@@ -70,7 +71,13 @@ When in doubt, look at how the existing scenes opt in via `appWindow({ className
 
 The `#app` element (the full-screen container behind the stage) has `transition: background-color 0.8s ease-in-out`. The runtime sets `#app.style.backgroundColor = scene.background || ""` on every mount — so any scene that sets `background: "var(--mauve)"` (or any colour) gets a smooth fade from the previous scene's tint. Scenes that omit `background` revert to the CSS default (`var(--black)`), which also transitions.
 
-Use this for an arc-level tint (e.g. claude-work / skill / github all set `background: "var(--mauve)"`, so the deck stays mauve through that stretch and fades back to black for the closing slide). Per-scene roots should NOT set their own `background` — that would cover the tinted `#app` and break continuity.
+Use this for an arc-level tint (e.g. claude-work / skill / github all set `background: "var(--offwhite)"`, so the deck stays offwhite through that stretch and fades back to black for the closing slide). Per-scene roots should NOT set their own `background` — that would cover the tinted `#app` and break continuity.
+
+### XP-bliss wallpaper layer
+
+The same arc of scenes (claude-work / skill / github) also opts into an abstract Windows XP "Bliss"-style wallpaper — soft mauve rolling hills + wispy clouds on the offwhite sky tint. It lives in `icons/xp-bliss-bg.svg`, painted onto a dedicated `#xp-bg` layer between `#app`'s background-color and `#stage`. The runtime toggles `#xp-bg.is-visible` based on `scene.xpBackground === true`; opacity transitions at the same speed as the bg-color fade (0.8s), so the wallpaper crossfades in alongside the color.
+
+To opt a new scene into the wallpaper, just add `xpBackground: true` to the scene definition. To swap the wallpaper for a different illustration, replace `icons/xp-bliss-bg.svg` (1600×900 viewBox, transparent-where-empty so the scene tint shows through, no internal CSS — it loads via `background-image`).
 
 ### Exit animations
 

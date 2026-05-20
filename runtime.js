@@ -123,6 +123,7 @@ const appWindow = (opts = {}) => {
 
 const stage = document.getElementById("stage");
 const app = document.getElementById("app");
+const xpBg = document.getElementById("xp-bg");
 const counterEl = document.getElementById("counter");
 
 let sceneIndex = 0;
@@ -158,6 +159,11 @@ function mountScene(i, step = 0) {
   // on #app in CSS, so swapping between scenes with different background
   // values fades smoothly.
   app.style.backgroundColor = scene.background || "";
+
+  // Abstract XP-bliss-style wallpaper layer. Crossfades in/out via the
+  // opacity transition on #xp-bg in CSS. Only the offwhite arc-tinted
+  // scenes (claude-work / skill / github) opt in via scene.xpBackground.
+  if (xpBg) xpBg.classList.toggle("is-visible", !!scene.xpBackground);
 
   let html = "";
   try {

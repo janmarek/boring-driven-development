@@ -73,8 +73,8 @@ body {
   background: var(--black);
   /* Per-scene background tint — runtime sets `#app.style.backgroundColor`
      from `scene.background` on mount. Transition lets the colour fade
-     between scenes (e.g. black → mauve when claude-work appears, mauve
-     → black on the closing slide). */
+     between scenes (e.g. black → offwhite when claude-work appears,
+     offwhite → black on the closing slide). */
   transition: background-color 0.8s ease-in-out;
 }
 
@@ -88,6 +88,25 @@ body {
      Scene roots also avoid setting a background so the colour change
      is continuous across the whole viewport. */
 }
+
+/* Abstract Windows XP "Bliss"-style wallpaper layer. Sits between #app's
+   solid background-color tint and the #stage. Only visible when the
+   runtime adds .is-visible (driven by scene.xpBackground === true).
+   Opacity transitions at the same speed as the scene-tint colour fade
+   so the wallpaper crossfades in/out alongside the colour. */
+#xp-bg {
+  position: absolute;
+  inset: 0;
+  background-image: url("icons/xp-bliss-bg.svg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  pointer-events: none;
+  z-index: 0;
+}
+#xp-bg.is-visible { opacity: 1; }
 
 #hud {
   position: fixed;
@@ -157,7 +176,10 @@ body {
   transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
-  filter: drop-shadow(0 26px 50px rgba(0, 0, 0, 0.55));
+  /* Tight, contained shadow — kept compact so it doesn't bleed past the
+     stage edges on the offwhite-background scenes (claude-work, skill,
+     github), and so the blur radius doesn't smear into a halo. */
+  filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.22));
   /* Per-scene CSS overrides the transition list for entrance/exit. */
   transition: transform 0.6s cubic-bezier(.34, 1.4, .64, 1),
               opacity 0.4s ease-out,
