@@ -260,13 +260,18 @@ body {
   transition: transform 0.6s cubic-bezier(.34, 1.56, .64, 1),
               opacity 0.55s ease-out;
 }
-.is-exiting .window-exit-to-left {
+/* Exit selectors include `.scene[data-step]` so they outrank the
+   per-scene visible-state rules (e.g. `.jira[data-step="3"] .jira-window`,
+   `.cw[data-step="0"] .window`), which sit at (0,3,0). A naive
+   `.is-exiting .window-exit-to-left` would be (0,2,0) and silently lose
+   — making the exit animation look instant. (0,4,0) wins cleanly. */
+.scene[data-step].is-exiting .window-exit-to-left {
   transform: translate(-180%, -50%);
   opacity: 0;
   transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2),
               opacity 0.55s ease-in 0.2s;
 }
-.is-exiting .window-exit-fade {
+.scene[data-step].is-exiting .window-exit-fade {
   opacity: 0;
   transition: opacity 0.5s ease-in;
 }
@@ -1383,13 +1388,22 @@ body {
    away" and "the app itself slides off" so the audience reads the
    "I gave up on this form" moment. The jira-window itself rides the
    shared .window-exit-to-left rule from the framework; we just push
-   its transition-delay so it starts AFTER the modal close + a pause. */
-.jira.is-exiting .jw-modal {
+   its transition-delay so it starts AFTER the modal close + a pause.
+   The `[data-step]` attribute selector here bumps these to (0,4,0)
+   specificity so they win over the per-step visible-state rules
+   further down the file (which are also (0,3,0) but source-later). */
+.jira[data-step].is-exiting .jw-modal {
   transform: translate(-50%, -50%) scale(0.92);
   opacity: 0;
   transition: transform 0.3s ease-in, opacity 0.3s ease-in;
 }
-.jira.is-exiting .window-exit-to-left {
+.jira[data-step].is-exiting .window-exit-to-left {
+  /* Restate the exit transform/opacity here (not just transition) so
+     this rule wins over the per-step visible-state rule below — the
+     global .is-exiting .window-exit-to-left at (0,2,0) loses to
+     .jira[data-step="3"] .jira-window at (0,3,0). */
+  transform: translate(-180%, -50%);
+  opacity: 0;
   transition: transform 0.6s cubic-bezier(.7, 0, .84, 0.2) 0.5s,
               opacity 0.5s ease-in 0.55s;
 }
