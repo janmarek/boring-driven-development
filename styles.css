@@ -953,12 +953,15 @@ body {
 .intro[data-step="1"] .intro-pacman {
   left: 350px; top: 450px;
 }
-/* Step 2: pacman travels right along the trail, eating the dots */
+/* Step 2: pacman travels right along the trail, eating the dots.
+   2.5s travel (slower than the iter-12 1.5s) so each chomp registers
+   visually before the next dot disappears. Stagger delays below match
+   this duration. */
 .intro[data-step="2"] .intro-pacman,
 .intro[data-step="3"] .intro-pacman,
 .intro[data-step="4"] .intro-pacman {
   left: 780px; top: 450px;
-  transition-duration: 1.5s, 1.5s, 0.4s;
+  transition-duration: 2.5s, 2.5s, 0.4s;
 }
 .intro[data-step="5"] .intro-pacman {
   /* Moves up-right to eat the notification badge at (1100, 370). */
@@ -1061,18 +1064,19 @@ body {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
-/* Step 2 specifically: staggered timing so pacman appears to eat them in sequence */
+/* Step 2 specifically: staggered timing so pacman appears to eat them
+   in sequence. Delays scaled to the 2.5s pacman traversal above. */
 .intro[data-step="2"] .intro-dots .dot:nth-child(1) {
-  transition: opacity 0.18s ease-out 0.32s, transform 0.18s ease-out 0.32s;
+  transition: opacity 0.2s ease-out 0.55s, transform 0.2s ease-out 0.55s;
 }
 .intro[data-step="2"] .intro-dots .dot:nth-child(2) {
-  transition: opacity 0.18s ease-out 0.62s, transform 0.18s ease-out 0.62s;
+  transition: opacity 0.2s ease-out 1.05s, transform 0.2s ease-out 1.05s;
 }
 .intro[data-step="2"] .intro-dots .dot:nth-child(3) {
-  transition: opacity 0.18s ease-out 0.92s, transform 0.18s ease-out 0.92s;
+  transition: opacity 0.2s ease-out 1.55s, transform 0.2s ease-out 1.55s;
 }
 .intro[data-step="2"] .intro-dots .dot:nth-child(4) {
-  transition: opacity 0.18s ease-out 1.22s, transform 0.18s ease-out 1.22s;
+  transition: opacity 0.2s ease-out 2.05s, transform 0.2s ease-out 2.05s;
 }
 
 /* --- Slack icon (fades in step 2, shrinks step 6) --- */
@@ -1823,7 +1827,9 @@ body {
   margin-left: -42px;
   margin-top: -42px;
   opacity: 1;
-  transition: top 0.8s ease-in-out, opacity 0.4s ease-out;
+  /* 1.4s descent (slower than the iter-12 0.8s) so each dot chomp
+     reads on its own. Stagger delays on .ca-dot below match this. */
+  transition: top 1.4s ease-in-out, opacity 0.4s ease-out;
 }
 .claude-arrival[data-step="2"] .ca-pacman { top: 620px; }
 
@@ -1869,17 +1875,17 @@ body {
   opacity: 0;
   transform: translate(-50%, -50%) scale(0);
 }
-/* Stagger eats: pacman descends 100→620 over 0.8s (650 px/s); its
-   front-edge (centre + 42 since rotated to face down) reaches each
-   dot's top y at (y − 142)/650 — matching delays below. */
+/* Stagger eats: pacman descends 100→620 over 1.4s (~371 px/s); its
+   front-edge (centre + 42, rotated to face down) reaches each dot's
+   top y at (y − 142)/371 s — matching the delays below. */
 .claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(1) {
-  transition: opacity 0.16s ease-out 0.15s, transform 0.16s ease-out 0.15s;
+  transition: opacity 0.2s ease-out 0.26s, transform 0.2s ease-out 0.26s;
 }
 .claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(2) {
-  transition: opacity 0.16s ease-out 0.34s, transform 0.16s ease-out 0.34s;
+  transition: opacity 0.2s ease-out 0.59s, transform 0.2s ease-out 0.59s;
 }
 .claude-arrival[data-step="2"] .ca-dots .ca-dot:nth-child(3) {
-  transition: opacity 0.16s ease-out 0.52s, transform 0.16s ease-out 0.52s;
+  transition: opacity 0.2s ease-out 0.91s, transform 0.2s ease-out 0.91s;
 }
 
 /* --- Claude AI icon. Visible only at step 1; eaten with a delayed
@@ -1904,7 +1910,11 @@ body {
 .claude-arrival[data-step="2"] .ca-icon {
   transform: scale(0);
   opacity: 0;
-  transition: transform 0.22s ease-in 0.55s, opacity 0.22s ease-in 0.55s;
+  /* Delay matches the moment pacman's mouth reaches the icon: descent
+     is 1.4s for 520px (100→620), icon top edge at 540, so mouth arrives
+     at (540 − 142)/371 ≈ 1.07s. Set the shrink to start a hair earlier
+     so it lands as pacman gets there. */
+  transition: transform 0.22s ease-in 1.05s, opacity 0.22s ease-in 1.05s;
 }
 .claude-arrival .ca-icon img {
   width: 100%;

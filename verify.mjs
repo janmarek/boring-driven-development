@@ -83,11 +83,13 @@ for (let i = 0; i < scenes.length; i++) {
     //  - title step 8: typewriter animation reveals message (~1.8s)
     //  - title step 11: pacman returns from offstage and eats claude (~1.6s)
     let wait = 900;
-    if (s.id === "title" && (step === 2 || step === 8)) wait = 2200;  // dot-eat stagger, typewriter
+    if (s.id === "title" && step === 2) wait = 3000;          // dot-eat stagger (2.5s pacman + 0.2s anim end)
+    else if (s.id === "title" && step === 8) wait = 2200;     // typewriter
     else if (s.id === "title" && step === 9) wait = 1100;     // reverse typewriter
     else if (s.id === "jira" && step === 2) wait = 1800;      // summary typewriter
     else if (s.id === "jira" && step === 3) wait = 4400;      // staggered field fills (last delay 3.80s + 0.3s anim)
     else if (s.id === "claude-arrival" && step === 0) wait = 1400;  // auto-rotate after delay
+    else if (s.id === "claude-arrival" && step === 2) wait = 2000;  // 1.4s descent + icon shrink
     else if (s.id === "claude-work" && step === 2) wait = 2300;  // prompt 1 typewriter
     else if (s.id === "claude-work" && step === 3) wait = 2000;  // tool calls + error stagger
     else if (s.id === "claude-work" && step === 4) wait = 2000;  // prompt 2 typewriter
