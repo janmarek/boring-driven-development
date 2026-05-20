@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#080f2a"/>
+      <stop offset="0.4"  stop-color="#172a59"/>
+      <stop offset="0.78" stop-color="#385a93"/>
+      <stop offset="1"    stop-color="#6889b8"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"    stop-color="#ffc890" stop-opacity="0.36"/>
+      <stop offset="0.45" stop-color="#7a9bc8" stop-opacity="0.22"/>
+      <stop offset="1"    stop-color="#7a9bc8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cloud" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"    stop-color="#b8c8e4" stop-opacity="0.6"/>
+      <stop offset="0.55" stop-color="#7a92bc" stop-opacity="0.22"/>
+      <stop offset="1"    stop-color="#7a92bc" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hillBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1a2c4f"/>
+      <stop offset="1" stop-color="#0a142a"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0e1a35"/>
+      <stop offset="1" stop-color="#040912"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+
+  <ellipse cx="900" cy="660" rx="720" ry="240" fill="url(#sun)"/>
+
+  <g fill="#ffffff" opacity="0.85">
+    <circle cx="180"  cy="80"  r="1.4"/>
+    <circle cx="320"  cy="50"  r="1.0"/>
+    <circle cx="470"  cy="120" r="1.6"/>
+    <circle cx="650"  cy="70"  r="1.0"/>
+    <circle cx="780"  cy="40"  r="1.5"/>
+    <circle cx="940"  cy="90"  r="1.2"/>
+    <circle cx="1080" cy="60"  r="1.0"/>
+    <circle cx="1220" cy="100" r="1.4"/>
+    <circle cx="1360" cy="50"  r="1.0"/>
+    <circle cx="1490" cy="90"  r="1.5"/>
+    <circle cx="100"  cy="180" r="1.0"/>
+    <circle cx="1540" cy="200" r="1.2"/>
+    <circle cx="240"  cy="30"  r="1.2"/>
+    <circle cx="560"  cy="240" r="0.9"/>
+    <circle cx="1180" cy="220" r="1.1"/>
+  </g>
+
+  <g>
+    <ellipse cx="240"  cy="210" rx="240" ry="34" fill="url(#cloud)"/>
+    <ellipse cx="330"  cy="250" rx="180" ry="26" fill="url(#cloud)"/>
+    <ellipse cx="1330" cy="150" rx="280" ry="38" fill="url(#cloud)"/>
+    <ellipse cx="1410" cy="190" rx="200" ry="28" fill="url(#cloud)"/>
+    <ellipse cx="900"  cy="320" rx="230" ry="32" fill="url(#cloud)"/>
+    <ellipse cx="850"  cy="350" rx="160" ry="22" fill="url(#cloud)"/>
+    <ellipse cx="540"  cy="390" rx="150" ry="20" fill="url(#cloud)"/>
+  </g>
+
+  <path d="M0 640
+           C 220 600, 480 540, 780 580
+           C 1080 615, 1320 540, 1600 580
+           L 1600 900 L 0 900 Z"
+        fill="url(#hillBg)"/>
+
+  <path d="M0 720
+           C 180 660, 340 540, 580 490
+           C 820 450, 1080 530, 1320 620
+           C 1430 660, 1500 690, 1600 700
+           L 1600 900 L 0 900 Z"
+        fill="url(#hill)"/>
+</svg>

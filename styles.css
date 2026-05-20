@@ -90,23 +90,29 @@ body {
 }
 
 /* Abstract Windows XP "Bliss"-style wallpaper layer. Sits between #app's
-   solid background-color tint and the #stage. Only visible when the
-   runtime adds .is-visible (driven by scene.xpBackground === true).
-   Opacity transitions at the same speed as the scene-tint colour fade
-   so the wallpaper crossfades in/out alongside the colour. */
+   solid background-color tint and the #stage.
+   Two stacked .xp-layer children let the runtime crossfade between two
+   different wallpaper files: it writes the new image onto whichever
+   layer is currently hidden, then toggles `.is-visible` so the back
+   layer fades in while the front layer fades out. Without this, a
+   scene-to-scene wallpaper swap would snap (background-image isn't
+   transitionable). */
 #xp-bg {
   position: absolute;
   inset: 0;
-  background-image: url("icons/xp-bliss-bg.svg");
+  pointer-events: none;
+  z-index: 0;
+}
+#xp-bg .xp-layer {
+  position: absolute;
+  inset: 0;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   opacity: 0;
   transition: opacity 0.8s ease-in-out;
-  pointer-events: none;
-  z-index: 0;
 }
-#xp-bg.is-visible { opacity: 1; }
+#xp-bg .xp-layer.is-visible { opacity: 1; }
 
 #hud {
   position: fixed;
@@ -2260,3 +2266,1114 @@ body {
   font-size: 12px;
 }
 .skill .sk-spacer { flex: 1; }
+
+/* =====================================================================
+ * Scene: ghost-rules (5 steps)
+ *
+ * Pacman left, orange ghost right. Ghost glides closer and demands a
+ * ticket ("Rules are rules."), pacman copes with coffee. Black
+ * background (no scene.background — default tint).
+ *
+ *   0 — pacman left, ghost far right
+ *   1 — ghost glides closer (still right of pacman)
+ *   2 — speech bubble fades in above the ghost
+ *   3 — coffee emoji appears below pacman
+ *   4 — pacman rotates down, descends, eats the coffee (shrink delayed
+ *       so it lands as pacman arrives)
+ * ===================================================================== */
+
+.ghost-rules { display: block; overflow: hidden; }
+
+/* --- Pacman: positioned absolutely; the inner .pacman still chomps
+   via its own .half keyframes (those animate child elements, not the
+   .pacman root). We drive movement + rotation here. */
+.ghost-rules .gr-pacman {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  left: 460px;
+  top: 450px;
+  margin-left: -55px;
+  margin-top: -55px;
+  transition: top 0.7s ease-in-out, left 0.7s ease-in-out;
+}
+.ghost-rules[data-step="4"] .gr-pacman {
+  top: 730px;
+  transition: top 0.7s ease-in-out 0.35s, left 0.7s ease-in-out 0.35s;
+}
+/* Inner pacman handles the rotation (no transform on bare .pacman, so
+   per-step rotate(90deg) interpolates cleanly). */
+.ghost-rules .gr-pacman .pacman {
+  transition: transform 0.4s ease-in-out;
+}
+.ghost-rules[data-step="4"] .gr-pacman .pacman {
+  transform: rotate(90deg);
+}
+
+/* --- Orange ghost wrapper. The helper renders .ghost as position:
+   absolute with translate(-50%, -50%) and a float animation; the
+   wrapper supplies that frame of reference. Negative margins centre
+   the wrapper on the (left, top) coordinate so the ghost's centre
+   sits on pacman's y-axis (450) — same convention as .gr-pacman. */
+.ghost-rules .gr-ghost {
+  position: absolute;
+  width: 110px;
+  height: 126px;
+  left: 1200px;
+  top: 450px;
+  margin-left: -55px;
+  margin-top: -63px;
+  transition: left 0.85s cubic-bezier(.34, 1.2, .64, 1);
+}
+.ghost-rules .gr-ghost .ghost {
+  left: 50%;
+  top: 50%;
+  width: 110px;
+  height: 126px;
+}
+.ghost-rules[data-step="1"] .gr-ghost,
+.ghost-rules[data-step="2"] .gr-ghost,
+.ghost-rules[data-step="3"] .gr-ghost,
+.ghost-rules[data-step="4"] .gr-ghost {
+  left: 820px;
+}
+
+/* --- Speech bubble: appears at step 2 above the ghost. White card
+   with a down-pointing tail. */
+.ghost-rules .gr-bubble {
+  position: absolute;
+  left: 820px;
+  top: 250px;
+  transform: translate(-50%, -50%) scale(0.85);
+  transform-origin: center bottom;
+  opacity: 0;
+  background: var(--offwhite);
+  color: var(--black);
+  padding: 26px 36px;
+  border-radius: 28px;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+  transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1), opacity 0.4s ease-out;
+}
+.ghost-rules[data-step="2"] .gr-bubble,
+.ghost-rules[data-step="3"] .gr-bubble,
+.ghost-rules[data-step="4"] .gr-bubble {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+/* Tail: triangle pointing down from the bubble's bottom edge, slightly
+   right of center so it reads as coming from the ghost. */
+.ghost-rules .gr-bubble-tail {
+  position: absolute;
+  left: 50%;
+  bottom: -18px;
+  /* Triangle is 28px wide (14+14). -14 centres the visual peak on the
+     bubble's horizontal centre — earlier -12 left it 2px off. */
+  margin-left: -14px;
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 22px solid var(--offwhite);
+  filter: drop-shadow(0 6px 4px rgba(0, 0, 0, 0.15));
+}
+
+/* --- Coffee emoji: appears step 3 below pacman; eaten at step 4 with
+   delayed shrink timed to pacman's arrival. */
+.ghost-rules .gr-coffee {
+  position: absolute;
+  left: 460px;
+  top: 730px;
+  margin-left: -50px;
+  margin-top: -50px;
+  width: 100px;
+  height: 100px;
+  font-size: 86px;
+  line-height: 100px;
+  text-align: center;
+  transform: scale(0);
+  opacity: 0;
+  filter: drop-shadow(0 8px 18px rgba(232, 90, 32, 0.4));
+  transition: transform 0.45s cubic-bezier(.34, 1.7, .64, 1), opacity 0.4s ease-out;
+}
+.ghost-rules[data-step="3"] .gr-coffee {
+  transform: scale(1);
+  opacity: 1;
+}
+.ghost-rules[data-step="4"] .gr-coffee {
+  transform: scale(0);
+  opacity: 0;
+  /* Pacman descends 450→730 starting at 0.35s over 0.7s. Mouth (front
+     edge facing down) reaches coffee top at ~0.8s overall — start the
+     shrink 0.85s in so it lands as pacman gets there. */
+  transition: transform 0.22s ease-in 0.85s, opacity 0.22s ease-in 0.85s;
+}
+
+/* =====================================================================
+ * Scene: claude-pr-flow (11 steps)
+ *
+ * Claude code window picks up from a prior turn already on screen.
+ * User bundles commit / /jira-create / /create-pr → claude tracks a
+ * 4-item plan that checks off one-by-one → 4 GitHub review notifications
+ * pop in top-right with stylistic nits → user asks to fix what's
+ * reasonable → claude summary → user asks for a skill → ✓ saved →
+ * user asks to update CLAUDE.md → ✓ done.
+ *
+ *   0 — pre-existing turn visible ("pls fix bug" + ✓)
+ *   1 — user prompt typewriter 1
+ *   2 — plan + 4 tasks appear (◯ state, staggered)
+ *   3 — tasks check off one-by-one (◯ → ✓, staggered)
+ *   4 — review notifications pop in top-right (stagger from the right)
+ *   5 — user prompt typewriter 2
+ *   6 — claude review summary; notifications fade away
+ *   7 — user prompt typewriter 3
+ *   8 — ✓ skill saved
+ *   9 — user prompt typewriter 4
+ *   10 — ✓ CLAUDE.md updated
+ *
+ * Transcript inner wrapper (.pf-scroll) translates up at later steps
+ * so the latest content stays in view as new turns arrive.
+ * ===================================================================== */
+
+.pf { display: block; overflow: hidden; }
+
+/* Window enters via .window-enter-from-right; visible at every step. */
+.pf[data-step="0"]  .window,
+.pf[data-step="1"]  .window,
+.pf[data-step="2"]  .window,
+.pf[data-step="3"]  .window,
+.pf[data-step="4"]  .window,
+.pf[data-step="5"]  .window,
+.pf[data-step="6"]  .window,
+.pf[data-step="7"]  .window,
+.pf[data-step="8"]  .window,
+.pf[data-step="9"]  .window,
+.pf[data-step="10"] .window {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+.pf .pf-screen {
+  height: 100%;
+  padding: 22px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #e6e6e6;
+}
+
+.pf .pf-splash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 0 0 auto;
+}
+.pf .pf-mark {
+  width: 32px;
+  height: 26px;
+  display: block;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 6px rgba(201, 123, 90, 0.4));
+}
+.pf .pf-brand {
+  font-family: "Söhne", sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--offwhite);
+  letter-spacing: -0.01em;
+}
+.pf .pf-tip { color: rgba(255, 255, 255, 0.4); font-size: 12px; }
+.pf .pf-tip kbd {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* --- Transcript: clipped viewport with an inner .pf-scroll wrapper.
+   per-step rules translateY the wrapper up to reveal later turns
+   without the transcript itself growing past the window. */
+.pf .pf-transcript {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+.pf .pf-scroll {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transform: translateY(0);
+  transition: transform 0.6s ease-in-out;
+}
+/* Scroll bumps. Each value moves ~3-5 lines off the top so the next
+   turn lands within the visible viewport. */
+.pf[data-step="6"]  .pf-scroll,
+.pf[data-step="7"]  .pf-scroll { transform: translateY(-90px); }
+.pf[data-step="8"]  .pf-scroll,
+.pf[data-step="9"]  .pf-scroll { transform: translateY(-180px); }
+.pf[data-step="10"] .pf-scroll { transform: translateY(-250px); }
+
+/* --- Line styling --- */
+.pf .pf-line {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 1.5em;
+}
+.pf .pf-line.pf-indent { padding-left: 24px; }
+.pf .pf-spacer { min-height: 6px; }
+.pf .pf-muted { color: rgba(255, 255, 255, 0.5); }
+.pf .pf-ok   { color: #4cd97c; font-weight: 700; }
+.pf .pf-skip { color: rgba(255, 255, 255, 0.45); font-weight: 700; }
+.pf .pf-arrow { color: var(--offwhite); font-weight: 700; }
+
+.pf .tool {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: rgba(200, 251, 243, 0.15);
+  color: var(--blue);
+  font-size: 12px;
+}
+.pf code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--ecru);
+  /* Explicit monospace — inside the notification cards the parent
+     font is Söhne (sans), which renders raw U+0060 backticks as tiny
+     floating accents that look like Vietnamese diacritics on the next
+     letter. <code> with a real monospace font sidesteps that. */
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 0.92em;
+}
+
+/* Pre-existing turn (visible at every step including 0) */
+.pf .pf-pre { opacity: 1; transform: translateY(0); }
+
+/* --- Step gating: each "pf-from-N" / "pf-line-pN" line fades in once
+   the current step reaches N. Verbose but explicit and reversible. --- */
+.pf[data-step="1"] .pf-line-p1, .pf[data-step="2"] .pf-line-p1, .pf[data-step="3"] .pf-line-p1,
+.pf[data-step="4"] .pf-line-p1, .pf[data-step="5"] .pf-line-p1, .pf[data-step="6"] .pf-line-p1,
+.pf[data-step="7"] .pf-line-p1, .pf[data-step="8"] .pf-line-p1, .pf[data-step="9"] .pf-line-p1,
+.pf[data-step="10"] .pf-line-p1 { opacity: 1; transform: translateY(0); }
+
+.pf[data-step="2"] .pf-from-2, .pf[data-step="3"] .pf-from-2, .pf[data-step="4"] .pf-from-2,
+.pf[data-step="5"] .pf-from-2, .pf[data-step="6"] .pf-from-2, .pf[data-step="7"] .pf-from-2,
+.pf[data-step="8"] .pf-from-2, .pf[data-step="9"] .pf-from-2, .pf[data-step="10"] .pf-from-2 { opacity: 1; transform: translateY(0); }
+
+.pf[data-step="5"] .pf-from-5, .pf[data-step="6"] .pf-from-5, .pf[data-step="7"] .pf-from-5,
+.pf[data-step="8"] .pf-from-5, .pf[data-step="9"] .pf-from-5, .pf[data-step="10"] .pf-from-5 { opacity: 1; transform: translateY(0); }
+.pf[data-step="5"] .pf-line-p2, .pf[data-step="6"] .pf-line-p2, .pf[data-step="7"] .pf-line-p2,
+.pf[data-step="8"] .pf-line-p2, .pf[data-step="9"] .pf-line-p2, .pf[data-step="10"] .pf-line-p2 { opacity: 1; transform: translateY(0); }
+
+.pf[data-step="6"] .pf-from-6, .pf[data-step="7"] .pf-from-6, .pf[data-step="8"] .pf-from-6,
+.pf[data-step="9"] .pf-from-6, .pf[data-step="10"] .pf-from-6 { opacity: 1; transform: translateY(0); }
+
+.pf[data-step="7"] .pf-from-7, .pf[data-step="8"] .pf-from-7, .pf[data-step="9"] .pf-from-7,
+.pf[data-step="10"] .pf-from-7 { opacity: 1; transform: translateY(0); }
+.pf[data-step="7"] .pf-line-p3, .pf[data-step="8"] .pf-line-p3, .pf[data-step="9"] .pf-line-p3,
+.pf[data-step="10"] .pf-line-p3 { opacity: 1; transform: translateY(0); }
+
+.pf[data-step="8"] .pf-from-8, .pf[data-step="9"] .pf-from-8, .pf[data-step="10"] .pf-from-8 { opacity: 1; transform: translateY(0); }
+
+.pf[data-step="9"] .pf-from-9, .pf[data-step="10"] .pf-from-9 { opacity: 1; transform: translateY(0); }
+.pf[data-step="9"] .pf-line-p4, .pf[data-step="10"] .pf-line-p4 { opacity: 1; transform: translateY(0); }
+
+.pf[data-step="10"] .pf-from-10 { opacity: 1; transform: translateY(0); }
+
+/* --- Stagger delays for the 4 plan tasks appearing at step 2. --- */
+.pf[data-step="2"] .pf-task[data-task="0"] { transition-delay: 0.15s; }
+.pf[data-step="2"] .pf-task[data-task="1"] { transition-delay: 0.45s; }
+.pf[data-step="2"] .pf-task[data-task="2"] { transition-delay: 0.75s; }
+.pf[data-step="2"] .pf-task[data-task="3"] { transition-delay: 1.05s; }
+
+/* --- Task state: ◯ vs ✓. The two glyphs live inside a fixed 16px-wide
+   .pf-task-icon container (position: relative). Both glyphs are
+   absolutely positioned at left:0, top:0 inside it — same x-axis, same
+   y-axis, regardless of glyph metrics. Opacity swaps which is visible.
+   This is more robust than the earlier "flex sibling + negative margin"
+   trick because ◯ and ✓ have different intrinsic widths and the flex
+   layout doesn't promise either will land at the same x in adjacent
+   rows. */
+.pf .pf-task .pf-task-icon {
+  position: relative;
+  display: inline-block;
+  width: 16px;
+  height: 1em;
+  flex: 0 0 16px;
+}
+.pf .pf-task .pf-box,
+.pf .pf-task .pf-check {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 16px;
+  text-align: center;
+  transition: opacity 0.25s ease-out;
+}
+.pf .pf-task .pf-box { color: rgba(255, 255, 255, 0.55); opacity: 1; }
+.pf .pf-task .pf-check {
+  color: #4cd97c;
+  font-weight: 700;
+  opacity: 0;
+}
+
+/* At step 3+: tasks are done — check fades in, box fades out, staggered
+   per task so the audience reads them ticking off one at a time. */
+.pf[data-step="3"] .pf-task .pf-box,
+.pf[data-step="4"] .pf-task .pf-box,
+.pf[data-step="5"] .pf-task .pf-box,
+.pf[data-step="6"] .pf-task .pf-box,
+.pf[data-step="7"] .pf-task .pf-box,
+.pf[data-step="8"] .pf-task .pf-box,
+.pf[data-step="9"] .pf-task .pf-box,
+.pf[data-step="10"] .pf-task .pf-box { opacity: 0; }
+
+.pf[data-step="3"] .pf-task .pf-check,
+.pf[data-step="4"] .pf-task .pf-check,
+.pf[data-step="5"] .pf-task .pf-check,
+.pf[data-step="6"] .pf-task .pf-check,
+.pf[data-step="7"] .pf-task .pf-check,
+.pf[data-step="8"] .pf-task .pf-check,
+.pf[data-step="9"] .pf-task .pf-check,
+.pf[data-step="10"] .pf-task .pf-check { opacity: 1; }
+
+/* Stagger at step 3: each task checks off in sequence. Subsequent steps
+   keep them all checked but with zero delay (no re-animation needed). */
+.pf[data-step="3"] .pf-task[data-task="0"] .pf-box,
+.pf[data-step="3"] .pf-task[data-task="0"] .pf-check { transition-delay: 0.25s; }
+.pf[data-step="3"] .pf-task[data-task="1"] .pf-box,
+.pf[data-step="3"] .pf-task[data-task="1"] .pf-check { transition-delay: 0.85s; }
+.pf[data-step="3"] .pf-task[data-task="2"] .pf-box,
+.pf[data-step="3"] .pf-task[data-task="2"] .pf-check { transition-delay: 1.45s; }
+.pf[data-step="3"] .pf-task[data-task="3"] .pf-box,
+.pf[data-step="3"] .pf-task[data-task="3"] .pf-check { transition-delay: 2.05s; }
+
+/* Task-text slight visual de-emphasis once done. */
+.pf .pf-task-text { transition: opacity 0.25s ease-out; }
+.pf[data-step="3"] .pf-task .pf-task-text,
+.pf[data-step="4"] .pf-task .pf-task-text,
+.pf[data-step="5"] .pf-task .pf-task-text,
+.pf[data-step="6"] .pf-task .pf-task-text,
+.pf[data-step="7"] .pf-task .pf-task-text,
+.pf[data-step="8"] .pf-task .pf-task-text,
+.pf[data-step="9"] .pf-task .pf-task-text,
+.pf[data-step="10"] .pf-task .pf-task-text { opacity: 0.6; }
+
+/* --- Typewriter prompts: per-step max-width drives the steps() reveal.
+   Char counts (incl. punctuation): 32 / 44 / 25 / 52. */
+.pf[data-step="1"] .pf-tw-1, .pf[data-step="2"] .pf-tw-1, .pf[data-step="3"] .pf-tw-1,
+.pf[data-step="4"] .pf-tw-1, .pf[data-step="5"] .pf-tw-1, .pf[data-step="6"] .pf-tw-1,
+.pf[data-step="7"] .pf-tw-1, .pf[data-step="8"] .pf-tw-1, .pf[data-step="9"] .pf-tw-1,
+.pf[data-step="10"] .pf-tw-1 {
+  max-width: 34ch;
+  transition: max-width 1.4s steps(32, end);
+}
+.pf[data-step="5"] .pf-tw-2, .pf[data-step="6"] .pf-tw-2, .pf[data-step="7"] .pf-tw-2,
+.pf[data-step="8"] .pf-tw-2, .pf[data-step="9"] .pf-tw-2, .pf[data-step="10"] .pf-tw-2 {
+  max-width: 46ch;
+  transition: max-width 1.8s steps(44, end);
+}
+.pf[data-step="7"] .pf-tw-3, .pf[data-step="8"] .pf-tw-3, .pf[data-step="9"] .pf-tw-3,
+.pf[data-step="10"] .pf-tw-3 {
+  max-width: 27ch;
+  transition: max-width 1.2s steps(25, end);
+}
+.pf[data-step="9"] .pf-tw-4, .pf[data-step="10"] .pf-tw-4 {
+  max-width: 54ch;
+  transition: max-width 2.0s steps(52, end);
+}
+
+/* =====================================================================
+ * Notification stack — overlays the upper-right of the stage from
+ * step 4. Each card slides in from the right with a stagger delay so
+ * the audience reads them piling on. Fades away from step 6 onward
+ * (claude is reading them so the OS popups can dismiss). z-index puts
+ * them above the window's filter:drop-shadow stacking context.
+ * ===================================================================== */
+.pf .pf-notif-stack {
+  position: absolute;
+  top: 40px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 340px;
+  z-index: 10;
+  pointer-events: none;
+}
+.pf .pf-notif {
+  /* Fully opaque — earlier rgba(…, 0.94) let the seam between the
+     window's terminal-dark body and the offwhite wallpaper bleed
+     through as a vertical artifact across all four cards. */
+  background: #1c1c1e;
+  color: #fff;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: "Söhne", -apple-system, sans-serif;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(.34, 1.5, .64, 1), opacity 0.35s ease-out;
+}
+.pf[data-step="4"] .pf-notif,
+.pf[data-step="5"] .pf-notif {
+  transform: translateX(0);
+  opacity: 1;
+}
+.pf[data-step="4"] .pf-notif:nth-child(1) { transition-delay: 0.20s; }
+.pf[data-step="4"] .pf-notif:nth-child(2) { transition-delay: 0.65s; }
+.pf[data-step="4"] .pf-notif:nth-child(3) { transition-delay: 1.10s; }
+.pf[data-step="4"] .pf-notif:nth-child(4) { transition-delay: 1.55s; }
+
+/* Step 6+: notifications dismiss (claude is processing them). */
+.pf[data-step="6"]  .pf-notif,
+.pf[data-step="7"]  .pf-notif,
+.pf[data-step="8"]  .pf-notif,
+.pf[data-step="9"]  .pf-notif,
+.pf[data-step="10"] .pf-notif {
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.pf .pf-notif-icon {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: var(--offwhite);
+  display: grid;
+  place-items: center;
+}
+.pf .pf-notif-icon img { width: 20px; height: 20px; }
+.pf .pf-notif-body { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.pf .pf-notif-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pf .pf-notif-app { font-weight: 700; }
+.pf .pf-notif-title { font-size: 13px; font-weight: 600; color: #fff; }
+/* Comment body kept at a bumped 17px + pure #fff so the actual review
+   message is readable from the back of a room. The surrounding chrome
+   (app label / title / icon / card padding) stays macOS-realistic. */
+.pf .pf-notif-text { font-size: 17px; color: #ffffff; line-height: 1.35; }
+
+/* =====================================================================
+ * Scene: claude-incident (8 steps)
+ *
+ * Investigate the /checkout 500 spike with the atlas:coralogix skill →
+ * diagnose → fix → announce on Slack via slack-announce → review the
+ * draft → ✓ posted → colleague thank-yous pop in.
+ *
+ *   0 — empty terminal (window just flew in)
+ *   1 — user prompt typewriter 1
+ *   2 — claude calls coralogix skill, runs queries
+ *   3 — diagnosis + fix
+ *   4 — user prompt typewriter 2 (announce)
+ *   5 — slack-announce skill, drafted message, review prompt
+ *   6 — ✓ posted to #status
+ *   7 — colleague thank-you notifications pop in top-right
+ *
+ * Structure is the same as claude-pr-flow (.pf) but with its own scope
+ * so step-gating numbers don't collide. The transcript inner wrapper
+ * (.ci-scroll) translates up at later steps so the latest turn stays
+ * within the visible viewport.
+ * ===================================================================== */
+
+.ci { display: block; overflow: hidden; }
+
+.ci[data-step="0"] .window,
+.ci[data-step="1"] .window,
+.ci[data-step="2"] .window,
+.ci[data-step="3"] .window,
+.ci[data-step="4"] .window,
+.ci[data-step="5"] .window,
+.ci[data-step="6"] .window,
+.ci[data-step="7"] .window {
+  transform: translate(-50%, -50%);
+  opacity: 1;
+}
+
+.ci .ci-screen {
+  height: 100%;
+  padding: 22px 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #e6e6e6;
+}
+.ci .ci-splash {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex: 0 0 auto;
+}
+.ci .ci-mark {
+  width: 32px;
+  height: 26px;
+  display: block;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 2px 6px rgba(201, 123, 90, 0.4));
+}
+.ci .ci-brand {
+  font-family: "Söhne", sans-serif;
+  font-weight: 800;
+  font-size: 20px;
+  color: var(--offwhite);
+  letter-spacing: -0.01em;
+}
+.ci .ci-tip { color: rgba(255, 255, 255, 0.4); font-size: 12px; }
+.ci .ci-tip kbd {
+  background: rgba(255, 255, 255, 0.12);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.ci .ci-transcript {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+.ci .ci-scroll {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transform: translateY(0);
+  transition: transform 0.6s ease-in-out;
+}
+/* Scroll bumps so the latest turn stays inside the viewport once we're
+   past the diagnosis section. */
+.ci[data-step="5"] .ci-scroll,
+.ci[data-step="6"] .ci-scroll,
+.ci[data-step="7"] .ci-scroll { transform: translateY(-100px); }
+
+.ci .ci-line {
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 1.5em;
+}
+.ci .ci-line.ci-indent { padding-left: 24px; }
+.ci .ci-spacer { min-height: 6px; }
+.ci .ci-muted { color: rgba(255, 255, 255, 0.5); }
+.ci .ci-ok   { color: #4cd97c; font-weight: 700; }
+.ci .ci-err  { color: #ff6f6f; font-weight: 700; }
+.ci .ci-arrow { color: var(--offwhite); font-weight: 700; }
+.ci .tool {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 4px;
+  background: rgba(200, 251, 243, 0.15);
+  color: var(--blue);
+  font-size: 12px;
+}
+.ci code {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: var(--ecru);
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 0.92em;
+}
+
+/* --- Draft message preview box — slack-quote-bar look. */
+.ci .ci-draft {
+  margin: 4px 0 4px 24px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border-left: 3px solid var(--blue);
+  border-radius: 4px;
+  font-size: 14px;
+  color: #e6e6e6;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out;
+}
+
+/* --- Step gating: same verbose pattern as claude-pr-flow. */
+.ci[data-step="1"] .ci-line-p1, .ci[data-step="2"] .ci-line-p1,
+.ci[data-step="3"] .ci-line-p1, .ci[data-step="4"] .ci-line-p1,
+.ci[data-step="5"] .ci-line-p1, .ci[data-step="6"] .ci-line-p1,
+.ci[data-step="7"] .ci-line-p1 { opacity: 1; transform: translateY(0); }
+
+.ci[data-step="2"] .ci-from-2, .ci[data-step="3"] .ci-from-2,
+.ci[data-step="4"] .ci-from-2, .ci[data-step="5"] .ci-from-2,
+.ci[data-step="6"] .ci-from-2, .ci[data-step="7"] .ci-from-2 { opacity: 1; transform: translateY(0); }
+
+.ci[data-step="3"] .ci-from-3, .ci[data-step="4"] .ci-from-3,
+.ci[data-step="5"] .ci-from-3, .ci[data-step="6"] .ci-from-3,
+.ci[data-step="7"] .ci-from-3 { opacity: 1; transform: translateY(0); }
+
+.ci[data-step="4"] .ci-from-4, .ci[data-step="5"] .ci-from-4,
+.ci[data-step="6"] .ci-from-4, .ci[data-step="7"] .ci-from-4 { opacity: 1; transform: translateY(0); }
+.ci[data-step="4"] .ci-line-p2, .ci[data-step="5"] .ci-line-p2,
+.ci[data-step="6"] .ci-line-p2, .ci[data-step="7"] .ci-line-p2 { opacity: 1; transform: translateY(0); }
+
+.ci[data-step="5"] .ci-from-5, .ci[data-step="6"] .ci-from-5,
+.ci[data-step="7"] .ci-from-5 { opacity: 1; transform: translateY(0); }
+
+.ci[data-step="6"] .ci-from-6, .ci[data-step="7"] .ci-from-6 { opacity: 1; transform: translateY(0); }
+
+/* Staggered indented query lines on step 2 (give the audience a beat
+   per tool call). */
+.ci[data-step="2"] .ci-from-2.ci-indent:nth-of-type(2) { transition-delay: 0.20s; }
+.ci[data-step="2"] .ci-from-2.ci-indent:nth-of-type(3) { transition-delay: 0.50s; }
+.ci[data-step="2"] .ci-from-2.ci-indent:nth-of-type(4) { transition-delay: 0.80s; }
+
+/* Typewriter widths. Chars:
+   p1 = "investigate /checkout 500 spike — what changed, p99 last 30m" (60)
+   p2 = "announce on #status that it's resolved" (38) */
+.ci[data-step="1"] .ci-tw-1, .ci[data-step="2"] .ci-tw-1, .ci[data-step="3"] .ci-tw-1,
+.ci[data-step="4"] .ci-tw-1, .ci[data-step="5"] .ci-tw-1, .ci[data-step="6"] .ci-tw-1,
+.ci[data-step="7"] .ci-tw-1 {
+  max-width: 62ch;
+  transition: max-width 2.0s steps(60, end);
+}
+.ci[data-step="4"] .ci-tw-2, .ci[data-step="5"] .ci-tw-2, .ci[data-step="6"] .ci-tw-2,
+.ci[data-step="7"] .ci-tw-2 {
+  max-width: 40ch;
+  transition: max-width 1.5s steps(38, end);
+}
+
+/* --- Colleague thank-you notification stack (step 7). */
+.ci .ci-notif-stack {
+  position: absolute;
+  top: 40px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 360px;
+  z-index: 10;
+  pointer-events: none;
+}
+.ci[data-step="7"] .slack-notif {
+  transform: translateX(0);
+  opacity: 1;
+}
+.ci[data-step="7"] .slack-notif:nth-child(1) { transition-delay: 0.20s; }
+.ci[data-step="7"] .slack-notif:nth-child(2) { transition-delay: 0.60s; }
+.ci[data-step="7"] .slack-notif:nth-child(3) { transition-delay: 1.00s; }
+.ci[data-step="7"] .slack-notif:nth-child(4) { transition-delay: 1.40s; }
+
+/* =====================================================================
+ * Reusable slack-style notification card
+ *
+ * White card with the slack mark on the left, used by both claude-md
+ * (incident alerts) and claude-incident (colleague thank-yous). The
+ * stack-container (positioning + per-step visibility gating) is
+ * per-scene; only the card chrome is shared here.
+ *
+ *   <div class="<per-scene>-stack">
+ *     <div class="slack-notif">
+ *       <div class="slack-notif-icon"><img src="…"/></div>
+ *       <div class="slack-notif-body">
+ *         <div class="slack-notif-head">
+ *           <span class="slack-notif-app">Slack</span>
+ *           <span class="slack-notif-when">1m</span>
+ *         </div>
+ *         <div class="slack-notif-title">Marie Dubois in #status</div>
+ *         <div class="slack-notif-text">merci! 🙏</div>
+ *       </div>
+ *     </div>
+ *     …
+ *   </div>
+ *
+ * Cards default to translateX(120%) opacity 0. The per-scene stack
+ * applies `transform: translateX(0); opacity: 1` at the step they
+ * should land, with stagger transition-delays on :nth-child.
+ * ===================================================================== */
+
+.slack-notif {
+  background: #ffffff;
+  color: #1f2937;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: "Söhne", -apple-system, sans-serif;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.06);
+  transform: translateX(120%);
+  opacity: 0;
+  transition: transform 0.45s cubic-bezier(.34, 1.5, .64, 1), opacity 0.35s ease-out;
+}
+.slack-notif-icon {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  border-radius: 7px;
+  background: #f4ede2;
+  display: grid;
+  place-items: center;
+}
+.slack-notif-icon img { width: 22px; height: 22px; }
+.slack-notif-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.slack-notif-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.slack-notif-app { font-weight: 700; }
+.slack-notif-when { color: rgba(0, 0, 0, 0.45); }
+.slack-notif-title { font-size: 13px; font-weight: 600; color: #1f2937; }
+/* Body text bumped + pure black for projector readability — matches
+   the GitHub-card treatment (head/title stay macOS-realistic). */
+.slack-notif-text {
+  font-size: 17px;
+  color: #000000;
+  line-height: 1.35;
+}
+.slack-notif-text code {
+  background: rgba(0, 0, 0, 0.06);
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-family: "SF Mono", "JetBrains Mono", Menlo, monospace;
+  font-size: 0.92em;
+  color: #1f2937;
+}
+
+/* --- Per-scene stack: claude-md incident alerts (top-right, step 1). */
+.claude-md .cm-notif-stack {
+  position: absolute;
+  top: 40px;
+  right: 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 360px;
+  z-index: 10;
+  pointer-events: none;
+}
+.claude-md[data-step="1"] .slack-notif {
+  transform: translateX(0);
+  opacity: 1;
+}
+.claude-md[data-step="1"] .slack-notif:nth-child(1) { transition-delay: 0.20s; }
+.claude-md[data-step="1"] .slack-notif:nth-child(2) { transition-delay: 0.60s; }
+.claude-md[data-step="1"] .slack-notif:nth-child(3) { transition-delay: 1.00s; }
+.claude-md[data-step="1"] .slack-notif:nth-child(4) { transition-delay: 1.40s; }
+
+/* =====================================================================
+ * Scene: takeaways (4 steps)
+ *
+ * Traditional summary slide on black. Pacman descends through 3
+ * rewards on the left; each bite reveals a corresponding takeaway on
+ * the right.
+ *
+ *   0 — pacman at top, 3 rewards visible, no takeaways
+ *   1 — pacman to reward 1, eats it, takeaway 1 fades in
+ *   2 — pacman to reward 2, eats it, takeaway 2 fades in
+ *   3 — pacman to reward 3, eats it, takeaway 3 fades in
+ *
+ * Reward emoji sizes are big so they read as desserts and not OS
+ * glyphs. The takeaway text is large and weighty so a back-of-the-room
+ * audience can follow without squinting.
+ * ===================================================================== */
+
+.takeaways {
+  display: block;
+  overflow: hidden;
+  padding: 80px 120px 80px;
+}
+
+.takeaways .tk-title {
+  position: absolute;
+  left: 120px;
+  top: 80px;
+  margin: 0;
+  font-size: 64px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--offwhite);
+}
+.takeaways .tk-title::after {
+  /* Small yellow accent — picks up the title-scene 'BORING DRIVEN
+     DEVELOPMENT' palette so the closing summary visually echoes the
+     opening. */
+  content: ".";
+  color: var(--yellow);
+}
+
+/* --- Reward column on the left + takeaway column on the right.
+   Rows positioned absolutely at fixed y so pacman can land on each
+   reward's centre by transitioning between specific top values. */
+.takeaways .tk-row {
+  position: absolute;
+  left: 280px;
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  height: 110px;
+}
+.takeaways .tk-row[data-row="0"] { top: 320px; }
+.takeaways .tk-row[data-row="1"] { top: 490px; }
+.takeaways .tk-row[data-row="2"] { top: 660px; }
+
+.takeaways .tk-reward {
+  width: 110px;
+  height: 110px;
+  font-size: 84px;
+  line-height: 110px;
+  text-align: center;
+  filter: drop-shadow(0 6px 18px rgba(232, 90, 32, 0.25));
+  transition: transform 0.25s ease-in, opacity 0.25s ease-in;
+}
+
+.takeaways .tk-takeaway {
+  flex: 1;
+  max-width: 980px;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--offwhite);
+  opacity: 0;
+  transform: translateX(12px);
+  transition: opacity 0.45s ease-out, transform 0.45s ease-out;
+}
+
+/* --- Pacman descends from y=180 down to each reward's y in turn.
+   Reward y's are 320 / 490 / 660 → row centres are 320+55=375 /
+   490+55=545 / 660+55=715. Pacman wrapper at left:335 (reward centre)
+   with margin-left:-48 to centre the 96px pacman; pacman top values
+   match the row centres exactly. */
+.takeaways .tk-pacman {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  left: 335px;
+  top: 180px;
+  margin-left: -48px;
+  margin-top: -48px;
+  transition: top 0.6s ease-in-out;
+}
+.takeaways[data-step="1"] .tk-pacman { top: 375px; }
+.takeaways[data-step="2"] .tk-pacman { top: 545px; }
+.takeaways[data-step="3"] .tk-pacman { top: 715px; }
+
+/* --- Eaten reward: scale → 0, fade out. The takeaway on its right
+   slides in. Timed so the reward shrinks just as pacman arrives. */
+.takeaways[data-step="1"] .tk-row[data-row="0"] .tk-reward,
+.takeaways[data-step="2"] .tk-row[data-row="0"] .tk-reward,
+.takeaways[data-step="3"] .tk-row[data-row="0"] .tk-reward {
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.22s ease-in 0.45s, opacity 0.22s ease-in 0.45s;
+}
+.takeaways[data-step="2"] .tk-row[data-row="1"] .tk-reward,
+.takeaways[data-step="3"] .tk-row[data-row="1"] .tk-reward {
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.22s ease-in 0.45s, opacity 0.22s ease-in 0.45s;
+}
+.takeaways[data-step="3"] .tk-row[data-row="2"] .tk-reward {
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 0.22s ease-in 0.45s, opacity 0.22s ease-in 0.45s;
+}
+
+/* --- Takeaway text fades in shortly after the reward is eaten. */
+.takeaways[data-step="1"] .tk-row[data-row="0"] .tk-takeaway,
+.takeaways[data-step="2"] .tk-row[data-row="0"] .tk-takeaway,
+.takeaways[data-step="3"] .tk-row[data-row="0"] .tk-takeaway {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.65s;
+}
+.takeaways[data-step="2"] .tk-row[data-row="1"] .tk-takeaway,
+.takeaways[data-step="3"] .tk-row[data-row="1"] .tk-takeaway {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.65s;
+}
+.takeaways[data-step="3"] .tk-row[data-row="2"] .tk-takeaway {
+  opacity: 1;
+  transform: translateX(0);
+  transition-delay: 0.65s;
+}
+
+/* =====================================================================
+ * Scene: boring-grid (4 steps)
+ *
+ * Pacman top-left, alone. Then declares "Coding is boring." (separate
+ * step so the line lands). Then a 4×2 grid of obstacle ghosts pops in
+ * across two more steps. Each ghost is a different colour with an
+ * uppercase label below.
+ *
+ *   0 — pacman alone (bubble + ghosts hidden)
+ *   1 — speech bubble fades in next to pacman
+ *   2 — top row (4 ghosts) appears, staggered
+ *   3 — bottom row (4 ghosts) appears, staggered
+ *
+ * Black background, no wallpaper — keeps the focus on pacman's line and
+ * the obstacle pile. Labels are light text on black; no halo needed.
+ * ===================================================================== */
+
+.boring { display: block; overflow: hidden; }
+
+/* --- Pacman top-left. Margin-based centring keeps the chomp animation
+   intact (the chomp animates child .half elements, not the .pacman
+   root, so a translate transform on the wrapper is fine). */
+.boring .bg-pacman {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  left: 220px;
+  top: 220px;
+  margin-left: -50px;
+  margin-top: -50px;
+}
+
+/* --- Speech bubble: offwhite card to the right of pacman, tail
+   pointing LEFT toward pacman. Centre moved from x=600 to x=540 so
+   the bubble sits closer to pacman (whose right edge is at x≈270);
+   tail tip now lands ~25px from pacman's right edge instead of the
+   earlier ~115px gap. */
+.boring .bg-bubble {
+  position: absolute;
+  left: 540px;
+  top: 220px;
+  transform: translate(-50%, -50%) scale(0.85);
+  transform-origin: left center;
+  opacity: 0;
+  background: var(--offwhite);
+  color: var(--black);
+  padding: 24px 38px;
+  border-radius: 26px;
+  font-size: 38px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-align: center;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  transition: transform 0.5s cubic-bezier(.34, 1.6, .64, 1), opacity 0.45s ease-out;
+}
+/* Step 0: pacman alone, bubble hidden. Step 1+: bubble visible. */
+.boring[data-step="1"] .bg-bubble,
+.boring[data-step="2"] .bg-bubble,
+.boring[data-step="3"] .bg-bubble {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+}
+.boring .bg-bubble-tail {
+  position: absolute;
+  /* Tail flushed against the bubble's left edge, pointing toward
+     pacman. Triangle is 28px tall (14+14 transparent); -14 centres the
+     visual peak on the bubble's vertical midline. */
+  left: -18px;
+  top: 50%;
+  margin-top: -14px;
+  width: 0;
+  height: 0;
+  border-top: 14px solid transparent;
+  border-bottom: 14px solid transparent;
+  border-right: 22px solid var(--offwhite);
+  filter: drop-shadow(-4px 4px 4px rgba(0, 0, 0, 0.08));
+}
+
+/* --- Obstacle grid. Each .bg-cell is a positioned wrapper around a
+   ghost; the (left, top) is the cell's CENTRE, achieved with negative
+   margins. Cells start scale(0) opacity(0); per-step rules pop them in
+   with a stagger so the audience reads them piling on. */
+.boring .bg-cell {
+  position: absolute;
+  width: 90px;
+  height: 103px;
+  margin-left: -45px;
+  margin-top: -51px;
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.4s ease-out, transform 0.5s cubic-bezier(.34, 1.6, .64, 1);
+}
+.boring .bg-cell .ghost {
+  left: 50%;
+  top: 50%;
+  width: 90px;
+  height: 103px;
+}
+/* Labels: tighter spacing + smaller font so longer labels
+   ("integration tests") still fit comfortably between adjacent cells.
+   Light text on the black scene background — no halo. */
+.boring .bg-cell .ghost-label {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--offwhite);
+  margin-top: 14px;
+}
+
+/* Step 2: top row (cells 0-3) appears with stagger. Stays visible
+   at step 3 so the bottom row joins the top, not replaces it. */
+.boring[data-step="2"] .bg-cell[data-cell="0"],
+.boring[data-step="3"] .bg-cell[data-cell="0"],
+.boring[data-step="2"] .bg-cell[data-cell="1"],
+.boring[data-step="3"] .bg-cell[data-cell="1"],
+.boring[data-step="2"] .bg-cell[data-cell="2"],
+.boring[data-step="3"] .bg-cell[data-cell="2"],
+.boring[data-step="2"] .bg-cell[data-cell="3"],
+.boring[data-step="3"] .bg-cell[data-cell="3"] {
+  opacity: 1;
+  transform: scale(1);
+}
+.boring[data-step="2"] .bg-cell[data-cell="0"] { transition-delay: 0.05s; }
+.boring[data-step="2"] .bg-cell[data-cell="1"] { transition-delay: 0.25s; }
+.boring[data-step="2"] .bg-cell[data-cell="2"] { transition-delay: 0.45s; }
+.boring[data-step="2"] .bg-cell[data-cell="3"] { transition-delay: 0.65s; }
+
+/* Step 3: bottom row (cells 4-7) appears with stagger. */
+.boring[data-step="3"] .bg-cell[data-cell="4"],
+.boring[data-step="3"] .bg-cell[data-cell="5"],
+.boring[data-step="3"] .bg-cell[data-cell="6"],
+.boring[data-step="3"] .bg-cell[data-cell="7"] {
+  opacity: 1;
+  transform: scale(1);
+}
+.boring[data-step="3"] .bg-cell[data-cell="4"] { transition-delay: 0.05s; }
+.boring[data-step="3"] .bg-cell[data-cell="5"] { transition-delay: 0.25s; }
+.boring[data-step="3"] .bg-cell[data-cell="6"] { transition-delay: 0.45s; }
+.boring[data-step="3"] .bg-cell[data-cell="7"] { transition-delay: 0.65s; }

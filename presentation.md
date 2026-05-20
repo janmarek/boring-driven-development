@@ -40,8 +40,14 @@ what bores you.
 | 3 | `claude-arrival`| 3     | Pacman center-top, rotates to face down, descends along a 3-dot trail, eats Claude AI icon (with `CLAUDE` label). No window — claude-work's window does the scale-in entrance next with real terminal content. |
 | 4 | `claude-work`   | 6     | Terminal flow: MCP connect (slack + atlassian) → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
 | 5 | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-grw.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
-| 6 | `github`        | 1     | GitHub **Open a pull request** screen — mac-frame window, GitHub navbar + repo bar, two-column body (title + description form, sidebar with reviewers / assignees / labels / linked issue). Last app window: fade-only exit. |
-| 7 | `abstract`      | 1     | (closing slide) frustration-as-signal — pink ghost above the heading, "inspiration." in pink, "frustration." in yellow. Single pacman in the corner, no ghost trailing it. |
+| 6 | `github`        | 1     | GitHub **Open a pull request** screen — mac-frame window, GitHub navbar + repo bar, two-column body (title + description, sidebar with reviewers / assignees / labels). Fade-only exit (next scene is on black with no window). |
+| 7 | `ghost-rules`   | 5     | Black bg. Pacman left, orange ghost right → ghost glides closer → speech bubble "You must create a ticket. Rules are rules." → coffee emoji appears below pacman → pacman rotates down, descends, eats coffee. |
+| 8 | `claude-pr-flow`| 11    | Reuses the claude code window. Pre-existing turn ("pls fix bug" → ✓) visible. User bundles `commit, /jira-create, /create-pr` → claude tracks a 4-item plan that checks off one-by-one → 4 GitHub review-comment desktop notifications pop in top-right (Uncle Bob / Kent Beck / Martin Fowler stylistic nits) → user: "read review comments and fix when reasonable" → claude summary (fixed 2, skipped 2 nits) → user: "btw create a skill for it" → ✓ saved `pr-fix.md` → user: "pls update CLAUDE.md so I don't deal with this again" → ✓ updated. Transcript scrolls up at later steps. Wallpaper switches to the vivid XP variant (`xp-bliss-bg-xp.svg`) from this scene onward. |
+| 9 | `boring-grid`   | 4     | Black background. Pacman top-left, alone → speech bubble fades in ("Coding is boring.") → 4×2 grid of obstacle ghosts pops in across two staggered rows: coding standards, architecture, unit tests, integration tests, observability, documentation, code review, feature flags. |
+| 10| `claude-md`     | 2     | Sunset wallpaper. VS Code editor showing `CLAUDE.md` (Coding standards / Architecture / Testing / Observability / Documentation / Code review / Feature flags). At step 1, four slack-style incident notifications pop in top-right (Coralogix / PagerDuty / Sentry / incident.io bots) — sets up the next scene. |
+| 11| `claude-incident`| 8    | Blue-hour wallpaper. Claude investigates the /checkout 500 spike with the atlas:coralogix skill → diagnoses NPE in TaxField.cs → fixes → user asks to announce on Slack → slack-announce skill drafts the message → review step → ✓ posted → four colleague thank-yous pop in top-right (Marie Dubois / Tomás García / Yuki Tanaka / Karl Müller). |
+| 12| `takeaways`     | 4     | Black background. Pacman descends through three desserts (🍰 🍩 🍫); each bite reveals one summary takeaway: "Observe. Automate what you don't like." / "Automate what you just did and will happen again." / "Chain small skills and automations — create magic." |
+| 13| `abstract`      | 1     | (closing slide) frustration-as-signal — pink ghost above the heading, "inspiration." in pink, "frustration." in yellow. Single pacman in the corner, no ghost trailing it. |
 
 Legacy scenes removed in iter 11 (map, slack, jira-list, jira-create, claude
 CLI) — the new scenes 2–5 cover the same ground.
@@ -170,16 +176,166 @@ GitHub **Open a pull request** screen — the ship-it beat. Mac frame
 window with the GitHub navbar (logo + search + nav) at the top, the
 mews/mews-pms repo bar with the Pull-requests tab active, then the
 page header "Open a pull request" with the compare-branches strip
-(`main ← grw-1405-split-bill`). The body is a two-column layout: PR
+(`main ← split-bill-multi-card`). The body is a two-column layout: PR
 title + structured description on the left (Summary / Test plan), and
 a sidebar on the right with Reviewers (@payments-team), Assignees
-(jan-marek), Labels, and the linked issue (GRW-1405). The big green
-"Create pull request" button anchors the bottom.
+(jan-marek), and Labels. The big green "Create pull request" button
+anchors the bottom.
 
-Last app window in the deck — uses `window-exit-fade` (no slide,
-just opacity).
+Fade-only exit (the next scene `ghost-rules` is on a black background
+with no window — nothing for the github window to slide toward).
 
-### 7. `abstract` — _(closing slide, 1 step)_
+### 7. `ghost-rules` — 5 steps
+
+Bridge between github (review nags) and the next claude-pr-flow scene
+(automate it). Black background, no window — just pacman, an orange
+ghost, a speech bubble, and a cup of coffee.
+
+- **Step 0** — Pacman center-left facing right; orange ghost far
+  right (around `left: 1200`).
+- **Step 1** — Ghost glides in closer to pacman (around `left: 820`),
+  still on the right side.
+- **Step 2** — A speech bubble fades in above the ghost: _"You must
+  create a ticket. Rules are rules."_
+- **Step 3** — A coffee mug (☕ emoji at 86px) appears below pacman.
+- **Step 4** — Pacman rotates 90° to face down, descends to the
+  coffee, and eats it (coffee shrinks with a delay timed to pacman's
+  arrival). The bubble stays — the rule didn't go away, pacman just
+  copes.
+
+### 8. `claude-pr-flow` — 11 steps
+
+The closing PMS workflow beat — automate the whole commit / Jira /
+PR / review-handling / skill-creation / CLAUDE.md update loop. Reuses
+the claude code window (mac-frame, terminal theme). Picks up from a
+prior turn that's already visible on screen, so the audience reads it
+as "claude has been doing this with me all along".
+
+The transcript inner wrapper (`.pf-scroll`) translates upward at later
+steps so the latest turn always lands within the visible viewport —
+the same content scrolling pattern a real terminal uses.
+
+- **Step 0** — Pre-existing turn visible: `› pls fix the bug` →
+  `Read src/checkout/TaxField.tsx` → `Edit re-render tax line on
+  second submit` → `✓ Fixed.`
+- **Step 1** — User prompt typewriter: _"commit, /jira-create,
+  /create-pr"_.
+- **Step 2** — Claude prints a 4-item plan (all ◯ pending), items
+  staggered in: commit changes → create jira issue → push branch →
+  create PR via gh CLI.
+- **Step 3** — Each task checks off (◯ → ✓ green) one-by-one with
+  per-task `transition-delay`. Task text de-emphasises (opacity 0.6).
+- **Step 4** — Four "GitHub" desktop notifications pop in from the
+  right edge of the stage with stagger delays. Each one shows the
+  GitHub mark, "GITHUB · 1m / 2m", "claude-bot commented on PR
+  #1287", and a stylistic nit (prefer `const`, `forEach` → `map`,
+  trailing newline, rename `data`).
+- **Step 5** — User prompt typewriter: _"read review comments and fix
+  when reasonable"_.
+- **Step 6** — Notifications fade out to the right (claude is reading
+  them). Claude summary: `Read 4 review comments from claude-bot on
+  PR #1287` → `✓ Fixed 2 (missing semicolon, variable rename)` →
+  `↷ Skipped 2 (forEach→map nit, ordering preference)`. Transcript
+  starts scrolling up here so the older turns slide off the top.
+- **Step 7** — User prompt typewriter: _"btw create a skill for it"_.
+- **Step 8** — `✓ Saved .claude/skills/pr-fix.md`. Transcript scrolls
+  again.
+- **Step 9** — User prompt typewriter: _"pls update CLAUDE.md so I
+  don't deal with this again"_.
+- **Step 10** — `Edit CLAUDE.md · added "Shipping a change" section`
+  → `✓ Updated CLAUDE.md.` Transcript scrolls one last time.
+
+Fade-only exit (last app window in the deck before the closing slide).
+
+### 9. `boring-grid` — 4 steps
+
+Wide shot of the development reality. Black background. Pacman
+top-left declares the thesis ("Coding is boring.") and the obstacles
+that stand between a developer's code and production show up as a
+coloured ghost army.
+
+- **Step 0** — Pacman alone at the upper-left.
+- **Step 1** — Speech bubble fades in to pacman's right ("Coding is
+  boring.") with a tail pointing left toward pacman.
+- **Step 2** — Top row of 4 obstacle ghosts pops in with a stagger:
+  **coding standards** (red), **architecture** (orange), **unit tests**
+  (cyan), **integration tests** (pink). Labels uppercase below each.
+- **Step 3** — Bottom row of 4 more: **observability** (green),
+  **documentation** (purple), **code review** (amber), **feature flags**
+  (indigo).
+
+Obstacle list drawn from `mews-subscription-service/CLAUDE.md` — every
+one of these is what a real PR has to clear before it can ship.
+
+### 10. `claude-md` — _(2 steps + slide-left exit)_
+
+The payoff after the obstacle wall. Sunset wallpaper — the deck's
+golden-hour beat as the engineer is wrapping up the day. VS Code
+editor opens `CLAUDE.md`
+in the project root and shows that every obstacle from the previous
+slide has its own documented section: **Coding standards** (CSharpier
++ Roslynator + named parameters), **Architecture** (layered, feature
+modules, port-per-adapter), **Testing** (unit / integration / DTO
+contract), **Observability** (OpenTelemetry → Coralogix + New Relic),
+**Documentation** (be concise; update when patterns emerge), **Code
+review** (run `/pr-fix`, skip nits), **Feature flags** (LaunchDarkly
+for release flags + kill switches).
+
+Reuses the `.skill` scene's editor chrome by adding `skill` as a
+second class on the scene root — same VS Code sidebar / tabs / gutter
+/ syntax-coloured content, no duplication.
+
+At **step 1**, four slack-style incident notifications pop in
+top-right (white cards, slack mark): Coralogix bot in `#alerts`
+(P2: /checkout error rate), PagerDuty bot in `#oncall` (page Jan),
+Sentry bot in `#mews-pms` (NullReferenceException in TaxField.cs),
+incident.io bot in `#status` (Incident MEWS-2025-04 declared). The
+beat hands straight over to the next scene where claude responds.
+
+Slide-left exit — the next scene is another claude code window.
+
+### 11. `claude-incident` — _(8 steps + fade exit)_
+
+Blue-hour wallpaper — twilight as the engineer wraps up the day's
+incident. Claude code window flies in from the right. The audience
+watches claude run the on-call playbook end-to-end.
+
+- **Step 0** — Empty terminal (window just landed).
+- **Step 1** — User prompt typewriter: _"investigate /checkout 500
+  spike — what changed, p99 last 30m"_.
+- **Step 2** — Claude invokes the `atlas:coralogix` skill and runs
+  three queries (Dataprime error rate, traces, git diff). Each query
+  line is staggered so the audience can read one at a time.
+- **Step 3** — Diagnosis (NPE in `TaxField.cs:42`, p99 latency 4.8s)
+  + `Edit src/checkout/TaxField.cs` + `✓ Fixed`.
+- **Step 4** — User prompt typewriter: _"announce on #status that
+  it's resolved"_.
+- **Step 5** — `slack-announce` skill drafts the message in a
+  slack-quote-bar style box (🟢 RESOLVED · root cause · hotfix). A
+  `[Review draft — press → to send]` line gives the speaker a
+  deliberate beat to talk about review-before-post.
+- **Step 6** — `✓ Posted to #status`.
+- **Step 7** — Four colleague thank-you slack notifications pop in
+  top-right (Marie Dubois, Tomás García, Yuki Tanaka, Karl Müller).
+
+Fade-only exit before the closing summary.
+
+### 12. `takeaways` — _(4 steps)_
+
+Traditional summary slide on black. "What to take away" headline,
+pacman top-left, three desserts (🍰 🍩 🍫) stacked vertically. Pacman
+descends; each bite reveals a takeaway sentence to its right.
+
+- **Step 0** — Pacman at top facing down; 🍰 🍩 🍫 visible; no
+  takeaways yet.
+- **Step 1** — Pacman descends to 🍰; cake shrinks; takeaway 1 fades
+  in: _"Observe. Automate what you don't like."_
+- **Step 2** — Pacman descends to 🍩; donut shrinks; takeaway 2 fades
+  in: _"Automate what you just did and will happen again."_
+- **Step 3** — Pacman descends to 🍫; chocolate shrinks; takeaway 3
+  fades in: _"Chain small skills and automations — create magic."_
+
+### 13. `abstract` — _(closing slide, 1 step)_
 
 The closing hook. Pink ghost above the heading, two-line statement
 with "inspiration." in pink and "frustration." in yellow. No body

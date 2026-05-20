@@ -124,7 +124,32 @@ const appWindow = (opts = {}) => {
 const stage = document.getElementById("stage");
 const app = document.getElementById("app");
 const xpBg = document.getElementById("xp-bg");
+const xpLayerA = xpBg && xpBg.querySelector('[data-layer="a"]');
+const xpLayerB = xpBg && xpBg.querySelector('[data-layer="b"]');
+let xpFront = "a"; // which layer is currently on top (visible)
 const counterEl = document.getElementById("counter");
+
+// Crossfade the wallpaper. file === null fades both layers out (no
+// wallpaper); otherwise writes the image onto the back layer, fades it
+// in, fades the front out. The back becomes the new front. Calling
+// repeatedly with the same file is harmless — both layers will end up
+// showing the same image, but no visible flicker because the back
+// layer fades in over 0.8s on top of an identical front.
+function setWallpaper(file) {
+  if (!xpLayerA || !xpLayerB) return;
+  if (!file) {
+    xpLayerA.classList.remove("is-visible");
+    xpLayerB.classList.remove("is-visible");
+    return;
+  }
+  const nextKey = xpFront === "a" ? "b" : "a";
+  const nextEl = nextKey === "a" ? xpLayerA : xpLayerB;
+  const prevEl = xpFront === "a" ? xpLayerA : xpLayerB;
+  nextEl.style.backgroundImage = `url("${file}")`;
+  nextEl.classList.add("is-visible");
+  prevEl.classList.remove("is-visible");
+  xpFront = nextKey;
+}
 
 let sceneIndex = 0;
 let stepIndex = 0;
@@ -160,10 +185,22 @@ function mountScene(i, step = 0) {
   // values fades smoothly.
   app.style.backgroundColor = scene.background || "";
 
-  // Abstract XP-bliss-style wallpaper layer. Crossfades in/out via the
-  // opacity transition on #xp-bg in CSS. Only the offwhite arc-tinted
-  // scenes (claude-work / skill / github) opt in via scene.xpBackground.
-  if (xpBg) xpBg.classList.toggle("is-visible", !!scene.xpBackground);
+  // Abstract XP-bliss-style wallpaper layer. The runtime keeps two
+  // children of #xp-bg (.xp-layer[data-layer="a"|"b"]) and crossfades
+  // between them whenever a scene supplies a new file. CSS owns the
+  // 0.8s opacity transition; we just toggle which layer is visible
+  // and write the new background-image onto the incoming layer.
+  //   scene.xpBackground = true     → default icons/xp-bliss-bg.svg
+  //   scene.xpBackground = "<path>" → that specific file (e.g. the
+  //     vivid daytime / sunset / blue-hour variants used in the later
+  //     XP-themed arc)
+  setWallpaper(
+    scene.xpBackground
+      ? typeof scene.xpBackground === "string"
+        ? scene.xpBackground
+        : "icons/xp-bliss-bg.svg"
+      : null
+  );
 
   let html = "";
   try {

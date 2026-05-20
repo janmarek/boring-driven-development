@@ -93,6 +93,17 @@ for (let i = 0; i < scenes.length; i++) {
     else if (s.id === "claude-work" && step === 2) wait = 2300;  // prompt 1 typewriter
     else if (s.id === "claude-work" && step === 3) wait = 2000;  // tool calls + error stagger
     else if (s.id === "claude-work" && step === 4) wait = 2000;  // prompt 2 typewriter
+    else if (s.id === "ghost-rules" && step === 1) wait = 1100;  // ghost glides in
+    else if (s.id === "ghost-rules" && step === 4) wait = 1300;  // pacman rotate + descend + coffee shrink
+    else if (s.id === "claude-pr-flow" && step === 1) wait = 1800;  // tw-1 (1.4s)
+    else if (s.id === "claude-pr-flow" && step === 2) wait = 1700;  // 4 tasks stagger (last delay 1.05s + 0.3s)
+    else if (s.id === "claude-pr-flow" && step === 3) wait = 2700;  // tasks check-off stagger (last delay 2.05s + 0.3s)
+    else if (s.id === "claude-pr-flow" && step === 4) wait = 2400;  // 4 notifs stagger (last delay 1.55s + 0.45s)
+    else if (s.id === "claude-pr-flow" && step === 5) wait = 2200;  // tw-2 (1.8s)
+    else if (s.id === "claude-pr-flow" && step === 7) wait = 1600;  // tw-3 (1.2s)
+    else if (s.id === "claude-pr-flow" && step === 9) wait = 2400;  // tw-4 (2.0s)
+    else if (s.id === "boring-grid" && step === 1) wait = 1300;  // top-row ghost stagger (last delay 0.65 + 0.5)
+    else if (s.id === "boring-grid" && step === 2) wait = 1300;  // bottom-row ghost stagger
     // On the first step of any scene whose predecessor has an
     // exitDuration, add that exit time + entrance buffer to the wait so
     // we don't screenshot mid-transition between scenes.

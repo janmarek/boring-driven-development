@@ -75,9 +75,14 @@ Use this for an arc-level tint (e.g. claude-work / skill / github all set `backg
 
 ### XP-bliss wallpaper layer
 
-The same arc of scenes (claude-work / skill / github) also opts into an abstract Windows XP "Bliss"-style wallpaper — soft mauve rolling hills + wispy clouds on the offwhite sky tint. It lives in `icons/xp-bliss-bg.svg`, painted onto a dedicated `#xp-bg` layer between `#app`'s background-color and `#stage`. The runtime toggles `#xp-bg.is-visible` based on `scene.xpBackground === true`; opacity transitions at the same speed as the bg-color fade (0.8s), so the wallpaper crossfades in alongside the color.
+The same arc of scenes opts into an abstract Windows XP "Bliss"-style wallpaper — soft mauve rolling hills + wispy clouds on the offwhite sky tint. It lives in `icons/xp-bliss-bg.svg`, painted onto a dedicated `#xp-bg` layer between `#app`'s background-color and `#stage`. The runtime toggles `#xp-bg.is-visible` based on whether `scene.xpBackground` is truthy; opacity transitions at the same speed as the bg-color fade (0.8s), so the wallpaper crossfades in alongside the color.
 
-To opt a new scene into the wallpaper, just add `xpBackground: true` to the scene definition. To swap the wallpaper for a different illustration, replace `icons/xp-bliss-bg.svg` (1600×900 viewBox, transparent-where-empty so the scene tint shows through, no internal CSS — it loads via `background-image`).
+`scene.xpBackground` accepts two forms:
+
+- `true` — use the default `icons/xp-bliss-bg.svg`.
+- `"icons/some-other.svg"` — use that file specifically. Lets the deck switch wallpapers per arc (the early claude arc uses the soft mauve `xp-bliss-bg.svg`; the late post-PR-flow arc switches to the vivid green/sky-blue Windows-XP-coloured `xp-bliss-bg-xp.svg` so the "this is basically Windows" reveal lands harder).
+
+To swap the default wallpaper for a different illustration, replace `icons/xp-bliss-bg.svg` (1600×900 viewBox, transparent-where-empty so the scene tint shows through, no internal CSS — it loads via `background-image`).
 
 Three alternative palettes also live in `icons/` if Jan wants to swap them in (rename or `cp` over `xp-bliss-bg.svg`):
 

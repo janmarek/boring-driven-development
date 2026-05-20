@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#3b1f5e"/>
+      <stop offset="0.32" stop-color="#a64570"/>
+      <stop offset="0.62" stop-color="#ef7a48"/>
+      <stop offset="0.85" stop-color="#ffb978"/>
+      <stop offset="1"    stop-color="#ffd9a2"/>
+    </linearGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"    stop-color="#fff0c4" stop-opacity="0.95"/>
+      <stop offset="0.35" stop-color="#ff9758" stop-opacity="0.6"/>
+      <stop offset="1"    stop-color="#ff6a3a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cloud" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"    stop-color="#ffd0a8" stop-opacity="0.92"/>
+      <stop offset="0.55" stop-color="#ff9a72" stop-opacity="0.32"/>
+      <stop offset="1"    stop-color="#ff9a72" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hillBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6a3958"/>
+      <stop offset="1" stop-color="#311e30"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3c1f37"/>
+      <stop offset="1" stop-color="#0f0814"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+
+  <ellipse cx="900" cy="540" rx="640" ry="340" fill="url(#sun)"/>
+
+  <g>
+    <ellipse cx="240"  cy="180" rx="240" ry="34" fill="url(#cloud)"/>
+    <ellipse cx="330"  cy="220" rx="180" ry="26" fill="url(#cloud)"/>
+    <ellipse cx="1330" cy="130" rx="280" ry="38" fill="url(#cloud)"/>
+    <ellipse cx="1410" cy="170" rx="200" ry="28" fill="url(#cloud)"/>
+    <ellipse cx="900"  cy="300" rx="230" ry="32" fill="url(#cloud)"/>
+    <ellipse cx="850"  cy="330" rx="160" ry="22" fill="url(#cloud)"/>
+    <ellipse cx="540"  cy="370" rx="150" ry="20" fill="url(#cloud)"/>
+  </g>
+
+  <path d="M0 640
+           C 220 600, 480 540, 780 580
+           C 1080 615, 1320 540, 1600 580
+           L 1600 900 L 0 900 Z"
+        fill="url(#hillBg)"/>
+
+  <path d="M0 720
+           C 180 660, 340 540, 580 490
+           C 820 450, 1080 530, 1320 620
+           C 1430 660, 1500 690, 1600 700
+           L 1600 900 L 0 900 Z"
+        fill="url(#hill)"/>
+</svg>
