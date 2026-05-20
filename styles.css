@@ -2855,10 +2855,37 @@ body {
    .window-exit-to-left framework — that fires only when the scene
    itself is unmounting). */
 
-/* Editor: visible at steps 0-1. */
+/* Editor entrance: bouncy scale-from-zero, identical to the slack
+   window in the title scene. Done as a CSS animation rather than the
+   shared .window-enter-scale class (which uses a transition from a
+   bare-state) because the editor mounts at step 0 — same rAF race
+   that broke .abstract-second. Animations auto-play on mount and
+   aren't subject to that single-paint collapse.
+
+   The keyframes' transform function list matches the step-0/1
+   visible state (translate + scale) so CSS can interpolate between
+   them; otherwise the browser would snap to the final state. */
+.ci .ci-editor {
+  animation: ci-editor-in 0.6s cubic-bezier(.34, 1.56, .64, 1);
+}
+@keyframes ci-editor-in {
+  from {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Editor visible at steps 0-1. scale(1) explicit so the transform
+   function list matches the keyframe's translate + scale form —
+   without it the post-animation computed style would lack the scale
+   function and the step-2 exit transition could snap. */
 .ci[data-step="0"] .ci-editor,
 .ci[data-step="1"] .ci-editor {
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
 /* Editor: slides off-left at step 2+. */
@@ -3045,13 +3072,15 @@ body {
 
 .ci[data-step="8"] .ci-from-8, .ci[data-step="9"] .ci-from-8 { opacity: 1; transform: translateY(0); }
 
-/* Staggered, deliberately-slow sub-line reveal at step 4 (logs / trace
-   / diff). Higher delays than before so the audience reads "claude is
-   searching" before the lines land — the user asked for the logs to
-   appear noticeably late, not immediately on press. */
-.ci[data-step="4"] .ci-from-4.ci-indent:nth-of-type(2) { transition-delay: 0.80s; }
-.ci[data-step="4"] .ci-from-4.ci-indent:nth-of-type(3) { transition-delay: 1.50s; }
-.ci[data-step="4"] .ci-from-4.ci-indent:nth-of-type(4) { transition-delay: 2.20s; }
+/* Staggered, deliberately-slow sub-line reveal at step 4 in natural
+   investigation order: logs (what's happening) → trace (what pattern)
+   → diff (what changed). Per-line classes instead of :nth-of-type —
+   the latter counts ALL div siblings of the same parent, so it picked
+   up the spacer and Skill lines and only ever matched a single
+   indent row, leaving the other two at the 0s default. */
+.ci[data-step="4"] .ci-tool-logs  { transition-delay: 0.50s; }
+.ci[data-step="4"] .ci-tool-trace { transition-delay: 1.30s; }
+.ci[data-step="4"] .ci-tool-diff  { transition-delay: 2.10s; }
 
 /* Typewriter widths. Chars:
    p1 = "checkout is broken — what's going on?" (37)
@@ -3386,8 +3415,12 @@ body {
  *   2 — top row (4 ghosts) appears, staggered
  *   3 — bottom row (4 ghosts) appears, staggered
  *
- * Black background, no wallpaper — keeps the focus on pacman's line and
- * the obstacle pile. Labels are light text on black; no halo needed.
+ * Black bg + the same XP-bliss wallpaper as claude-pr-flow, kept for
+ * continuity across that transition. Matches claude-incident's bg too,
+ * so the only thing changing into the next scene is the wallpaper
+ * crossfade. Labels are light text + a soft dark text-shadow so they
+ * stay legible on the wallpaper's lighter sky bands as well as the
+ * darker hills.
  * ===================================================================== */
 
 .boring { display: block; overflow: hidden; }
@@ -3476,13 +3509,16 @@ body {
 }
 /* Labels: tighter spacing + smaller font so longer labels
    ("integration tests") still fit comfortably between adjacent cells.
-   Light text on the black scene background — no halo. */
+   Soft dark text-shadow keeps the offwhite labels legible over the
+   wallpaper's lighter sky bands (clouds, paler top of the sky
+   gradient) and the brighter foreground-hill green. */
 .boring .bg-cell .ghost-label {
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: var(--offwhite);
   margin-top: 14px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
 /* Step 2: top row (cells 0-3) appears with stagger. Stays visible

@@ -43,9 +43,9 @@ what bores you.
 | 6 | `github`        | 1     | GitHub **Open a pull request** screen — mac-frame window, GitHub navbar + repo bar, two-column body (title + description, sidebar with reviewers / assignees / labels). Fade-only exit (next scene is on black with no window). |
 | 7 | `ghost-rules`   | 5     | Black bg. Pacman left, orange ghost right → ghost glides closer → speech bubble "You must create a ticket. Rules are rules." → coffee emoji appears below pacman → pacman rotates down, descends, eats coffee. |
 | 8 | `claude-pr-flow`| 11    | Reuses the claude code window. Pre-existing turn ("pls fix bug" → ✓) visible. User bundles `commit, /jira-create, /create-pr` → claude tracks a 4-item plan that checks off one-by-one → 4 GitHub review-comment desktop notifications pop in top-right (Uncle Bob / Kent Beck / Martin Fowler stylistic nits) → user: "read review comments and fix when reasonable" → claude summary (fixed 2, skipped 2 nits) → user: "btw create a skill for it" → ✓ saved `pr-fix.md` → user: "pls update CLAUDE.md so I don't deal with this again" → ✓ updated. Transcript scrolls up at later steps. Wallpaper switches to the vivid XP variant (`xp-bliss-bg-xp.svg`) from this scene onward. |
-| 9 | `boring-grid`   | 4     | Black background. Pacman top-left, alone → speech bubble fades in ("Coding is boring.") → 4×2 grid of obstacle ghosts pops in across two staggered rows: coding standards, architecture, unit tests, integration tests, observability, documentation, localization, feature flags. |
+| 9 | `boring-grid`   | 4     | Black bg + the XP-bliss wallpaper (kept from claude-pr-flow). On mount, kicks off a deliberately slow 10s crossfade of the wallpaper into sunset — the sky behind shifts from XP daytime to twilight while Jan talks through the obstacles, foreshadowing the incident response without an explicit scene change. Pacman top-left, alone → speech bubble fades in ("Coding is boring.") → 4×2 grid of obstacle ghosts pops in across two staggered rows: coding standards, architecture, unit tests, integration tests, observability, documentation, localization, feature flags. |
 | 10| `claude-incident`| 10   | Merged editor + incident scene. Black bg throughout. Step 0 = VS Code editor on CLAUDE.md (sunset wallpaper). Step 1 = four slack incident alerts pile in over the editor (Coralogix / PagerDuty / Sentry / incident.io). Step 2 = editor slides off-left, terminal slides in from right, wallpaper crossfades sunset → blue-hour (onStep + window.setWallpaper). Steps 3–8 = atlas:coralogix investigation (logs/trace/diff with a deliberate "claude is searching" delay) → diagnosis → fix → announce on `#engineering` → slack-announce draft + review → ✓ posted. Step 9 = four colleague thank-yous pop in. |
-| 11| `takeaways`     | 4     | Black background. Pacman descends through three desserts (🍰 🍩 🍫); each bite reveals one summary takeaway: "Observe. Automate what you don't like." / "Automate what you just did and will happen again." / "Chain small skills and automations — create magic." |
+| 11| `takeaways`     | 4     | Black bg + new night wallpaper (dark sky, stars, crescent moon top-left, near-black hills) — even darker than the previous scene's blue-hour, so the deck deepens into full night for the closing beats. Pacman descends through three desserts (🍰 🍩 🍫); each bite reveals one summary takeaway: "Observe. Automate what you don't like." / "Automate what you just did and will happen again." / "Chain small skills and automations — create magic." |
 | 12| `abstract`      | 1     | (closing slide) frustration-as-signal — pink ghost above the heading, "creativity." in pink, "enough." in yellow. Single pacman in the corner, no ghost trailing it. |
 
 Legacy scenes removed in iter 11 (map, slack, jira-list, jira-create, claude
@@ -253,20 +253,34 @@ Fade-only exit (last app window in the deck before the closing slide).
 
 ### 9. `boring-grid` — 4 steps
 
-Wide shot of the development reality. Black background. Pacman
-top-left declares the thesis ("Coding is boring.") and the obstacles
-that stand between a developer's code and production show up as a
-coloured ghost army.
+Wide shot of the development reality. Black bg + the same XP-bliss
+wallpaper as claude-pr-flow on mount, so the handover from the
+previous scene is just the same wallpaper continuing (the runtime
+skips a same-file crossfade).
+
+On mount, `onStep` kicks off a deliberately **slow 10-second
+crossfade** of the wallpaper into the sunset variant via
+`window.setWallpaper("…sunset.svg", 10000)`. The sky behind boring-grid
+shifts from XP daytime to twilight while Jan talks through the
+obstacles, foreshadowing the incident response without an explicit
+scene change. By the time the bottom row of ghosts is on screen, the
+hills are already warm reds and purples — the originally-green
+observability ghost no longer clashes with grass-green grass because
+the grass isn't grass any more. The next scene (claude-incident)
+shares the matching `…sunset.svg` wallpaper, so its own mount call is
+a no-op via the same-file skip.
 
 - **Step 0** — Pacman alone at the upper-left.
 - **Step 1** — Speech bubble fades in to pacman's right ("Coding is
   boring.") with a tail pointing left toward pacman.
 - **Step 2** — Top row of 4 obstacle ghosts pops in with a stagger:
   **coding standards** (red), **architecture** (orange), **unit tests**
-  (cyan), **integration tests** (pink). Labels uppercase below each.
+  (cyan), **integration tests** (pink). Labels uppercase below each
+  with a soft dark text-shadow so they read on any band of the
+  wallpaper as the sunset crossfade progresses.
 - **Step 3** — Bottom row of 4 more: **observability** (green),
-  **documentation** (purple), **code review** (amber), **feature flags**
-  (indigo).
+  **documentation** (purple), **localization** (amber), **feature
+  flags** (indigo).
 
 Obstacle list drawn from `mews-subscription-service/CLAUDE.md` — every
 one of these is what a real PR has to clear before it can ship.
@@ -327,12 +341,18 @@ Fade-only exit before the closing summary.
 
 ### 11. `takeaways` — _(4 steps)_
 
-Traditional summary slide on black. No headline — just pacman, three
-desserts (🍰 🍩 🍫) stacked vertically, and the three takeaway
-sentences with the load-bearing words highlighted in yellow. Pacman
+Traditional summary slide. Black bg + a new night wallpaper
+(`icons/xp-bliss-bg-night.svg`) — darker than the blue-hour the
+previous scene exits on, so the deck deepens into full night for the
+closing beats. No headline — just pacman, three desserts
+(🍰 🍩 🍫) stacked vertically, and the three takeaway sentences with
+the load-bearing words highlighted (yellow / pink / orange). Pacman
 descends; each bite reveals one sentence to its right. The reward
 shrinks start ~0.20s into pacman's descent so the dessert is visibly
-disappearing as pacman's mouth reaches it — eating, not just teleporting.
+disappearing as pacman's mouth reaches it — eating, not just
+teleporting. Pacman itself recolours per row to match the highlight:
+yellow on the cake row (default), pink on the donut row, orange on
+the chocolate row.
 
 - **Step 0** — Pacman at top facing down; 🍰 🍩 🍫 visible; no
   takeaways yet.

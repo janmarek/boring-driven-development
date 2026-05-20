@@ -696,8 +696,20 @@ const scenes = [
   {
     id: "boring-grid",
     notes:
-      "Pacman appears alone → speech bubble fades in ('Coding is boring.') → 4×2 grid of obstacle ghosts (coding standards / architecture / unit tests / integration tests / observability / documentation / code review / feature flags) revealed across two more steps. Black background, no wallpaper — the void echoes the developer's mood.",
+      "Pacman appears alone → speech bubble fades in ('Coding is boring.') → 4×2 grid of obstacle ghosts (coding standards / architecture / unit tests / integration tests / observability / documentation / code review / feature flags) revealed across two more steps. Black bg + XP-bliss wallpaper at mount (matches the previous scene so the runtime skips the same-file crossfade). At mount, onStep starts a deliberately slow 10s crossfade from the daytime XP wallpaper into sunset, so by the time Jan finishes the bottom-row reveal the sky has shifted toward the incident response's twilight palette — the next scene's wallpaper transition is then a no-op via the same-file skip.",
     steps: 4,
+    background: "var(--black)",
+    xpBackground: "icons/xp-bliss-bg-xp.svg",
+    onStep: (root, step, prev) => {
+      // Only on the initial mount of the scene (prev === -1) — start
+      // the slow XP→sunset crossfade. Skip on intra-scene step changes
+      // and on returning from a forward navigation (prev > step) to
+      // avoid restarting the transition every time someone steps back
+      // and forward through the grid.
+      if (prev === -1 && window.setWallpaper) {
+        window.setWallpaper("icons/xp-bliss-bg-sunset.svg", 10000);
+      }
+    },
     render: () => `
       <div class="scene boring">
         <div class="bg-pacman">${pacman("right", 100)}</div>
@@ -707,14 +719,14 @@ const scenes = [
         </div>
         <div class="bg-grid">
           ${[
-            ["#e34935",       "coding standards",  280, 440],
-            ["var(--orange)", "architecture",      620, 440],
-            ["#06b6d4",       "unit tests",        960, 440],
-            ["var(--pink)",   "integration tests", 1300, 440],
-            ["#16a34a",       "observability",     280, 680],
-            ["#a855f7",       "documentation",     620, 680],
-            ["#fbbf24",       "localization",      960, 680],
-            ["#6366f1",       "feature flags",     1300, 680],
+            ["#16a34a",       "coding standards",  280, 440],
+            ["#a855f7",       "architecture",      620, 440],
+            ["#fbbf24",       "unit tests",        960, 440],
+            ["#6366f1",       "integration tests", 1300, 440],
+            ["#e34935",       "observability",     280, 680],
+            ["var(--orange)", "documentation",     620, 680],
+            ["#06b6d4",       "localization",      960, 680],
+            ["var(--pink)",   "feature flags",     1300, 680],
           ]
             .map(([color, label, x, y], i) => `
               <div class="bg-cell" data-cell="${i}" style="left:${x}px; top:${y}px;">
@@ -786,7 +798,7 @@ const scenes = [
           title: "CLAUDE.md",
           width: 1300,
           height: 780,
-          className: "ci-editor window-enter-from-right",
+          className: "ci-editor",
           body: `
             <div class="skill"><div class="sk-editor">
               <div class="sk-sidebar">
@@ -911,9 +923,9 @@ const scenes = [
                        audience reads "claude is searching" before they
                        land. -->
                   <div class="ci-line ci-from-4">Skill: <code>atlas:coralogix</code></div>
-                  <div class="ci-line ci-from-4 ci-indent"><span class="tool">Logs</span><span class="ci-muted">checkout is throwing a lot of errors</span></div>
-                  <div class="ci-line ci-from-4 ci-indent"><span class="tool">Trace</span><span class="ci-muted">same error pattern across every failed request</span></div>
-                  <div class="ci-line ci-from-4 ci-indent"><span class="tool">Diff</span><span class="ci-muted">PR #1287 touched the tax code right before things broke</span></div>
+                  <div class="ci-line ci-from-4 ci-indent ci-tool-logs"><span class="tool">Logs</span><span class="ci-muted">checkout is throwing a lot of errors</span></div>
+                  <div class="ci-line ci-from-4 ci-indent ci-tool-trace"><span class="tool">Trace</span><span class="ci-muted">same error pattern across every failed request</span></div>
+                  <div class="ci-line ci-from-4 ci-indent ci-tool-diff"><span class="tool">Diff</span><span class="ci-muted">PR #1287 touched the tax code right before things broke</span></div>
                   <div class="ci-line ci-spacer ci-from-5"></div>
 
                   <!-- Step 5: diagnosis + fix (plain English) -->
@@ -984,8 +996,10 @@ const scenes = [
   {
     id: "takeaways",
     notes:
-      "Summary slide. Pacman descends through 3 rewards — each bite reveals one takeaway. Black bg, no wallpaper. Lessons match the talk's arc: observe and automate friction; automate what'll happen again; chain small skills into magic.",
+      "Summary slide. Pacman descends through 3 rewards — each bite reveals one takeaway. Black bg + new night wallpaper (dark sky, stars, a crescent moon top-left, near-black hills) — even darker than the blue-hour wallpaper the previous scene exited on, so the deck deepens into full night for the closing beats. Lessons match the talk's arc: observe and automate friction; automate what'll happen again; chain small skills into magic.",
     steps: 4,
+    background: "var(--black)",
+    xpBackground: "icons/xp-bliss-bg-night.svg",
     render: () => `
       <div class="scene takeaways">
         <div class="tk-pacman">${pacman("down", 96)}</div>

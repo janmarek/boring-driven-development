@@ -127,28 +127,45 @@ const xpBg = document.getElementById("xp-bg");
 const xpLayerA = xpBg && xpBg.querySelector('[data-layer="a"]');
 const xpLayerB = xpBg && xpBg.querySelector('[data-layer="b"]');
 let xpFront = "a"; // which layer is currently on top (visible)
+let currentWallpaper = null; // file currently shown — skip swap if unchanged
 const counterEl = document.getElementById("counter");
 
 // Crossfade the wallpaper. file === null fades both layers out (no
 // wallpaper); otherwise writes the image onto the back layer, fades it
-// in, fades the front out. The back becomes the new front. Calling
-// repeatedly with the same file is harmless — both layers will end up
-// showing the same image, but no visible flicker because the back
-// layer fades in over 0.8s on top of an identical front.
-function setWallpaper(file) {
+// in, fades the front out. The back becomes the new front. Skips the
+// swap entirely when the requested file matches what's already
+// showing — otherwise scenes that share a wallpaper (e.g.
+// claude-pr-flow → boring-grid both on the XP wallpaper) would
+// trigger a same-image crossfade, and the brief mid-fade composite
+// dip (75% wallpaper + 25% bg) would expose any concurrent bg-color
+// shift as a flicker.
+//
+// durationMs: optional override of the CSS default (800ms). Used by
+// boring-grid to crossfade the XP wallpaper into sunset slowly over
+// the scene's dwell time (the "sky turning to sunset while Jan talks
+// about being bored" beat). Applied as inline transition-duration on
+// the two layers — each call overwrites it, so a subsequent fast
+// crossfade (e.g. claude-incident's sunset → blue-hour at step 2)
+// snaps back to 800ms cleanly.
+function setWallpaper(file, durationMs = 800) {
   if (!xpLayerA || !xpLayerB) return;
   if (!file) {
     xpLayerA.classList.remove("is-visible");
     xpLayerB.classList.remove("is-visible");
+    currentWallpaper = null;
     return;
   }
+  if (file === currentWallpaper) return;
   const nextKey = xpFront === "a" ? "b" : "a";
   const nextEl = nextKey === "a" ? xpLayerA : xpLayerB;
   const prevEl = xpFront === "a" ? xpLayerA : xpLayerB;
   nextEl.style.backgroundImage = `url("${file}")`;
+  nextEl.style.transitionDuration = `${durationMs}ms`;
+  prevEl.style.transitionDuration = `${durationMs}ms`;
   nextEl.classList.add("is-visible");
   prevEl.classList.remove("is-visible");
   xpFront = nextKey;
+  currentWallpaper = file;
 }
 
 // Exposed so a scene's onStep can crossfade wallpapers mid-scene (the
