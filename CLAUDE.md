@@ -79,6 +79,14 @@ The same arc of scenes (claude-work / skill / github) also opts into an abstract
 
 To opt a new scene into the wallpaper, just add `xpBackground: true` to the scene definition. To swap the wallpaper for a different illustration, replace `icons/xp-bliss-bg.svg` (1600×900 viewBox, transparent-where-empty so the scene tint shows through, no internal CSS — it loads via `background-image`).
 
+Three alternative palettes also live in `icons/` if Jan wants to swap them in (rename or `cp` over `xp-bliss-bg.svg`):
+
+- `xp-bliss-bg-xp.svg` — true Windows-XP colours: vivid green hills, sky-blue gradient, white clouds.
+- `xp-bliss-bg-mint.svg` — brand `--yellow` hills, brand `--blue` (mint) sky. Reads cool and on-brand but easy to confuse with offwhite.
+- `xp-bliss-bg-blue.svg` — brand `--yellow` hills, brighter Jira-button-derived blue sky.
+
+These exist as standalone files only (the active wallpaper is always `xp-bliss-bg.svg`); the CSS doesn't reference them.
+
 ### Exit animations
 
 When a scene needs a visible disappear before the next scene mounts (e.g. the jira window scaling down on the press that advances to claude-arrival), declare `exitDuration` in ms. On `next()` past the last step, the runtime adds `.is-exiting` to the scene root, waits `exitDuration`, then swaps the DOM. Input is ignored during the wait so a rapid-fire press can't double-mount.

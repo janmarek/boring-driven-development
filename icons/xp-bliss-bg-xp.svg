@@ -1,34 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
   <defs>
-    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f3deee"/>
-      <stop offset="1" stop-color="#cfa4c2"/>
-    </linearGradient>
-    <linearGradient id="hill2" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f8e8f2"/>
-      <stop offset="1" stop-color="#e0bdd6"/>
-    </linearGradient>
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#fff3e2" stop-opacity="0.55"/>
-      <stop offset="0.65" stop-color="#fbeae4" stop-opacity="0"/>
+      <stop offset="0"    stop-color="#4f8fc7"/>
+      <stop offset="0.55" stop-color="#9ec8e6"/>
+      <stop offset="1"    stop-color="#d5e8f3"/>
     </linearGradient>
-    <radialGradient id="cloud" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#ffffff" stop-opacity="0.95"/>
-      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.4"/>
-      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
-    </radialGradient>
     <radialGradient id="sun" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#fff7c8" stop-opacity="0.55"/>
-      <stop offset="0.55" stop-color="#fde9c4" stop-opacity="0.15"/>
-      <stop offset="1" stop-color="#fde9c4" stop-opacity="0"/>
+      <stop offset="0"    stop-color="#fff8d8" stop-opacity="0.6"/>
+      <stop offset="0.55" stop-color="#fff1bf" stop-opacity="0.18"/>
+      <stop offset="1"    stop-color="#fff1bf" stop-opacity="0"/>
     </radialGradient>
+    <radialGradient id="cloud" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0"    stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.45"/>
+      <stop offset="1"    stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hillBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a8d281"/>
+      <stop offset="1" stop-color="#78ad58"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#88c956"/>
+      <stop offset="1" stop-color="#4d8e2f"/>
+    </linearGradient>
   </defs>
 
-  <!-- Subtle warm sky gradient over the offwhite scene background -->
+  <!-- Full sky gradient (the SVG owns the sky now — covers scene bg) -->
   <rect width="1600" height="900" fill="url(#sky)"/>
 
-  <!-- Soft sun glow toward the top-right (XP-style warmth) -->
-  <ellipse cx="1280" cy="200" rx="520" ry="320" fill="url(#sun)"/>
+  <!-- Soft sun warmth toward the top-right -->
+  <ellipse cx="1280" cy="200" rx="540" ry="320" fill="url(#sun)"/>
 
   <!-- Wispy clouds in the upper sky -->
   <g>
@@ -41,12 +42,12 @@
     <ellipse cx="540"  cy="340" rx="150" ry="20" fill="url(#cloud)"/>
   </g>
 
-  <!-- Distant rolling hill (paler, behind) -->
+  <!-- Distant rolling hill (paler green, behind) -->
   <path d="M0 640
            C 220 600, 480 540, 780 580
            C 1080 615, 1320 540, 1600 580
            L 1600 900 L 0 900 Z"
-        fill="url(#hill2)"/>
+        fill="url(#hillBg)"/>
 
   <!-- Foreground rolling hill (the XP-bliss S-curve) -->
   <path d="M0 720
