@@ -470,7 +470,12 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 80px 120px;
+  /* Asymmetric padding biases the content upward — keeping
+     justify-content: center but inflating the bottom padding shifts
+     the visual centre toward the top of the stage. The closing line
+     now sits closer to where the audience's eye lands first instead
+     of being marooned dead-centre. */
+  padding: 60px 120px 280px;
   gap: 56px;
   text-align: center;
 }
@@ -518,16 +523,24 @@ body {
    data-step="0" on the next frame after mounting, which kicks off
    the delayed fade. The speaker doesn't have to time the press; the
    deck handles the comedic-timing pause for them. */
+/* CSS animation (not a transition-from-bare-state) so the reveal is
+   robust against the runtime's rAF pattern collapsing the initial
+   paint — the browser was sometimes computing the bare and step-0
+   states in a single pass, snapping straight to opacity 1 with no
+   visible delay. Animations auto-play on mount and aren't subject
+   to that race. `forwards` keeps the final state after the animation
+   ends; the scene has only one step so reverse-nav isn't a concern. */
 .abstract-scene .abstract-second {
-  opacity: 0;
   display: inline-block;
-  transform: translateY(8px);
-  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+  opacity: 0;
+  transform: translateY(10px);
+  animation: abstract-second-in 0.55s ease-out 1.2s forwards;
 }
-.abstract-scene[data-step="0"] .abstract-second {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 1.2s;
+@keyframes abstract-second-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* --- Pacman character --- */
@@ -3301,6 +3314,20 @@ body {
 .takeaways[data-step="1"] .tk-pacman { top: 275px; }
 .takeaways[data-step="2"] .tk-pacman { top: 455px; }
 .takeaways[data-step="3"] .tk-pacman { top: 635px; }
+
+/* Pacman colour shifts to match the takeaway highlight on each row —
+   yellow (cake row, default), pink (donut row, "just did"/"again"),
+   orange (chocolate row, "Chain"). Both halves recoloured + the glow
+   shadow swapped so the halo doesn't fight the body. Brand swatches:
+   pink #f088d8 → rgb(240,136,216), orange #ec5a20 → rgb(236,90,32). */
+.takeaways[data-step="2"] .tk-pacman .pacman .half { background: var(--pink); }
+.takeaways[data-step="2"] .tk-pacman .pacman {
+  filter: drop-shadow(0 0 18px rgba(240, 136, 216, 0.5));
+}
+.takeaways[data-step="3"] .tk-pacman .pacman .half { background: var(--orange); }
+.takeaways[data-step="3"] .tk-pacman .pacman {
+  filter: drop-shadow(0 0 18px rgba(236, 90, 32, 0.55));
+}
 
 /* --- Eaten reward: scale → 0, fade out. Shrink starts at 0.20s
    into the 0.6s pacman descent (was 0.45s — felt like the reward
