@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
   <defs>
-    <!-- Sky: brand --blue (#c8fbf3) at the horizon, darkened toward the
+    <!-- Sky: brand blue (#c8fbf3) at the horizon, darkened toward the
          top so it reads as a real sky and the foreground reads brighter. -->
     <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0"    stop-color="#7cc4ba"/>
@@ -17,7 +17,7 @@
       <stop offset="0.55" stop-color="#ffffff" stop-opacity="0.45"/>
       <stop offset="1"    stop-color="#ffffff" stop-opacity="0"/>
     </radialGradient>
-    <!-- Hills: brand --yellow (#e8fa5f) sunlit top, slightly darkened
+    <!-- Hills: brand yellow (#e8fa5f) sunlit top, slightly darkened
          olive-yellow at the shaded base. -->
     <linearGradient id="hillBg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#d4dd6b"/>
