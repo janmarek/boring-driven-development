@@ -62,17 +62,17 @@ const scenes = [
                 <div class="sw-line mid"></div>
               </div>
             </div>
-            <div class="sw-msg">
-              <div class="sw-avatar"></div>
-              <div class="sw-bubble">
-                <div class="sw-line short"></div>
-              </div>
-            </div>
             <div class="sw-msg new-msg">
               <div class="sw-avatar"></div>
               <div class="sw-bubble">
                 <div class="sw-name">Petr · PM</div>
-                <div class="sw-text">hey, found a bug 🐛 — the tax field disappears on second submit.</div>
+                <div class="sw-text">hey, we have a bug. Guest tried to add breakfast for their dog and the system didn't allow it.</div>
+              </div>
+            </div>
+            <div class="sw-msg new-msg new-msg-photo">
+              <div class="sw-avatar"></div>
+              <div class="sw-bubble">
+                <div class="sw-photo"><img src="icons/guest-dog.avif" alt=""/></div>
               </div>
             </div>
             <!-- Composer: appears at step 8, types message, deletes at step 9 -->
@@ -140,14 +140,14 @@ const scenes = [
                 <div>Key</div><div>Summary</div><div>Type</div><div>Status</div><div>Assignee</div>
               </div>
               ${[
-                ["GRW-1408", "Add CSV export for revenue report", "task", "todo", "—"],
-                ["GRW-1407", "Tax field disappears on second submit", "bug", "progress", "Karel"],
-                ["GRW-1406", "Welcome email link broken (German)", "bug", "review", "Mara"],
-                ["GRW-1405", "Split bill across multiple cards", "task", "todo", "Jan", true],
-                ["GRW-1404", "Refactor reservation hooks", "task", "progress", "Tom"],
-                ["GRW-1403", "Investigate timeout in checkout", "bug", "todo", "—"],
-                ["GRW-1402", "Translate onboarding screens", "task", "done", "Mara"],
-                ["GRW-1401", "Dark mode for Commander", "task", "todo", "—"],
+                ["MEWS-1408", "Add CSV export for revenue report", "task", "todo", "—"],
+                ["MEWS-1407", "Tax field disappears on second submit", "bug", "progress", "Karel"],
+                ["MEWS-1406", "Welcome email link broken (German)", "bug", "review", "Mara"],
+                ["MEWS-1405", "Split bill across multiple cards", "task", "todo", "Jan", true],
+                ["MEWS-1404", "Refactor reservation hooks", "task", "progress", "Tom"],
+                ["MEWS-1403", "Investigate timeout in checkout", "bug", "todo", "—"],
+                ["MEWS-1402", "Translate onboarding screens", "task", "done", "Mara"],
+                ["MEWS-1401", "Dark mode for the dashboard", "task", "todo", "—"],
               ]
                 .map(
                   ([key, sum, type, status, ass, highlight]) => `
@@ -172,7 +172,7 @@ const scenes = [
               <div class="jw-modal-body">
                 <div class="jw-field jw-field-summary">
                   <label>Summary <span class="req">*</span></label>
-                  <div class="jw-input"><span class="jw-typing-wrap"><span class="jw-typed">tax field disappears on second submit</span></span><span class="jw-cursor"></span></div>
+                  <div class="jw-input"><span class="jw-typing-wrap"><span class="jw-typed">guest can't add breakfast for their pet</span></span><span class="jw-cursor"></span></div>
                 </div>
                 <div class="jw-grid">
                   <div class="jw-field jw-field-type">
@@ -181,7 +181,7 @@ const scenes = [
                   </div>
                   <div class="jw-field jw-field-team">
                     <label>R&amp;D team <span class="req">*</span></label>
-                    <div class="jw-select"><span class="jw-fill"><span>Ecosystem Experience</span></span></div>
+                    <div class="jw-select"><span class="jw-fill"><span>Checkin</span></span></div>
                   </div>
                   <div class="jw-field jw-field-points">
                     <label>Story points <span class="req">*</span></label>
@@ -190,11 +190,11 @@ const scenes = [
                 </div>
                 <div class="jw-field jw-field-labels">
                   <label>Labels <span class="req">*</span></label>
-                  <div class="jw-select"><span class="jw-chip">payments</span><span class="jw-chip">tax</span><span class="jw-chip">bug-bash</span></div>
+                  <div class="jw-select"><span class="jw-chip">breakfast</span><span class="jw-chip">pets</span><span class="jw-chip">guest-feedback</span></div>
                 </div>
                 <div class="jw-field jw-field-desc">
                   <label>Description <span class="req">*</span></label>
-                  <div class="jw-textarea"><span class="jw-fill"><span class="jw-line jw-line-h">**What &amp; Why**</span><span class="jw-line">Tax field disappears on second submit during checkout —</span><span class="jw-line">guest can't pay, support tickets piling up.</span><span class="jw-line jw-line-h">**Implementation suggestions**</span><span class="jw-line">Inspect CheckoutFlow state machine, re-render on resubmit.</span><span class="jw-line jw-line-h">**Acceptance criteria**</span><span class="jw-line">• Tax line visible on every submit attempt</span><span class="jw-line">• Regression test for double-submit</span></span></div>
+                  <div class="jw-textarea"><span class="jw-fill"><span class="jw-line jw-line-h">**What &amp; Why**</span><span class="jw-line">Guests can't add breakfast for their pet —</span><span class="jw-line">order flow blocks any non-human attendee.</span><span class="jw-line jw-line-h">**Implementation suggestions**</span><span class="jw-line">Allow pet entries in the breakfast order schema.</span><span class="jw-line jw-line-h">**Acceptance criteria**</span><span class="jw-line">• Pets selectable as breakfast attendees</span><span class="jw-line">• Regression test for mixed human + pet orders</span></span></div>
                 </div>
               </div>
               <div class="jw-modal-footer">
@@ -245,18 +245,19 @@ const scenes = [
   // 4 — Claude at work in the terminal. Same window as claude-arrival.
   //   0 — idle terminal with pixel-octopus mark + empty prompt
   //   1 — MCP connection lines (/mcp atlassian connect → ✓ Connected)
-  //   2 — user prompt typewriter: "create a jira ticket for the tax
-  //       bug Petr reported in #product-feedback"
+  //   2 — user prompt typewriter: pet breakfast ticket request
   //   3 — claude works: Read slack thread → Call Atlassian.createJiraIssue
-  //       → ✗ Error: missing required fields (labels, team, …)
-  //   4 — user prompt typewriter: "create a skill from how you
+  //       → ✗ Error: missing required fields (labels, team, story points)
+  //   4 — user types the missing values ("ok — team is Checkin, …")
+  //       then ✓ Created MEWS-1409 lands after the typewriter finishes
+  //   5 — user prompt typewriter: "create a skill from how you
   //       learned creating jiras"
-  //   5 — ✓ Saved .claude/skills/jira-grw.md confirmation
+  //   6 — ✓ Saved .claude/skills/jira-mews.md
   {
     id: "claude-work",
     notes:
-      "Terminal flow: MCP → create-issue → error about missing required fields → ask for a skill → skill saved. Bouncy scale-in entrance (it's the first window in the claude-arrival → claude-work 'row'), slide-left-fade exit. Background tints to offwhite on mount.",
-    steps: 6,
+      "Terminal flow: MCP → create-issue → error about missing required fields → claude fills them in → ✓ Created → ask for a skill → skill saved. Bouncy scale-in entrance (it's the first window in the claude-arrival → claude-work 'row'), slide-left-fade exit. Background tints to offwhite on mount.",
+    steps: 7,
     exitDuration: 700,
     background: "var(--offwhite)",
     xpBackground: true,
@@ -284,21 +285,26 @@ const scenes = [
 
                 <div class="cw-line cw-line-p1">
                   <span class="cw-arrow">›</span>
-                  <span class="typewriter cw-tw-1"><span>create a jira ticket for the tax bug Petr reported in #product-feedback</span></span>
+                  <span class="typewriter cw-tw-1"><span>create a jira ticket for the pet breakfast complaint Petr forwarded in #product-feedback</span></span>
                 </div>
 
                 <div class="cw-line cw-line-w1"><span class="tool">Read</span><span class="cw-muted">slack thread #product-feedback — Petr's bug message</span></div>
-                <div class="cw-line cw-line-w2"><span class="tool">Call</span><span class="cw-muted">Atlassian.createJiraIssue { project: "GRW", summary: "Tax field disappears…", type: "Bug" }</span></div>
+                <div class="cw-line cw-line-w2"><span class="tool">Call</span><span class="cw-muted">Atlassian.createJiraIssue { project: "MEWS", summary: "Guest can't add breakfast for pet…", type: "Bug" }</span></div>
                 <div class="cw-line cw-line-w3"><span class="cw-err">✗</span> <span class="cw-err-text">Error from atlassian-mcp · missing required fields:</span></div>
-                <div class="cw-line cw-line-w4 cw-indent"><span class="cw-err-text">labels · R&amp;D team · story points · description sections (What &amp; Why / Implementation / Acceptance)</span></div>
+                <div class="cw-line cw-line-w4 cw-indent"><span class="cw-err-text">labels · R&amp;D team · story points</span></div>
+
+                <div class="cw-line cw-line-p3">
+                  <span class="cw-arrow">›</span>
+                  <span class="typewriter cw-tw-3"><span>ok — team is Checkin, story points 3, labels breakfast/pets.</span></span>
+                </div>
+                <div class="cw-line cw-line-w6"><span class="cw-ok">✓</span> Created <code>MEWS-1409</code></div>
 
                 <div class="cw-line cw-line-p2">
                   <span class="cw-arrow">›</span>
                   <span class="typewriter cw-tw-2"><span>create a skill from how you learned creating jiras</span></span>
                 </div>
 
-                <div class="cw-line cw-line-s1"><span class="cw-ok">✓</span> Saved <code>.claude/skills/jira-grw.md</code></div>
-                <div class="cw-line cw-line-s2 cw-indent cw-muted">Use it next time — it'll fill the required fields and structure for you.</div>
+                <div class="cw-line cw-line-s1"><span class="cw-ok">✓</span> Saved <code>.claude/skills/jira-mews.md</code></div>
               </div>
             </div>
           `,
@@ -308,12 +314,12 @@ const scenes = [
   },
 
   // 5 — Skill markdown opened in a VS Code-ish editor. The saved
-  //   .claude/skills/jira-grw.md the previous scene confirmed exists.
+  //   .claude/skills/jira-mews.md the previous scene confirmed exists.
   //   One step for now — speaker walks the audience through it.
   {
     id: "skill",
     notes:
-      "VS Code editor showing the saved jira-grw skill: frontmatter (tools used, saved ids), When to use, required fields, description template. Slide-from-right entrance, slide-left-fade exit. Background stays offwhite (inherited from claude-work).",
+      "VS Code editor showing the saved jira-mews skill: frontmatter (tools used, saved ids), When to use, required fields, description template. Slide-from-right entrance, slide-left-fade exit. Background stays offwhite (inherited from claude-work).",
     steps: 1,
     exitDuration: 700,
     background: "var(--offwhite)",
@@ -323,7 +329,7 @@ const scenes = [
         ${appWindow({
           variant: "frame",
           theme: "editor",
-          title: "jira-grw.md",
+          title: "jira-mews.md",
           width: 1300,
           height: 780,
           className: "window-enter-from-right window-exit-to-left",
@@ -334,7 +340,7 @@ const scenes = [
                 <div class="sk-tree">
                   <div class="sk-tree-folder">▾ .claude</div>
                   <div class="sk-tree-folder sk-indent">▾ skills</div>
-                  <div class="sk-tree-file sk-indent-2 sk-active">jira-grw.md</div>
+                  <div class="sk-tree-file sk-indent-2 sk-active">jira-mews.md</div>
                   <div class="sk-tree-folder">▸ src</div>
                   <div class="sk-tree-folder">▸ tests</div>
                   <div class="sk-tree-file">README.md</div>
@@ -342,7 +348,7 @@ const scenes = [
                 </div>
               </div>
               <div class="sk-tabs">
-                <div class="sk-tab sk-active">jira-grw.md <span class="sk-x">×</span></div>
+                <div class="sk-tab sk-active">jira-mews.md <span class="sk-x">×</span></div>
               </div>
               <div class="sk-code">
                 <div class="sk-gutter">
@@ -350,31 +356,31 @@ const scenes = [
                 </div>
                 <div class="sk-content">
                   <div class="sk-line"><span class="sk-meta">---</span></div>
-                  <div class="sk-line"><span class="sk-key">name</span>: jira-grw</div>
-                  <div class="sk-line"><span class="sk-key">description</span>: Create well-structured Jira issues in the <span class="sk-str">GRW</span> project with the required fields and Ecosystem Experience team practices.</div>
+                  <div class="sk-line"><span class="sk-key">name</span>: jira-mews</div>
+                  <div class="sk-line"><span class="sk-key">description</span>: Create well-structured Jira issues in the <span class="sk-str">MEWS</span> project with the required fields and Checkin team practices.</div>
                   <div class="sk-line"><span class="sk-key">allowed-tools</span>:</div>
                   <div class="sk-line">  - Atlassian.createJiraIssue</div>
                   <div class="sk-line">  - Atlassian.lookupJiraAccountId</div>
                   <div class="sk-line">  - Atlassian.searchJiraIssuesUsingJql</div>
                   <div class="sk-line"><span class="sk-key">references</span>:</div>
-                  <div class="sk-line">  <span class="sk-key">project_key</span>: <span class="sk-str">GRW</span></div>
-                  <div class="sk-line">  <span class="sk-key">default_team</span>: <span class="sk-str">Ecosystem Experience</span></div>
+                  <div class="sk-line">  <span class="sk-key">project_key</span>: <span class="sk-str">MEWS</span></div>
+                  <div class="sk-line">  <span class="sk-key">default_team</span>: <span class="sk-str">Checkin</span></div>
                   <div class="sk-line">  <span class="sk-key">budget_options</span>: [<span class="sk-str">KTLO</span>, <span class="sk-str">Scale</span>, <span class="sk-str">Strategy</span>]</div>
-                  <div class="sk-line">  <span class="sk-key">jan_account_id</span>: <span class="sk-str">712020:e2c4f1bb…</span></div>
+                  <div class="sk-line">  <span class="sk-key">default_assignee_id</span>: <span class="sk-str">712020:e2c4f1bb…</span></div>
                   <div class="sk-line"><span class="sk-meta">---</span></div>
                   <div class="sk-line"></div>
-                  <div class="sk-line"><span class="sk-h1"># Jira GRW</span></div>
+                  <div class="sk-line"><span class="sk-h1"># Jira MEWS</span></div>
                   <div class="sk-line"></div>
                   <div class="sk-line"><span class="sk-h2">## When to use</span></div>
-                  <div class="sk-line">When the user asks to create a GRW ticket — "new GRW issue",</div>
-                  <div class="sk-line">"jira grw", "create a ticket for &lt;bug&gt;", etc.</div>
+                  <div class="sk-line">When the user asks to create a MEWS ticket — "new MEWS issue",</div>
+                  <div class="sk-line">"jira mews", "create a ticket for &lt;bug&gt;", etc.</div>
                   <div class="sk-line"></div>
                   <div class="sk-line"><span class="sk-h2">## Required fields</span></div>
                   <div class="sk-line">- <span class="sk-em">Summary</span> — concise, imperative</div>
                   <div class="sk-line">- <span class="sk-em">Issue type</span> — Bug | Task | Story</div>
-                  <div class="sk-line">- <span class="sk-em">R&amp;D team</span> — defaults to "Ecosystem Experience"</div>
+                  <div class="sk-line">- <span class="sk-em">R&amp;D team</span> — defaults to "Checkin"</div>
                   <div class="sk-line">- <span class="sk-em">Story points</span> — 1, 2, 3, 5, 8</div>
-                  <div class="sk-line">- <span class="sk-em">Labels</span> — at least one (e.g. payments, tax, bug-bash)</div>
+                  <div class="sk-line">- <span class="sk-em">Labels</span> — at least one (e.g. breakfast, pets, guest-feedback)</div>
                   <div class="sk-line"></div>
                   <div class="sk-line"><span class="sk-h2">## Description template</span></div>
                   <div class="sk-line"><span class="sk-bold">**What &amp; Why**</span></div>
@@ -451,24 +457,24 @@ const scenes = [
                     <span class="gh-branch">main</span>
                     <span class="gh-arrow">←</span>
                     <span class="gh-compare-label">compare:</span>
-                    <span class="gh-branch gh-branch-feature">split-bill-multi-card</span>
+                    <span class="gh-branch gh-branch-feature">fix-pet-breakfast</span>
                   </div>
                 </div>
                 <div class="gh-body">
                   <div class="gh-main">
                     <div class="gh-field">
                       <label>Title</label>
-                      <div class="gh-input">feat(payments): split bill across multiple cards</div>
+                      <div class="gh-input">fix(breakfast): allow pets in breakfast order</div>
                     </div>
                     <div class="gh-field">
                       <label>Description</label>
                       <div class="gh-textarea">
                         <div class="gh-md-h">## Summary</div>
-                        <div class="gh-md-line">- Add <code>SplitPaymentBuilder</code> with per-card allocations</div>
-                        <div class="gh-md-line">- Update checkout flow to accept multiple cards</div>
+                        <div class="gh-md-line">- Allow non-human attendees in <code>BreakfastOrderBuilder</code></div>
+                        <div class="gh-md-line">- Update order schema to accept pet entries</div>
                         <div class="gh-md-h">## Test plan</div>
-                        <div class="gh-md-line">- [x] Unit tests for builder validation</div>
-                        <div class="gh-md-line">- [x] Manual test in staging with 2-card split</div>
+                        <div class="gh-md-line">- [x] Unit tests for mixed human + pet orders</div>
+                        <div class="gh-md-line">- [x] Manual test in staging with a dog as attendee</div>
                       </div>
                     </div>
                     <div class="gh-actions">
@@ -479,7 +485,7 @@ const scenes = [
                   <aside class="gh-sidebar">
                     <div class="gh-side-section">
                       <div class="gh-side-label">Reviewers</div>
-                      <div class="gh-side-value"><span class="gh-pill">@payments-team</span></div>
+                      <div class="gh-side-value"><span class="gh-pill">@checkin-team</span></div>
                     </div>
                     <div class="gh-side-section">
                       <div class="gh-side-label">Assignees</div>
@@ -488,8 +494,8 @@ const scenes = [
                     <div class="gh-side-section">
                       <div class="gh-side-label">Labels</div>
                       <div class="gh-side-value">
-                        <span class="gh-label gh-label-payments">payments</span>
-                        <span class="gh-label gh-label-tax">tax</span>
+                        <span class="gh-label gh-label-breakfast">breakfast</span>
+                        <span class="gh-label gh-label-pets">pets</span>
                       </div>
                     </div>
                   </aside>
@@ -504,7 +510,7 @@ const scenes = [
 
   // 7 — Ghost rules pacman beat. Black background. Pacman left, orange
   // ghost right. Ghost glides in close, speech bubble appears
-  // ("You must create a ticket. Rules are rules."), then coffee
+  // ("You must create a ticket. PR needs a description."), then coffee
   // appears below pacman and pacman descends to eat it — frustration
   // → coping reflex, sets up the next claude scene.
   //
@@ -516,14 +522,14 @@ const scenes = [
   {
     id: "ghost-rules",
     notes:
-      "Pacman vs orange ghost: 'You must create a ticket. Rules are rules.' Pacman reaches for coffee. Bridge between github (review bot nags) and claude-pr-flow (automate it all).",
+      "Pacman vs orange ghost: 'You must create a ticket. PR needs a description.' Pacmanreaches for coffee. Bridge between github (review bot nags) and claude-pr-flow (automate it all).",
     steps: 5,
     render: () => `
       <div class="scene ghost-rules">
         <div class="gr-pacman">${pacman("right", 110)}</div>
         <div class="gr-ghost">${ghost("var(--orange)", "", 110)}</div>
         <div class="gr-bubble">
-          <div class="gr-bubble-text">You must create a ticket.<br/>Rules are rules.</div>
+          <div class="gr-bubble-text">You must create a ticket.<br/>PR needs a description.</div>
           <div class="gr-bubble-tail"></div>
         </div>
         <div class="gr-coffee">☕</div>
@@ -586,8 +592,8 @@ const scenes = [
                     <span class="pf-arrow">›</span>
                     <span>pls fix the bug</span>
                   </div>
-                  <div class="pf-line pf-pre"><span class="tool">Read</span><span class="pf-muted">src/checkout/TaxField.tsx</span></div>
-                  <div class="pf-line pf-pre"><span class="tool">Edit</span><span class="pf-muted">re-render tax line on second submit</span></div>
+                  <div class="pf-line pf-pre"><span class="tool">Read</span><span class="pf-muted">src/breakfast/BreakfastOrder.tsx</span></div>
+                  <div class="pf-line pf-pre"><span class="tool">Edit</span><span class="pf-muted">allow pets in breakfast order</span></div>
                   <div class="pf-line pf-pre"><span class="pf-ok">✓</span> Fixed.</div>
                   <div class="pf-line pf-spacer pf-pre"></div>
 
@@ -645,7 +651,7 @@ const scenes = [
                     <span class="typewriter pf-tw-4"><span>pls update CLAUDE.md so I don't deal with this again</span></span>
                   </div>
                   <!-- Step 10: claude.md updated -->
-                  <div class="pf-line pf-from-10"><span class="tool">Edit</span><span class="pf-muted">CLAUDE.md · added "Shipping a change" section</span></div>
+                  <div class="pf-line pf-from-10"><span class="tool">Edit</span><span class="pf-muted">CLAUDE.md · added "Coding standards" section</span></div>
                   <div class="pf-line pf-from-10 pf-indent"><span class="pf-ok">✓</span> Updated CLAUDE.md.</div>
                 </div>
               </div>
@@ -751,15 +757,17 @@ const scenes = [
   //   2 — editor slides off left, terminal slides in from right; alerts
   //       still visible during the handoff; wallpaper crossfades to
   //       blue-hour
-  //   3 — alerts fade out; user prompt typewriter: "checkout is broken
-  //       — what's going on?"
-  //   4 — claude calls atlas:coralogix; logs/trace/diff appear with a
+  //   3 — alerts fade out; user prompt typewriter: "checkin is not
+  //       loading, check what's going on in coralogix"
+  //   4 — claude calls mews-coralogix; logs/trace/diff appear with a
   //       deliberate "claude is searching" delay before they land
-  //   5 — diagnosis + fix
-  //   6 — user prompt typewriter: announce on #engineering
-  //   7 — slack-announce drafts the message (review beat)
-  //   8 — ✓ posted to #engineering
-  //   9 — 4 colleague thank-yous pile in top-right
+  //   5 — diagnosis ("looks like config is missing…")
+  //   6 — user prompt "fix it"
+  //   7 — Edit + ✓ Fixed
+  //   8 — user prompt typewriter: announce on #engineering
+  //   9 — slack-announce drafts the message (review beat)
+  //   10 — ✓ posted to #engineering
+  //   11 — 4 colleague thank-yous pile in top-right
   //
   // Background stays black throughout so the wallpaper crossfade
   // doesn't expose any bg-colour shift through the partial-opacity
@@ -771,7 +779,7 @@ const scenes = [
     id: "claude-incident",
     notes:
       "Editor (CLAUDE.md payoff) + slack alerts → terminal investigation → ✓ resolved → thank-yous. One scene, two windows, two notification stacks; the wallpaper switches sunset→blue-hour at step 2 via onStep + window.setWallpaper.",
-    steps: 10,
+    steps: 12,
     exitDuration: 500,
     background: "var(--black)",
     xpBackground: "icons/xp-bliss-bg-sunset.svg",
@@ -806,7 +814,7 @@ const scenes = [
                 <div class="sk-tree">
                   <div class="sk-tree-folder">▾ .claude</div>
                   <div class="sk-tree-folder sk-indent">▾ skills</div>
-                  <div class="sk-tree-file sk-indent-2">jira-grw.md</div>
+                  <div class="sk-tree-file sk-indent-2">jira-mews.md</div>
                   <div class="sk-tree-file sk-indent-2">pr-fix.md</div>
                   <div class="sk-tree-folder">▸ src</div>
                   <div class="sk-tree-folder">▸ tests</div>
@@ -875,9 +883,9 @@ const scenes = [
              working. -->
         <div class="ci-alert-stack">
           ${[
-            ["Coralogix bot", "#alerts",   "P2: <code>/checkout</code> error rate &gt; 1% (last 5m)", "1m"],
+            ["Coralogix bot", "#alerts",   "P2: <code>/checkin</code> error rate &gt; 1% (last 5m)", "1m"],
             ["PagerDuty bot", "#oncall",   "page Jan — <code>mews-pms</code> p99 latency &gt; 2s", "1m"],
-            ["Sentry bot",    "#mews-pms", "NullReferenceException · <code>TaxField.cs:42</code>", "2m"],
+            ["Sentry bot",    "#mews-pms", "NullReferenceException · <code>BreakfastOrder.cs:42</code>", "2m"],
             ["incident.io bot", "#engineering", "Incident MEWS-2025-04 declared (P2)", "2m"],
           ]
             .map(([who, channel, msg, when]) => `
@@ -914,7 +922,7 @@ const scenes = [
                   <!-- Step 3: investigate prompt -->
                   <div class="ci-line ci-line-p1">
                     <span class="ci-arrow">›</span>
-                    <span class="typewriter ci-tw-1"><span>checkout is broken — what's going on?</span></span>
+                    <span class="typewriter ci-tw-1"><span>checkin is not loading, check what's going on in coralogix</span></span>
                   </div>
                   <div class="ci-line ci-spacer ci-from-4"></div>
 
@@ -922,39 +930,48 @@ const scenes = [
                        diff sub-lines get longer staggered delays so the
                        audience reads "claude is searching" before they
                        land. -->
-                  <div class="ci-line ci-from-4">Skill: <code>atlas:coralogix</code></div>
-                  <div class="ci-line ci-from-4 ci-indent ci-tool-logs"><span class="tool">Logs</span><span class="ci-muted">checkout is throwing a lot of errors</span></div>
+                  <div class="ci-line ci-from-4">Skill: <code>mews-coralogix</code></div>
+                  <div class="ci-line ci-from-4 ci-indent ci-tool-logs"><span class="tool">Logs</span><span class="ci-muted">checkin is throwing a lot of errors</span></div>
                   <div class="ci-line ci-from-4 ci-indent ci-tool-trace"><span class="tool">Trace</span><span class="ci-muted">same error pattern across every failed request</span></div>
-                  <div class="ci-line ci-from-4 ci-indent ci-tool-diff"><span class="tool">Diff</span><span class="ci-muted">PR #1287 touched the tax code right before things broke</span></div>
+                  <div class="ci-line ci-from-4 ci-indent ci-tool-diff"><span class="tool">Diff</span><span class="ci-muted">PR #1287 touched the breakfast code right before things broke</span></div>
                   <div class="ci-line ci-spacer ci-from-5"></div>
 
-                  <!-- Step 5: diagnosis + fix (plain English) -->
-                  <div class="ci-line ci-from-5"><span class="ci-err">✗</span> Looks like the tax code crashes when the config is missing.</div>
-                  <div class="ci-line ci-from-5 ci-indent ci-muted">checkout's also been slow because of the retries.</div>
-                  <div class="ci-line ci-from-5"><span class="tool">Edit</span><span class="ci-muted">handle the missing-config case</span></div>
-                  <div class="ci-line ci-from-5 ci-indent"><span class="ci-ok">✓</span> Fixed. Hotfix going out now.</div>
+                  <!-- Step 5: diagnosis (plain English) -->
+                  <div class="ci-line ci-from-5"><span class="ci-err">✗</span> Looks like config is missing which is throwing an error.</div>
                   <div class="ci-line ci-spacer ci-from-6"></div>
 
-                  <!-- Step 6: announce prompt -->
+                  <!-- Step 6: user types "fix it" -->
+                  <div class="ci-line ci-line-p3">
+                    <span class="ci-arrow">›</span>
+                    <span class="typewriter ci-tw-3"><span>fix it</span></span>
+                  </div>
+                  <div class="ci-line ci-spacer ci-from-7"></div>
+
+                  <!-- Step 7: claude fixes -->
+                  <div class="ci-line ci-from-7"><span class="tool">Edit</span><span class="ci-muted">handle the missing-config case</span></div>
+                  <div class="ci-line ci-from-7 ci-indent"><span class="ci-ok">✓</span> Fixed. Hotfix going out now.</div>
+                  <div class="ci-line ci-spacer ci-from-8"></div>
+
+                  <!-- Step 8: announce prompt -->
                   <div class="ci-line ci-line-p2">
                     <span class="ci-arrow">›</span>
                     <span class="typewriter ci-tw-2"><span>announce on #engineering that it's resolved</span></span>
                   </div>
-                  <div class="ci-line ci-spacer ci-from-7"></div>
+                  <div class="ci-line ci-spacer ci-from-9"></div>
 
-                  <!-- Step 7: claude drafts message + review prompt -->
-                  <div class="ci-line ci-from-7">Skill: <code>slack-announce</code></div>
-                  <div class="ci-line ci-from-7">Draft for <span class="ci-channel">#engineering:</span></div>
-                  <div class="ci-draft ci-from-7">
-                    <div>🟢 Resolved — checkout is back to normal.</div>
-                    <div>Cause: a missing config in the tax code from this morning's release.</div>
+                  <!-- Step 9: claude drafts message + review prompt -->
+                  <div class="ci-line ci-from-9">Skill: <code>slack-announce</code></div>
+                  <div class="ci-line ci-from-9">Draft for <span class="ci-channel">#engineering:</span></div>
+                  <div class="ci-draft ci-from-9">
+                    <div>🟢 Resolved — checkin is back to normal.</div>
+                    <div>Cause: a missing config in the breakfast code from this morning's release.</div>
                     <div>Hotfix is out. No customer impact.</div>
                   </div>
-                  <div class="ci-line ci-from-7 ci-indent ci-muted">[Review draft — press → to send]</div>
-                  <div class="ci-line ci-spacer ci-from-8"></div>
+                  <div class="ci-line ci-from-9 ci-indent ci-muted">[Review draft — press → to send]</div>
+                  <div class="ci-line ci-spacer ci-from-10"></div>
 
-                  <!-- Step 8: posted -->
-                  <div class="ci-line ci-from-8"><span class="ci-ok">✓</span> Posted to <span class="ci-channel">#engineering.</span></div>
+                  <!-- Step 10: posted -->
+                  <div class="ci-line ci-from-10"><span class="ci-ok">✓</span> Posted to <span class="ci-channel">#engineering.</span></div>
                 </div>
               </div>
             </div>

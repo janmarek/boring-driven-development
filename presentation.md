@@ -38,13 +38,13 @@ what bores you.
 | 1 | `title`         | 8     | Title → fade+center → pacman eats dot trail → Slack icon appears (notification badge auto-pops on top after a ~1s delay) → pacman eats notif → Slack window (bug report auto-slides in after ~1s delay) → composer+typing "please create a ticket in jira" → delete. Advance from the last step cuts straight to the jira scene flying in. |
 | 2 | `jira`          | 4     | Schematic Mews Jira: detailed backlog flies in (Mews toolbar + table) → "+ Create" modal scales in → summary typewriter → required fields fill in stagger (type, team, story points, label chips one-by-one, structured description). Advancing past step 3 plays a 500ms scale-down + fade disappear before claude-arrival mounts (`exitDuration` + `.is-exiting`). |
 | 3 | `claude-arrival`| 2     | Pacman center-top, auto-rotates to face down, then the 3-dot trail + Claude AI icon (with `CLAUDE` label) auto-appear with a delay. Step 1 = pacman descends along the trail and eats the icon. No window — claude-work's window does the scale-in entrance next with real terminal content. |
-| 4 | `claude-work`   | 6     | Terminal flow: MCP connect (slack + atlassian) → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
-| 5 | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-grw.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
+| 4 | `claude-work`   | 7     | Terminal flow: MCP connect (slack + atlassian) → user prompt "create a jira ticket…" → tool calls (Read slack thread, Call createJiraIssue) → error about required fields → user types the values ("ok — team is Checkin, story points 3, labels breakfast/pets") → ✓ Created MEWS-1409 → user prompt "create a skill from how you learned creating jiras" → ✓ saved. |
+| 5 | `skill`         | 1     | VS Code-ish editor showing `.claude/skills/jira-mews.md` — frontmatter (name / description / allowed-tools / references with saved ids) and body (When to use / Required fields / Description template). |
 | 6 | `github`        | 1     | GitHub **Open a pull request** screen — mac-frame window, GitHub navbar + repo bar, two-column body (title + description, sidebar with reviewers / assignees / labels). Fade-only exit (next scene is on black with no window). |
-| 7 | `ghost-rules`   | 5     | Black bg. Pacman left, orange ghost right → ghost glides closer → speech bubble "You must create a ticket. Rules are rules." → coffee emoji appears below pacman → pacman rotates down, descends, eats coffee. |
+| 7 | `ghost-rules`   | 5     | Black bg. Pacman left, orange ghost right → ghost glides closer → speech bubble "You must create a ticket. PR needs a description." → coffee emoji appears below pacman → pacman rotates down, descends, eats coffee. |
 | 8 | `claude-pr-flow`| 11    | Reuses the claude code window. Pre-existing turn ("pls fix bug" → ✓) visible. User bundles `commit, /jira-create, /create-pr` → claude tracks a 4-item plan that checks off one-by-one → 4 GitHub review-comment desktop notifications pop in top-right (Uncle Bob / Kent Beck / Martin Fowler stylistic nits) → user: "read review comments and fix when reasonable" → claude summary (fixed 2, skipped 2 nits) → user: "btw create a skill for it" → ✓ saved `pr-fix.md` → user: "pls update CLAUDE.md so I don't deal with this again" → ✓ updated. Transcript scrolls up at later steps. Wallpaper switches to the vivid XP variant (`xp-bliss-bg-xp.svg`) from this scene onward. |
 | 9 | `boring-grid`   | 4     | Black bg + the XP-bliss wallpaper (kept from claude-pr-flow). On mount, kicks off a deliberately slow 10s crossfade of the wallpaper into sunset — the sky behind shifts from XP daytime to twilight while Jan talks through the obstacles, foreshadowing the incident response without an explicit scene change. Pacman top-left, alone → speech bubble fades in ("Coding is boring.") → 4×2 grid of obstacle ghosts pops in across two staggered rows: coding standards, architecture, unit tests, integration tests, observability, documentation, localization, feature flags. |
-| 10| `claude-incident`| 10   | Merged editor + incident scene. Black bg throughout. Step 0 = VS Code editor on CLAUDE.md (sunset wallpaper). Step 1 = four slack incident alerts pile in over the editor (Coralogix / PagerDuty / Sentry / incident.io). Step 2 = editor slides off-left, terminal slides in from right, wallpaper crossfades sunset → blue-hour (onStep + window.setWallpaper). Steps 3–8 = atlas:coralogix investigation (logs/trace/diff with a deliberate "claude is searching" delay) → diagnosis → fix → announce on `#engineering` → slack-announce draft + review → ✓ posted. Step 9 = four colleague thank-yous pop in. |
+| 10| `claude-incident`| 12   | Merged editor + incident scene. Black bg throughout. Step 0 = VS Code editor on CLAUDE.md (sunset wallpaper). Step 1 = four slack incident alerts pile in over the editor (Coralogix / PagerDuty / Sentry / incident.io). Step 2 = editor slides off-left, terminal slides in from right, wallpaper crossfades sunset → blue-hour (onStep + window.setWallpaper). Steps 3–10 = mews-coralogix investigation (logs/trace/diff with a deliberate "claude is searching" delay) → diagnosis → user types "fix it" → Edit + ✓ Fixed → announce on `#engineering` → slack-announce draft + review → ✓ posted. Step 11 = four colleague thank-yous pop in. |
 | 11| `takeaways`     | 4     | Black bg + new night wallpaper (dark sky, stars, crescent moon top-left, near-black hills) — even darker than the previous scene's blue-hour, so the deck deepens into full night for the closing beats. Pacman descends through three desserts (🍰 🍩 🍫); each bite reveals one summary takeaway: "Observe. Automate what you don't like." / "Automate what you just did and will happen again." / "Chain small skills and automations — create magic." |
 | 12| `abstract`      | 1     | (closing slide) frustration-as-signal — pink ghost above the heading, "creativity." in pink, "enough." in yellow. Single pacman in the corner, no ghost trailing it. |
 
@@ -80,8 +80,10 @@ speaker doesn't have to time them.
   notification.
 - **Step 5** — Pacman exits right; the Slack icon shrinks; the schematic
   `#product-feedback` window scales in at the centre. **~1s after the window
-  lands, Petr's bug message auto-slides in**: _"hey, found a bug 🐛 — the
-  tax field disappears on second submit."_
+  lands, Petr's bug message auto-slides in**: _"hey, we have a bug. Guest
+  tried to add breakfast for their dog and the system didn't allow it."_
+  **~1.5s after the text**, a follow-up message from Petr appears with a
+  photo attachment of the guest's dog — same step, longer transition-delay.
 - **Step 6** — Composer (text input + green send button) slides up from the
   bottom of the Slack window. A blinking cursor appears and a typewriter
   animation reveals the reply, character by character: _"please create a
@@ -109,8 +111,8 @@ jira arriving together.
   ticket rows (key + summary bar + status pill).
 - **Step 1** — "+ Create" button gets a focus ring; the create-issue
   modal scales in over the list.
-- **Step 2** — Summary typewriter fills: _"tax field disappears on
-  second submit"_ with a blue blinking cursor.
+- **Step 2** — Summary typewriter fills: _"guest can't add breakfast
+  for their pet"_ with a blue blinking cursor.
 - **Step 3** — Required fields fill in staggered with per-field
   `transition-delay`: issue type → R&D team → story points → budget →
   labels → structured description (What & Why / Implementation /
@@ -143,7 +145,7 @@ descent).
 Pressing → from step 1 mounts `claude-work`, whose window scale-in
 entrance carries the audience into the next beat.
 
-### 4. `claude-work` — 6 steps
+### 4. `claude-work` — 7 steps
 
 Same Claude code window, but now we drive it through the MCP flow that
 motivates the next beat.
@@ -154,25 +156,26 @@ motivates the next beat.
   `› /mcp slack connect` → ✓ Connected to slack-mcp →
   `› /mcp atlassian connect` → ✓ Connected to atlassian-mcp.
 - **Step 2** — User prompt typewriter: _"create a jira ticket for the
-  tax bug Petr reported in #product-feedback"_.
+  pet breakfast complaint Petr forwarded in #product-feedback"_.
 - **Step 3** — Claude works: `Read slack thread` → `Call
-  Atlassian.createJiraIssue { project: "GRW", … }` → ✗ Error: missing
-  required fields (labels / R&D team / story points / description
-  sections).
-- **Step 4** — User prompt typewriter: _"create a skill from how you
+  Atlassian.createJiraIssue { project: "MEWS", … }` → ✗ Error: missing
+  required fields (labels / R&D team / story points).
+- **Step 4** — User prompt typewriter supplies the missing values:
+  _"ok — team is Checkin, story points 3, labels breakfast/pets."_
+  then `✓ Created MEWS-1409` lands after the typing finishes.
+- **Step 5** — User prompt typewriter: _"create a skill from how you
   learned creating jiras"_.
-- **Step 5** — ✓ Saved `.claude/skills/jira-grw.md` · _"Use it next
-  time — it'll fill the required fields and structure for you."_
+- **Step 6** — ✓ Saved `.claude/skills/jira-mews.md`.
 
 ### 5. `skill` — 1 step
 
 VS Code-ish editor showing the saved skill file. Frontmatter (`name`,
 `description`, `allowed-tools` including the Atlassian MCP calls used
-in the previous scene, and `references` with saved ids like the GRW
-project key, default R&D team, budget options, and Jan's Atlassian
-account id), then body sections: When to use / Required fields /
-Description template (the same What & Why / Implementation /
-Acceptance criteria structure the jira modal demanded).
+in the previous scene, and `references` with saved ids like the MEWS
+project key, default R&D team, budget options, and a default assignee
+id), then body sections: When to use / Required fields / Description
+template (the same What & Why / Implementation / Acceptance criteria
+structure the jira modal demanded).
 
 ### 6. `github` — (1 step + fade exit)
 
@@ -180,9 +183,9 @@ GitHub **Open a pull request** screen — the ship-it beat. Mac frame
 window with the GitHub navbar (logo + search + nav) at the top, the
 mews/mews-pms repo bar with the Pull-requests tab active, then the
 page header "Open a pull request" with the compare-branches strip
-(`main ← split-bill-multi-card`). The body is a two-column layout: PR
+(`main ← fix-pet-breakfast`). The body is a two-column layout: PR
 title + structured description on the left (Summary / Test plan), and
-a sidebar on the right with Reviewers (@payments-team), Assignees
+a sidebar on the right with Reviewers (@checkin-team), Assignees
 (jan-marek), and Labels. The big green "Create pull request" button
 anchors the bottom.
 
@@ -200,7 +203,7 @@ ghost, a speech bubble, and a cup of coffee.
 - **Step 1** — Ghost glides in closer to pacman (around `left: 820`),
   still on the right side.
 - **Step 2** — A speech bubble fades in above the ghost: _"You must
-  create a ticket. Rules are rules."_
+  create a ticket. PR needs a description."_
 - **Step 3** — A coffee mug (☕ emoji at 86px) appears below pacman.
 - **Step 4** — Pacman rotates 90° to face down, descends to the
   coffee, and eats it (coffee shrinks with a delay timed to pacman's
@@ -246,7 +249,7 @@ the same content scrolling pattern a real terminal uses.
   again.
 - **Step 9** — User prompt typewriter: _"pls update CLAUDE.md so I
   don't deal with this again"_.
-- **Step 10** — `Edit CLAUDE.md · added "Shipping a change" section`
+- **Step 10** — `Edit CLAUDE.md · added "Coding standards" section`
   → `✓ Updated CLAUDE.md.` Transcript scrolls one last time.
 
 Fade-only exit (last app window in the deck before the closing slide).
@@ -285,7 +288,7 @@ a no-op via the same-file skip.
 Obstacle list drawn from `mews-subscription-service/CLAUDE.md` — every
 one of these is what a real PR has to clear before it can ship.
 
-### 10. `claude-incident` — _(10 steps + fade exit)_
+### 10. `claude-incident` — _(12 steps + fade exit)_
 
 Merged scene combining the CLAUDE.md payoff with the incident
 response. Black background throughout; the wallpaper crossfades
@@ -303,36 +306,38 @@ across the editor→terminal handoff.
   scene root, which would also match the terminal `.window`.)
 - **Step 1** — Four slack-style incident notifications pop in
   top-right over the editor (white cards, slack mark, staggered):
-  Coralogix bot in `#alerts` (P2: /checkout error rate), PagerDuty
+  Coralogix bot in `#alerts` (P2: /checkin error rate), PagerDuty
   bot in `#oncall` (page Jan), Sentry bot in `#mews-pms`
-  (NullReferenceException in TaxField.cs), incident.io bot in
+  (NullReferenceException in BreakfastOrder.cs), incident.io bot in
   `#engineering` (Incident MEWS-2025-04 declared).
 - **Step 2** — Editor slides off to the left; terminal slides in
   from the right; alerts stay visible during the handoff; wallpaper
   crossfades sunset → blue-hour.
 - **Step 3** — Alerts fade out as claude starts working. User prompt
-  typewriter: _"checkout is broken — what's going on?"_.
-- **Step 4** — Claude invokes the `atlas:coralogix` skill and runs
+  typewriter: _"checkin is not loading, check what's going on in
+  coralogix"_.
+- **Step 4** — Claude invokes the `mews-coralogix` skill and runs
   three staggered investigations (logs, traces, git diff) with
   deliberately slow delays (0.8 / 1.5 / 2.2s) — the audience reads
   "claude is searching" before the lines land. Plain-English
-  summaries: _"checkout is throwing a lot of errors"_, _"same error
-  pattern across every failed request"_, _"PR #1287 touched the tax
-  code right before things broke"_.
-- **Step 5** — Diagnosis: _"the tax code crashes when the config is
-  missing. checkout's also been slow because of the retries."_ Then
-  `Edit · handle the missing-config case` and `✓ Fixed. Hotfix going
-  out now.`
-- **Step 6** — User prompt typewriter: _"announce on #engineering
+  summaries: _"checkin is throwing a lot of errors"_, _"same error
+  pattern across every failed request"_, _"PR #1287 touched the
+  breakfast code right before things broke"_.
+- **Step 5** — Diagnosis: _"Looks like config is missing which is
+  throwing an error."_
+- **Step 6** — User prompt typewriter: _"fix it"_.
+- **Step 7** — `Edit · handle the missing-config case` → `✓ Fixed.
+  Hotfix going out now.`
+- **Step 8** — User prompt typewriter: _"announce on #engineering
   that it's resolved"_.
-- **Step 7** — `slack-announce` skill drafts the message in a
+- **Step 9** — `slack-announce` skill drafts the message in a
   slack-quote-bar style box (🟢 Resolved · cause · hotfix · no
   customer impact). The channel reference uses a `.ci-channel` styled
   span (no code-pill padding) so trailing punctuation sits flush
   against the channel name. A `[Review draft — press → to send]`
   line gives the speaker a deliberate beat.
-- **Step 8** — `✓ Posted to #engineering.`
-- **Step 9** — Four colleague thank-you slack notifications pop in
+- **Step 10** — `✓ Posted to #engineering.`
+- **Step 11** — Four colleague thank-you slack notifications pop in
   top-right over the terminal (Sarah / Michael / Emma / James, all in
   `#engineering`): _"you're a lifesaver 🙏"_, _"thanks, that was fast
   🚀"_, _"amazing work 🔥"_, _"🎉 thank you!"_.

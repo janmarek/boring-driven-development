@@ -903,8 +903,8 @@ body {
   font-size: 11px;
   font-weight: 600;
 }
-.gh-label-payments { background: #cfe8ff; color: #0a3069; }
-.gh-label-tax      { background: #ffd8b5; color: #6f3500; }
+.gh-label-breakfast { background: #cfe8ff; color: #0a3069; }
+.gh-label-pets      { background: #ffd8b5; color: #6f3500; }
 
 /* --- Helpers --- */
 .row { display: flex; align-items: center; gap: 10px; }
@@ -1312,6 +1312,29 @@ body {
   font-weight: 500;
   line-height: 1.4;
   color: #1d1c1d;
+}
+
+/* Photo follow-up: same sender, so avatar slot stays for alignment but
+   is hidden. The bubble holds a slack-style photo attachment card. */
+.intro .intro-window .new-msg-photo .sw-avatar { visibility: hidden; }
+.intro .intro-window .sw-photo {
+  margin-top: 8px;
+  max-width: 230px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #d6d3cf;
+  background: #f4f1ec;
+}
+.intro .intro-window .sw-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Photo arrives a beat after Petr's text — same step, longer delay. */
+.intro[data-step="5"] .intro-window .new-msg.new-msg-photo,
+.intro[data-step="6"] .intro-window .new-msg.new-msg-photo,
+.intro[data-step="7"] .intro-window .new-msg.new-msg-photo {
+  transition: opacity 0.4s ease-out 2.6s, transform 0.4s ease-out 2.6s;
 }
 
 /* --- Composer at bottom of slack window body (appears step 8) ---
@@ -1799,6 +1822,10 @@ body {
 .jira[data-step="3"] .jw-field-points  .jw-fill { transition-delay: 1.40s; }
 .jira[data-step="3"] .jw-field-desc    .jw-fill { transition-delay: 3.80s; }
 
+/* Labels: chips sit side-by-side with a small breathing gap so the
+   audience can read them as distinct tags rather than one merged blob. */
+.jira .jw-field-labels .jw-select { gap: 8px; }
+
 /* Labels are special: each chip animates in individually, one after
    the other, after the other fields have settled. */
 .jira .jw-field-labels .jw-chip {
@@ -2031,7 +2058,8 @@ body {
 .cw[data-step="2"] .window,
 .cw[data-step="3"] .window,
 .cw[data-step="4"] .window,
-.cw[data-step="5"] .window {
+.cw[data-step="5"] .window,
+.cw[data-step="6"] .window {
   transform: translate(-50%, -50%) scale(1);
   opacity: 1;
 }
@@ -2103,7 +2131,7 @@ body {
    overflow: hidden — which warps its baseline). vertical-align tricks are
    unreliable when overflow:hidden is involved, so use flex centering on
    the line and own the gap from here. */
-.cw .cw-line-p1, .cw .cw-line-p2 {
+.cw .cw-line-p1, .cw .cw-line-p2, .cw .cw-line-p3 {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2129,41 +2157,53 @@ body {
    slack-cmd → slack-ok → atlassian-cmd → atlassian-ok. */
 .cw[data-step="1"] .cw-line-mcp0a, .cw[data-step="2"] .cw-line-mcp0a,
 .cw[data-step="3"] .cw-line-mcp0a, .cw[data-step="4"] .cw-line-mcp0a,
-.cw[data-step="5"] .cw-line-mcp0a { opacity: 1; transform: translateY(0); }
+.cw[data-step="5"] .cw-line-mcp0a, .cw[data-step="6"] .cw-line-mcp0a { opacity: 1; transform: translateY(0); }
 
 .cw[data-step="1"] .cw-line-mcp0b, .cw[data-step="2"] .cw-line-mcp0b,
 .cw[data-step="3"] .cw-line-mcp0b, .cw[data-step="4"] .cw-line-mcp0b,
-.cw[data-step="5"] .cw-line-mcp0b { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+.cw[data-step="5"] .cw-line-mcp0b, .cw[data-step="6"] .cw-line-mcp0b { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
 
 .cw[data-step="1"] .cw-line-mcp1, .cw[data-step="2"] .cw-line-mcp1,
 .cw[data-step="3"] .cw-line-mcp1, .cw[data-step="4"] .cw-line-mcp1,
-.cw[data-step="5"] .cw-line-mcp1 { opacity: 1; transform: translateY(0); transition-delay: 0.6s; }
+.cw[data-step="5"] .cw-line-mcp1, .cw[data-step="6"] .cw-line-mcp1 { opacity: 1; transform: translateY(0); transition-delay: 0.6s; }
 
 .cw[data-step="1"] .cw-line-mcp2, .cw[data-step="2"] .cw-line-mcp2,
 .cw[data-step="3"] .cw-line-mcp2, .cw[data-step="4"] .cw-line-mcp2,
-.cw[data-step="5"] .cw-line-mcp2 { opacity: 1; transform: translateY(0); transition-delay: 0.9s; }
+.cw[data-step="5"] .cw-line-mcp2, .cw[data-step="6"] .cw-line-mcp2 { opacity: 1; transform: translateY(0); transition-delay: 0.9s; }
 
 .cw[data-step="2"] .cw-line-p1, .cw[data-step="3"] .cw-line-p1,
-.cw[data-step="4"] .cw-line-p1, .cw[data-step="5"] .cw-line-p1 { opacity: 1; transform: translateY(0); }
+.cw[data-step="4"] .cw-line-p1, .cw[data-step="5"] .cw-line-p1,
+.cw[data-step="6"] .cw-line-p1 { opacity: 1; transform: translateY(0); }
 
-.cw[data-step="3"] .cw-line-w1, .cw[data-step="4"] .cw-line-w1, .cw[data-step="5"] .cw-line-w1 { opacity: 1; transform: translateY(0); }
-.cw[data-step="3"] .cw-line-w2, .cw[data-step="4"] .cw-line-w2, .cw[data-step="5"] .cw-line-w2 { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
-.cw[data-step="3"] .cw-line-w3, .cw[data-step="4"] .cw-line-w3, .cw[data-step="5"] .cw-line-w3 { opacity: 1; transform: translateY(0); transition-delay: 1.0s; }
-.cw[data-step="3"] .cw-line-w4, .cw[data-step="4"] .cw-line-w4, .cw[data-step="5"] .cw-line-w4 { opacity: 1; transform: translateY(0); transition-delay: 1.3s; }
+.cw[data-step="3"] .cw-line-w1, .cw[data-step="4"] .cw-line-w1, .cw[data-step="5"] .cw-line-w1, .cw[data-step="6"] .cw-line-w1 { opacity: 1; transform: translateY(0); }
+.cw[data-step="3"] .cw-line-w2, .cw[data-step="4"] .cw-line-w2, .cw[data-step="5"] .cw-line-w2, .cw[data-step="6"] .cw-line-w2 { opacity: 1; transform: translateY(0); transition-delay: 0.4s; }
+.cw[data-step="3"] .cw-line-w3, .cw[data-step="4"] .cw-line-w3, .cw[data-step="5"] .cw-line-w3, .cw[data-step="6"] .cw-line-w3 { opacity: 1; transform: translateY(0); transition-delay: 1.0s; }
+.cw[data-step="3"] .cw-line-w4, .cw[data-step="4"] .cw-line-w4, .cw[data-step="5"] .cw-line-w4, .cw[data-step="6"] .cw-line-w4 { opacity: 1; transform: translateY(0); transition-delay: 1.3s; }
 
-.cw[data-step="4"] .cw-line-p2, .cw[data-step="5"] .cw-line-p2 { opacity: 1; transform: translateY(0); }
+/* Step 4: user types the missing values, then ✓ Created lands after
+   the typewriter finishes (≈1.8s reveal, success appears at 2.0s). */
+.cw[data-step="4"] .cw-line-p3, .cw[data-step="5"] .cw-line-p3, .cw[data-step="6"] .cw-line-p3 { opacity: 1; transform: translateY(0); }
+.cw[data-step="4"] .cw-line-w6, .cw[data-step="5"] .cw-line-w6, .cw[data-step="6"] .cw-line-w6 { opacity: 1; transform: translateY(0); transition-delay: 2.0s; }
 
-.cw[data-step="5"] .cw-line-s1 { opacity: 1; transform: translateY(0); }
-.cw[data-step="5"] .cw-line-s2 { opacity: 1; transform: translateY(0); transition-delay: 0.3s; }
+/* Skill prompt shifted to step 5; saved confirmation to step 6. */
+.cw[data-step="5"] .cw-line-p2, .cw[data-step="6"] .cw-line-p2 { opacity: 1; transform: translateY(0); }
+
+.cw[data-step="6"] .cw-line-s1 { opacity: 1; transform: translateY(0); }
 
 /* Typewriter prompts */
-.cw .cw-tw-1, .cw .cw-tw-2 { vertical-align: baseline; }
+.cw .cw-tw-1, .cw .cw-tw-2, .cw .cw-tw-3 { vertical-align: baseline; }
 .cw[data-step="2"] .cw-tw-1, .cw[data-step="3"] .cw-tw-1,
-.cw[data-step="4"] .cw-tw-1, .cw[data-step="5"] .cw-tw-1 {
-  max-width: 100ch;
-  transition: max-width 2.0s steps(72, end);
+.cw[data-step="4"] .cw-tw-1, .cw[data-step="5"] .cw-tw-1,
+.cw[data-step="6"] .cw-tw-1 {
+  max-width: 105ch;
+  transition: max-width 2.5s steps(88, end);
 }
-.cw[data-step="4"] .cw-tw-2, .cw[data-step="5"] .cw-tw-2 {
+.cw[data-step="4"] .cw-tw-3, .cw[data-step="5"] .cw-tw-3,
+.cw[data-step="6"] .cw-tw-3 {
+  max-width: 80ch;
+  transition: max-width 1.8s steps(63, end);
+}
+.cw[data-step="5"] .cw-tw-2, .cw[data-step="6"] .cw-tw-2 {
   max-width: 60ch;
   transition: max-width 1.6s steps(52, end);
 }
@@ -2171,7 +2211,7 @@ body {
 /* =====================================================================
  * Scene: skill (1 step)
  *
- * VS Code-ish editor showing the saved jira-grw.md skill. Grid layout:
+ * VS Code-ish editor showing the saved jira-mews.md skill. Grid layout:
  *   sidebar | tabs | code area
  *           | statusbar at bottom
  * ===================================================================== */
@@ -2896,7 +2936,9 @@ body {
 .ci[data-step="6"] .ci-editor,
 .ci[data-step="7"] .ci-editor,
 .ci[data-step="8"] .ci-editor,
-.ci[data-step="9"] .ci-editor {
+.ci[data-step="9"] .ci-editor,
+.ci[data-step="10"] .ci-editor,
+.ci[data-step="11"] .ci-editor {
   transform: translate(-180%, -50%);
   opacity: 0;
   transition: transform 0.75s cubic-bezier(.7, 0, .84, 0.2),
@@ -2917,7 +2959,9 @@ body {
 .ci[data-step="6"] .ci-terminal,
 .ci[data-step="7"] .ci-terminal,
 .ci[data-step="8"] .ci-terminal,
-.ci[data-step="9"] .ci-terminal {
+.ci[data-step="9"] .ci-terminal,
+.ci[data-step="10"] .ci-terminal,
+.ci[data-step="11"] .ci-terminal {
   transform: translate(-50%, -50%);
   opacity: 1;
   transition: transform 0.65s cubic-bezier(.34, 1.2, .64, 1) 0.55s,
@@ -2981,9 +3025,9 @@ body {
 /* Scroll bumps so the latest turn stays inside the viewport once we're
    past the diagnosis section (now at steps 7-9 with the editor beats
    absorbed into the same scene). */
-.ci[data-step="7"] .ci-scroll,
-.ci[data-step="8"] .ci-scroll,
-.ci[data-step="9"] .ci-scroll { transform: translateY(-100px); }
+.ci[data-step="9"] .ci-scroll,
+.ci[data-step="10"] .ci-scroll,
+.ci[data-step="11"] .ci-scroll { transform: translateY(-100px); }
 
 .ci .ci-line {
   opacity: 0;
@@ -3052,25 +3096,41 @@ body {
 .ci[data-step="3"] .ci-line-p1, .ci[data-step="4"] .ci-line-p1,
 .ci[data-step="5"] .ci-line-p1, .ci[data-step="6"] .ci-line-p1,
 .ci[data-step="7"] .ci-line-p1, .ci[data-step="8"] .ci-line-p1,
-.ci[data-step="9"] .ci-line-p1 { opacity: 1; transform: translateY(0); }
+.ci[data-step="9"] .ci-line-p1, .ci[data-step="10"] .ci-line-p1,
+.ci[data-step="11"] .ci-line-p1 { opacity: 1; transform: translateY(0); }
 
 .ci[data-step="4"] .ci-from-4, .ci[data-step="5"] .ci-from-4,
 .ci[data-step="6"] .ci-from-4, .ci[data-step="7"] .ci-from-4,
-.ci[data-step="8"] .ci-from-4, .ci[data-step="9"] .ci-from-4 { opacity: 1; transform: translateY(0); }
+.ci[data-step="8"] .ci-from-4, .ci[data-step="9"] .ci-from-4,
+.ci[data-step="10"] .ci-from-4, .ci[data-step="11"] .ci-from-4 { opacity: 1; transform: translateY(0); }
 
 .ci[data-step="5"] .ci-from-5, .ci[data-step="6"] .ci-from-5,
 .ci[data-step="7"] .ci-from-5, .ci[data-step="8"] .ci-from-5,
-.ci[data-step="9"] .ci-from-5 { opacity: 1; transform: translateY(0); }
+.ci[data-step="9"] .ci-from-5, .ci[data-step="10"] .ci-from-5,
+.ci[data-step="11"] .ci-from-5 { opacity: 1; transform: translateY(0); }
 
-.ci[data-step="6"] .ci-from-6, .ci[data-step="7"] .ci-from-6,
-.ci[data-step="8"] .ci-from-6, .ci[data-step="9"] .ci-from-6 { opacity: 1; transform: translateY(0); }
-.ci[data-step="6"] .ci-line-p2, .ci[data-step="7"] .ci-line-p2,
-.ci[data-step="8"] .ci-line-p2, .ci[data-step="9"] .ci-line-p2 { opacity: 1; transform: translateY(0); }
+/* Step 6: user types "fix it" (typewriter only). */
+.ci[data-step="6"] .ci-line-p3, .ci[data-step="7"] .ci-line-p3,
+.ci[data-step="8"] .ci-line-p3, .ci[data-step="9"] .ci-line-p3,
+.ci[data-step="10"] .ci-line-p3, .ci[data-step="11"] .ci-line-p3 { opacity: 1; transform: translateY(0); }
 
+/* Step 7: claude's fix response (Edit + ✓ Fixed). */
 .ci[data-step="7"] .ci-from-7, .ci[data-step="8"] .ci-from-7,
-.ci[data-step="9"] .ci-from-7 { opacity: 1; transform: translateY(0); }
+.ci[data-step="9"] .ci-from-7, .ci[data-step="10"] .ci-from-7,
+.ci[data-step="11"] .ci-from-7 { opacity: 1; transform: translateY(0); }
 
-.ci[data-step="8"] .ci-from-8, .ci[data-step="9"] .ci-from-8 { opacity: 1; transform: translateY(0); }
+/* Announce prompt shifted to step 8. */
+.ci[data-step="8"] .ci-from-8, .ci[data-step="9"] .ci-from-8,
+.ci[data-step="10"] .ci-from-8, .ci[data-step="11"] .ci-from-8 { opacity: 1; transform: translateY(0); }
+.ci[data-step="8"] .ci-line-p2, .ci[data-step="9"] .ci-line-p2,
+.ci[data-step="10"] .ci-line-p2, .ci[data-step="11"] .ci-line-p2 { opacity: 1; transform: translateY(0); }
+
+/* Draft + review shifted to step 9. */
+.ci[data-step="9"] .ci-from-9, .ci[data-step="10"] .ci-from-9,
+.ci[data-step="11"] .ci-from-9 { opacity: 1; transform: translateY(0); }
+
+/* Posted shifted to step 10. */
+.ci[data-step="10"] .ci-from-10, .ci[data-step="11"] .ci-from-10 { opacity: 1; transform: translateY(0); }
 
 /* Staggered, deliberately-slow sub-line reveal at step 4 in natural
    investigation order: logs (what's happening) → trace (what pattern)
@@ -3083,16 +3143,22 @@ body {
 .ci[data-step="4"] .ci-tool-diff  { transition-delay: 2.10s; }
 
 /* Typewriter widths. Chars:
-   p1 = "checkout is broken — what's going on?" (37)
-   p2 = "announce on #engineering that it's resolved" (43) */
+   p1 = "checkin is not loading, check what's going on in coralogix" (58)
+   p2 = "announce on #engineering that it's resolved" (43)
+   p3 = "fix it" (6) */
 .ci[data-step="3"] .ci-tw-1, .ci[data-step="4"] .ci-tw-1, .ci[data-step="5"] .ci-tw-1,
 .ci[data-step="6"] .ci-tw-1, .ci[data-step="7"] .ci-tw-1, .ci[data-step="8"] .ci-tw-1,
-.ci[data-step="9"] .ci-tw-1 {
-  max-width: 38ch;
-  transition: max-width 1.6s steps(37, end);
+.ci[data-step="9"] .ci-tw-1, .ci[data-step="10"] .ci-tw-1, .ci[data-step="11"] .ci-tw-1 {
+  max-width: 60ch;
+  transition: max-width 2.2s steps(58, end);
 }
-.ci[data-step="6"] .ci-tw-2, .ci[data-step="7"] .ci-tw-2, .ci[data-step="8"] .ci-tw-2,
-.ci[data-step="9"] .ci-tw-2 {
+.ci[data-step="6"] .ci-tw-3, .ci[data-step="7"] .ci-tw-3, .ci[data-step="8"] .ci-tw-3,
+.ci[data-step="9"] .ci-tw-3, .ci[data-step="10"] .ci-tw-3, .ci[data-step="11"] .ci-tw-3 {
+  max-width: 8ch;
+  transition: max-width 0.5s steps(6, end);
+}
+.ci[data-step="8"] .ci-tw-2, .ci[data-step="9"] .ci-tw-2,
+.ci[data-step="10"] .ci-tw-2, .ci[data-step="11"] .ci-tw-2 {
   max-width: 45ch;
   transition: max-width 1.7s steps(43, end);
 }
@@ -3134,14 +3200,16 @@ body {
 .ci[data-step="6"] .ci-alert-stack .slack-notif,
 .ci[data-step="7"] .ci-alert-stack .slack-notif,
 .ci[data-step="8"] .ci-alert-stack .slack-notif,
-.ci[data-step="9"] .ci-alert-stack .slack-notif {
+.ci[data-step="9"] .ci-alert-stack .slack-notif,
+.ci[data-step="10"] .ci-alert-stack .slack-notif,
+.ci[data-step="11"] .ci-alert-stack .slack-notif {
   transform: translateX(120%);
   opacity: 0;
   transition: transform 0.45s ease-in, opacity 0.4s ease-in;
   transition-delay: 0s;
 }
 
-/* --- Colleague thank-you stack (step 9). Same card chrome as the
+/* --- Colleague thank-you stack (step 11). Same card chrome as the
    alerts. Sits higher up (top:40) so it doesn't clash with the
    terminal's own top padding. */
 .ci .ci-thanks-stack {
@@ -3155,14 +3223,14 @@ body {
   z-index: 10;
   pointer-events: none;
 }
-.ci[data-step="9"] .ci-thanks-stack .slack-notif {
+.ci[data-step="11"] .ci-thanks-stack .slack-notif {
   transform: translateX(0);
   opacity: 1;
 }
-.ci[data-step="9"] .ci-thanks-stack .slack-notif:nth-child(1) { transition-delay: 0.20s; }
-.ci[data-step="9"] .ci-thanks-stack .slack-notif:nth-child(2) { transition-delay: 0.60s; }
-.ci[data-step="9"] .ci-thanks-stack .slack-notif:nth-child(3) { transition-delay: 1.00s; }
-.ci[data-step="9"] .ci-thanks-stack .slack-notif:nth-child(4) { transition-delay: 1.40s; }
+.ci[data-step="11"] .ci-thanks-stack .slack-notif:nth-child(1) { transition-delay: 0.20s; }
+.ci[data-step="11"] .ci-thanks-stack .slack-notif:nth-child(2) { transition-delay: 0.60s; }
+.ci[data-step="11"] .ci-thanks-stack .slack-notif:nth-child(3) { transition-delay: 1.00s; }
+.ci[data-step="11"] .ci-thanks-stack .slack-notif:nth-child(4) { transition-delay: 1.40s; }
 
 /* =====================================================================
  * Reusable slack-style notification card
